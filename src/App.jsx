@@ -1,0 +1,62 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Home from "./pages/Home";
+import Registro from "./pages/Registro";
+import Login from "./pages/Login";
+import RecuperarPassword from "./pages/RecuperarPassword";
+import Panel from "./pages/Panel";
+
+import DashboardAdmin from "./pages/admin/DashboardAdmin";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+
+import AdminRoute from "./components/AdminRoute";
+
+import Perfil from "./pages/Perfil";
+
+function App() {
+    return (
+        <BrowserRouter>
+
+            <Routes>
+
+                <Route path="/" element={<Home />} />
+
+                <Route path="/registro" element={<Registro />} />
+
+                <Route path="/login" element={<Login />} />
+
+                <Route path="/recuperar-password" element={<RecuperarPassword />} />
+
+                <Route path="/panel" element={
+                        <ProtectedRoute>
+                            <Panel />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin"
+                    element={
+                        <AdminRoute>
+                            <DashboardAdmin />
+                        </AdminRoute>
+                    }
+                />
+
+                <Route
+                    path="/perfil"
+                    element={
+                        <ProtectedRoute>
+                          <Perfil />
+                        </ProtectedRoute>
+    }
+/>
+
+            </Routes>
+
+        </BrowserRouter>
+    );
+}
+
+export default App;
