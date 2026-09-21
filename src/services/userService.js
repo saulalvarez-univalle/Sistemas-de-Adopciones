@@ -21,12 +21,16 @@ export async function obtenerPerfil(uid) {
 export async function actualizarPerfil(
     uid,
     nombreCompleto,
-    telefono
+    telefono,
+    departamentoId,
+    municipioId
 ) {
     const referenciaUsuario = doc(db, "users", uid);
 
     await updateDoc(referenciaUsuario, {
         nombreCompleto: nombreCompleto,
-        telefono: telefono
+        telefono: telefono,
+        departamentoId: departamentoId,
+        municipioId: municipioId
     });
 }

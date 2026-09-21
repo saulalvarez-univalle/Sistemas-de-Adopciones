@@ -9,10 +9,10 @@ import Panel from "./pages/Panel";
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
 
 import ProtectedRoute from "./components/ProtectedRoute";
-
 import AdminRoute from "./components/AdminRoute";
 
 import Perfil from "./pages/Perfil";
+
 
 function App() {
     return (
@@ -50,8 +50,8 @@ function App() {
                         <ProtectedRoute>
                           <Perfil />
                         </ProtectedRoute>
-    }
-/>
+                    }
+                />
 
             </Routes>
 

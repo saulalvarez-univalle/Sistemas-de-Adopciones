@@ -7,12 +7,23 @@ import {
     actualizarPerfil
 } from "../services/userService";
 
+import {
+    obtenerDepartamentos,
+    obtenerMunicipios
+} from "../services/territorioService";
+
 function Perfil() {
     const navigate = useNavigate();
     const { usuarioFirebase } = useAuth();
 
     const [nombreCompleto, setNombreCompleto] = useState("");
     const [telefono, setTelefono] = useState("");
+
+    const [departamentos, setDepartamentos] = useState([]);
+const [municipios, setMunicipios] = useState([]);
+
+const [departamentoId, setDepartamentoId] = useState("");
+const [municipioId, setMunicipioId] = useState("");
 
     const [email, setEmail] = useState("");
     const [rol, setRol] = useState("");
@@ -42,6 +53,8 @@ function Perfil() {
                 setEmail(perfil.email || "");
                 setRol(perfil.rol || "");
                 setEstadoCuenta(perfil.estadoCuenta || "");
+                setDepartamentoId(perfil.departamentoId || "");
+                setMunicipioId(perfil.municipioId || "");
             } catch (error) {
                 console.error(
                     "Error al cargar el perfil:",
@@ -58,6 +71,64 @@ function Perfil() {
 
         cargarPerfil();
     }, [usuarioFirebase, navigate]);
+
+    useEffect(() => {
+    async function cargarDepartamentos() {
+        try {
+            const datos = await obtenerDepartamentos();
+
+            setDepartamentos(datos);
+        } catch (error) {
+            console.error(
+                "Error al cargar los departamentos:",
+                error
+            );
+
+            setError(
+                "No se pudieron cargar los departamentos."
+            );
+        }
+    }
+
+    cargarDepartamentos();
+}, []);
+
+    useEffect(() => {
+    async function cargarMunicipios() {
+        if (departamentoId === "") {
+            setMunicipios([]);
+            return;
+        }
+
+        try {
+            const datos = await obtenerMunicipios(
+                departamentoId
+            );
+
+            setMunicipios(datos);
+
+            const municipioExiste = datos.some(
+                (municipio) =>
+                    municipio.id === municipioId
+            );
+
+            if (!municipioExiste) {
+                setMunicipioId("");
+            }
+        } catch (error) {
+            console.error(
+                "Error al cargar los municipios:",
+                error
+            );
+
+            setError(
+                "No se pudieron cargar los municipios."
+            );
+        }
+    }
+
+    cargarMunicipios();
+}, [departamentoId]);
 
     function validarFormulario() {
         const nombre = nombreCompleto.trim();
@@ -89,6 +160,14 @@ function Perfil() {
             return "El teléfono debe tener 8 dígitos y comenzar con 5, 6 o 7.";
         }
 
+        if (departamentoId === "") {
+    return "Debes seleccionar un departamento.";
+}
+
+if (municipioId === "") {
+    return "Debes seleccionar un municipio.";
+}
+
         return "";
     }
 
@@ -114,10 +193,12 @@ function Perfil() {
 
         try {
             await actualizarPerfil(
-                usuarioFirebase.uid,
-                nombreCompleto.trim(),
-                telefono.trim()
-            );
+              usuarioFirebase.uid,
+              nombreCompleto.trim(),
+              telefono.trim(),
+              departamentoId,
+              municipioId
+          );
 
             setNombreCompleto(nombreCompleto.trim());
             setTelefono(telefono.trim());
@@ -213,7 +294,65 @@ function Perfil() {
                             disabled={guardando}
                         />
                     </div>
+                    <div className="form-group">
+    <label htmlFor="departamento">
+        Departamento
+    </label>
 
+    <select
+        id="departamento"
+        value={departamentoId}
+        onChange={(event) => {
+            setDepartamentoId(event.target.value);
+            setMunicipioId("");
+        }}
+        disabled={guardando}
+    >
+        <option value="">
+            Selecciona un departamento
+        </option>
+
+        {departamentos.map((departamento) => (
+            <option
+                key={departamento.id}
+                value={departamento.id}
+            >
+                {departamento.nombre}
+            </option>
+        ))}
+    </select>
+</div>
+
+<div className="form-group">
+    <label htmlFor="municipio">
+        Municipio
+    </label>
+
+    <select
+        id="municipio"
+        value={municipioId}
+        onChange={(event) =>
+            setMunicipioId(event.target.value)
+        }
+        disabled={
+            guardando ||
+            departamentoId === ""
+        }
+    >
+        <option value="">
+            Selecciona un municipio
+        </option>
+
+        {municipios.map((municipio) => (
+            <option
+                key={municipio.id}
+                value={municipio.id}
+            >
+                {municipio.nombre}
+            </option>
+        ))}
+    </select>
+</div>
                     <div className="form-group">
                         <label htmlFor="email">
                             Correo electrónico
@@ -281,6 +420,6 @@ function Perfil() {
             </section>
         </main>
     );
-}
+  }
 
 export default Perfil;
