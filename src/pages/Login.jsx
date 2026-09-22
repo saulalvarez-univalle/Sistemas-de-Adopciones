@@ -72,7 +72,7 @@ function Login() {
 
             if (
                 perfil.rol !== "Adoptante" &&
-                perfil.rol !== "Albergue" &&
+                perfil.rol !== "Albergue/Refugio" &&
                 perfil.rol !== "Servicio" &&
                 perfil.rol !== "Admin" &&
                 perfil.rol !== "Superusuario"

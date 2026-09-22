@@ -347,7 +347,7 @@ function Registro() {
                                     Adoptante
                                 </option>
 
-                                <option value="Albergue">
+                                <option value="Albergue/Refugio">
                                     Albergue / Refugio
                                 </option>
 

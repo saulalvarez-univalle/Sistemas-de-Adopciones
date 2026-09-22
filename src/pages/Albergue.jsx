@@ -21,6 +21,8 @@ function Albergue() {
     const { usuarioFirebase, perfil } = useAuth();
 
     const [albergueId, setAlbergueId] = useState("");
+    const [estadoVerificacion, setEstadoVerificacion] = useState("");
+const [motivoRechazo, setMotivoRechazo] = useState("");
 
     const [nombreRefugio, setNombreRefugio] = useState("");
     const [descripcion, setDescripcion] = useState("");
@@ -59,6 +61,13 @@ function Albergue() {
                     await obtenerAlberguePorUsuario(usuarioFirebase.uid);
 
                 if (datosAlbergue) {
+                  setEstadoVerificacion(
+    datosAlbergue.estadoVerificacion || ""
+);
+
+setMotivoRechazo(
+    datosAlbergue.motivoRechazo || ""
+);
 
                     setAlbergueId(datosAlbergue.id);
                     setNombreRefugio(datosAlbergue.nombreRefugio || "");
@@ -332,6 +341,45 @@ function Albergue() {
                 Completa la información de tu refugio para que pueda
                 ser verificado por un administrador.
             </p>
+
+            {albergueId !== "" && (
+    <div>
+
+        <h2>
+            Estado de verificación
+        </h2>
+
+        {estadoVerificacion === "Pendiente_Verificacion" && (
+            <p>
+                Tu solicitud está pendiente de verificación por un administrador.
+            </p>
+        )}
+
+        {estadoVerificacion === "Aprobado" && (
+            <p>
+                Tu albergue fue aprobado correctamente.
+            </p>
+        )}
+
+        {estadoVerificacion === "Rechazado" && (
+            <div>
+
+                <p>
+                    Tu solicitud de albergue fue rechazada.
+                </p>
+
+                <p>
+                    <strong>
+                        Motivo del rechazo:
+                    </strong>{" "}
+                    {motivoRechazo}
+                </p>
+
+            </div>
+        )}
+
+    </div>
+)}
 
             {mensaje && (
                 <p>

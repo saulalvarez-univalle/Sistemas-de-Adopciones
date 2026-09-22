@@ -16,6 +16,8 @@ import Perfil from "./pages/Perfil";
 
 import Albergue from "./pages/Albergue";
 
+import GestionAlbergues from "./pages/GestionAlbergues";
+
 function App() {
     return (
         <BrowserRouter>
@@ -61,8 +63,17 @@ function App() {
                       <ProtectedRoute>
                         <Albergue />
                       </ProtectedRoute>
-    }
-/>
+                  }
+                />
+
+                <Route
+                  path="/gestion-albergues"
+                  element={
+                      <AdminRoute>
+                        <GestionAlbergues />
+                      </AdminRoute>
+                  }
+                />
 
             </Routes>
 

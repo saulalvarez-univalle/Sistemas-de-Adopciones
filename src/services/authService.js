@@ -85,3 +85,37 @@ export async function cerrarSesion() {
     await signOut(auth);
 
 }
+export async function obtenerAlberguesPendientes() {
+    const referencia = collection(db, "albergues");
+
+    const consulta = query(
+        referencia,
+        where("estadoVerificacion", "==", "Pendiente_Verificacion")
+    );
+
+    const resultado = await getDocs(consulta);
+
+    const albergues = [];
+
+    resultado.forEach((documento) => {
+        albergues.push({
+            id: documento.id,
+            ...documento.data()
+        });
+    });
+
+    return albergues;
+}
+
+export async function actualizarEstadoAlbergue(
+    id,
+    estadoVerificacion,
+    motivoRechazo
+) {
+    const referencia = doc(db, "albergues", id);
+
+    await updateDoc(referencia, {
+        estadoVerificacion: estadoVerificacion,
+        motivoRechazo: motivoRechazo
+    });
+}
