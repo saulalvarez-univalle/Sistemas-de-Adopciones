@@ -18,6 +18,8 @@ import Albergue from "./pages/Albergue";
 
 import GestionAlbergues from "./pages/GestionAlbergues";
 
+import GestionEspecies from "./pages/admin/GestionEspecies";
+
 function App() {
     return (
         <BrowserRouter>
@@ -75,6 +77,14 @@ function App() {
                   }
                 />
 
+                <Route
+                  path="/gestion-especies"
+                  element={
+                      <AdminRoute>
+                        <GestionEspecies />
+                      </AdminRoute>
+                  }
+                />
             </Routes>
 
         </BrowserRouter>
