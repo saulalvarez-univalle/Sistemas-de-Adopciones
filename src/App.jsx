@@ -9,10 +9,12 @@ import Panel from "./pages/Panel";
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
 
 import ProtectedRoute from "./components/ProtectedRoute";
+
 import AdminRoute from "./components/AdminRoute";
 
 import Perfil from "./pages/Perfil";
 
+import Albergue from "./pages/Albergue";
 
 function App() {
     return (
@@ -52,6 +54,15 @@ function App() {
                         </ProtectedRoute>
                     }
                 />
+
+                <Route
+                  path="/albergue"
+                  element={
+                      <ProtectedRoute>
+                        <Albergue />
+                      </ProtectedRoute>
+    }
+/>
 
             </Routes>
 
