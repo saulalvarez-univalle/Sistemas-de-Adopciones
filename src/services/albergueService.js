@@ -58,19 +58,65 @@ export async function obtenerAlberguePorUsuario(userId) {
 
 export async function actualizarAlbergue(id, datos) {
 
-    const referencia = doc(db, "albergues", id);
+    const referencia =
+        doc(db, "albergues", id);
 
-    await updateDoc(referencia, {
-        nombreRefugio: datos.nombreRefugio,
-        descripcion: datos.descripcion,
-        departamentoId: datos.departamentoId,
-        municipioId: datos.municipioId,
-        direccion: datos.direccion,
-        latitud: datos.latitud,
-        longitud: datos.longitud,
-        telefonoContacto: datos.telefonoContacto,
-        horariosAtencion: datos.horariosAtencion
-    });
+    const documento =
+        await getDoc(referencia);
+
+    if (!documento.exists()) {
+        throw new Error(
+            "No se encontró el albergue."
+        );
+    }
+
+    const datosActuales =
+        documento.data();
+
+    const cambios = {
+        nombreRefugio:
+            datos.nombreRefugio,
+
+        descripcion:
+            datos.descripcion,
+
+        departamentoId:
+            datos.departamentoId,
+
+        municipioId:
+            datos.municipioId,
+
+        direccion:
+            datos.direccion,
+
+        latitud:
+            datos.latitud,
+
+        longitud:
+            datos.longitud,
+
+        telefonoContacto:
+            datos.telefonoContacto,
+
+        horariosAtencion:
+            datos.horariosAtencion
+    };
+
+    if (
+        datosActuales.estadoVerificacion ===
+        "Rechazado"
+    ) {
+
+        cambios.estadoVerificacion =
+            "Pendiente_Verificacion";
+
+        cambios.motivoRechazo = "";
+    }
+
+    await updateDoc(
+        referencia,
+        cambios
+    );
 }
 
 export async function obtenerAlberguesPendientes() {
@@ -94,16 +140,52 @@ export async function obtenerAlberguesPendientes() {
 
     return albergues;
 }
-
 export async function actualizarEstadoAlbergue(
     id,
     estadoVerificacion,
     motivoRechazo
 ) {
-    const referencia = doc(db, "albergues", id);
 
-    await updateDoc(referencia, {
-        estadoVerificacion: estadoVerificacion,
-        motivoRechazo: motivoRechazo
+    const referencia =
+        doc(db, "albergues", id);
+
+    await updateDoc(
+        referencia,
+        {
+            estadoVerificacion:
+                estadoVerificacion,
+
+            motivoRechazo:
+                motivoRechazo
+        }
+    );
+}
+
+export async function obtenerAlberguesVerificados() {
+
+    const referencia = collection(db, "albergues");
+
+    const consulta = query(
+        referencia,
+        where(
+            "estadoVerificacion",
+            "==",
+            "Verificado"
+        )
+    );
+
+    const resultado = await getDocs(consulta);
+
+    const albergues = [];
+
+    resultado.forEach((documento) => {
+
+        albergues.push({
+            id: documento.id,
+            ...documento.data()
+        });
+
     });
+
+    return albergues;
 }

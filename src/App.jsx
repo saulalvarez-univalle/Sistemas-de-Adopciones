@@ -20,10 +20,14 @@ import GestionAlbergues from "./pages/GestionAlbergues";
 
 import GestionEspecies from "./pages/admin/GestionEspecies";
 
+import Navbar from "./components/Navbar";
+
+import Refugios from "./pages/Refugios";
+
 function App() {
     return (
         <BrowserRouter>
-
+        <Navbar />
             <Routes>
 
                 <Route path="/" element={<Home />} />
@@ -85,6 +89,8 @@ function App() {
                       </AdminRoute>
                   }
                 />
+
+                <Route path="/refugios" element={<Refugios />} />
             </Routes>
 
         </BrowserRouter>

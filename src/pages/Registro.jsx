@@ -277,7 +277,6 @@ function Registro() {
                                 onChange={(evento) =>
                                     setNombreCompleto(evento.target.value)
                                 }
-                                placeholder="Ej. Constanza Olguin Flores"
                                 maxLength="100"
                                 autoComplete="name"
                             />

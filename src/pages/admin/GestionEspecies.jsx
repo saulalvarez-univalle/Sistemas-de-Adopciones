@@ -8,6 +8,8 @@ import {
     actualizarEspecie
 } from "../../services/especieService";
 
+import "../../styles/gestion-especies.css";
+
 function GestionEspecies() {
 
     const { perfil } = useAuth();
@@ -252,9 +254,23 @@ function GestionEspecies() {
     if (cargando) {
 
         return (
-            <p>
-                Cargando especies...
-            </p>
+            <main className="species-page">
+
+                <section className="species-container">
+
+                    <div className="species-loading">
+
+                        <div className="species-loading-spinner"></div>
+
+                        <p>
+                            Cargando catálogo...
+                        </p>
+
+                    </div>
+
+                </section>
+
+            </main>
         );
     }
 
@@ -265,194 +281,475 @@ function GestionEspecies() {
     ) {
 
         return (
-            <div>
+            <main className="species-page">
 
-                <h1>
-                    Acceso no permitido
-                </h1>
+                <section className="species-container">
 
-                <p>
-                    Solo un administrador puede gestionar
-                    las especies.
-                </p>
+                    <div className="species-empty">
 
-            </div>
+                        <div className="species-empty-icon">
+                            !
+                        </div>
+
+                        <h1>
+                            Acceso no permitido
+                        </h1>
+
+                        <p>
+                            Solo un administrador puede gestionar
+                            las especies del sistema.
+                        </p>
+
+                    </div>
+
+                </section>
+
+            </main>
         );
     }
 
+    const especiesActivas =
+        especies.filter(
+            (especie) => especie.activo
+        ).length;
+
+    const especiesInactivas =
+        especies.length - especiesActivas;
+
     return (
-        <div>
+        <main className="species-page">
 
-            <h1>
-                Gestión de especies
-            </h1>
+            <section className="species-container">
 
-            <p>
-                Administra las categorías de especies
-                disponibles para las mascotas.
-            </p>
+                <header className="species-header">
 
-            {error && (
-                <p>
-                    {error}
-                </p>
-            )}
+                    <div>
 
-            {mensaje && (
-                <p>
-                    {mensaje}
-                </p>
-            )}
+                        <span className="species-label">
+                            RED HUELLA / CATÁLOGO
+                        </span>
 
-            <form
-                onSubmit={guardarNuevaEspecie}
-            >
+                        <h1>
+                            Gestión de especies
+                        </h1>
 
-                <h2>
-                    Nueva especie
-                </h2>
+                        <p>
+                            Administra las especies disponibles
+                            para los procesos de adopción.
+                        </p>
 
-                <label>
-                    Nombre de la especie
-                </label>
+                    </div>
 
-                <input
-                    type="text"
-                    value={nombre}
-                    onChange={(evento) => {
-                        setNombre(
-                            evento.target.value
-                        );
+                    <div className="species-header-count">
 
-                        setError("");
-                    }}
-                    placeholder="Ej.: Loro"
-                />
+                        <strong>
+                            {especies.length}
+                        </strong>
 
-                <button
-                    type="submit"
-                    disabled={guardando}
-                >
-                    {guardando
-                        ? "Guardando..."
-                        : "Crear especie"}
-                </button>
+                        <span>
+                            especies registradas
+                        </span>
 
-            </form>
+                    </div>
 
-            <hr />
+                </header>
 
-            <h2>
-                Especies registradas
-            </h2>
 
-            {especies.length === 0 ? (
+                {error !== "" && (
 
-                <p>
-                    No existen especies registradas.
-                </p>
+                    <div className="species-alert species-alert-error">
 
-            ) : (
+                        <span className="species-alert-icon">
+                            !
+                        </span>
 
-                especies.map((especie) => (
+                        <div>
 
-                    <div
-                        key={especie.id}
-                    >
+                            <strong>
+                                No se pudo completar la operación
+                            </strong>
 
-                        {editandoId === especie.id ? (
+                            <p>
+                                {error}
+                            </p>
 
-                            <div>
+                        </div>
+
+                    </div>
+
+                )}
+
+
+                {mensaje !== "" && (
+
+                    <div className="species-alert species-alert-success">
+
+                        <span className="species-alert-icon">
+                            ✓
+                        </span>
+
+                        <div>
+
+                            <strong>
+                                Operación completada
+                            </strong>
+
+                            <p>
+                                {mensaje}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                )}
+
+
+                <section className="species-stats">
+
+                    <div className="species-stat">
+
+                        <span>
+                            TOTAL
+                        </span>
+
+                        <strong>
+                            {especies.length}
+                        </strong>
+
+                        <small>
+                            Registradas en el catálogo
+                        </small>
+
+                    </div>
+
+
+                    <div className="species-stat">
+
+                        <span>
+                            ACTIVAS
+                        </span>
+
+                        <strong className="species-stat-green">
+                            {especiesActivas}
+                        </strong>
+
+                        <small>
+                            Disponibles para utilizar
+                        </small>
+
+                    </div>
+
+
+                    <div className="species-stat">
+
+                        <span>
+                            DESHABILITADAS
+                        </span>
+
+                        <strong className="species-stat-muted">
+                            {especiesInactivas}
+                        </strong>
+
+                        <small>
+                            No disponibles actualmente
+                        </small>
+
+                    </div>
+
+                </section>
+
+
+                <div className="species-layout">
+
+                    <aside className="species-create">
+
+                        <div className="species-create-heading">
+
+                            <span className="species-overline">
+                                NUEVO REGISTRO
+                            </span>
+
+                            <h2>
+                                Agregar especie
+                            </h2>
+
+                            <p>
+                                Añade una nueva especie al catálogo
+                                de Red Huella.
+                            </p>
+
+                        </div>
+
+                        <form
+                            onSubmit={guardarNuevaEspecie}
+                        >
+
+                            <div className="species-form-group">
+
+                                <label htmlFor="nombreEspecie">
+                                    Nombre
+                                </label>
 
                                 <input
+                                    id="nombreEspecie"
                                     type="text"
-                                    value={nombreEditado}
+                                    value={nombre}
                                     onChange={(evento) => {
-                                        setNombreEditado(
+                                        setNombre(
                                             evento.target.value
                                         );
 
                                         setError("");
+                                        setMensaje("");
                                     }}
+                                    placeholder="Ej. Loro"
+                                    maxLength="50"
+                                    disabled={guardando}
                                 />
 
-                                <button
-                                    type="button"
-                                    disabled={guardando}
-                                    onClick={() =>
-                                        guardarEdicion(
-                                            especie
-                                        )
-                                    }
-                                >
-                                    Guardar
-                                </button>
+                                <small>
+                                    Solo letras y espacios.
+                                </small>
 
-                                <button
-                                    type="button"
-                                    onClick={
-                                        cancelarEdicion
-                                    }
-                                >
-                                    Cancelar
-                                </button>
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="species-create-button"
+                                disabled={guardando}
+                            >
+                                {guardando
+                                    ? "Guardando..."
+                                    : "Agregar especie"}
+                            </button>
+
+                        </form>
+
+                    </aside>
+
+
+                    <section className="species-list-section">
+
+                        <div className="species-list-header">
+
+                            <div>
+
+                                <span className="species-overline">
+                                    CATÁLOGO
+                                </span>
+
+                                <h2>
+                                    Especies registradas
+                                </h2>
+
+                            </div>
+
+                            <span className="species-list-count">
+                                {especies.length}
+                            </span>
+
+                        </div>
+
+
+                        {especies.length === 0 ? (
+
+                            <div className="species-no-results">
+
+                                <h3>
+                                    El catálogo está vacío
+                                </h3>
+
+                                <p>
+                                    Agrega la primera especie utilizando
+                                    el formulario.
+                                </p>
 
                             </div>
 
                         ) : (
 
-                            <div>
+                            <div className="species-table">
 
-                                <p>
-                                    <strong>
-                                        {especie.nombre}
-                                    </strong>
-                                </p>
+                                <div className="species-table-head">
 
-                                <p>
-                                    Estado:{" "}
-                                    {especie.activo
-                                        ? "Activa"
-                                        : "Deshabilitada"}
-                                </p>
+                                    <span>
+                                        ESPECIE
+                                    </span>
 
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        iniciarEdicion(
-                                            especie
-                                        )
-                                    }
-                                >
-                                    Editar
-                                </button>
+                                    <span>
+                                        ESTADO
+                                    </span>
 
-                                <button
-                                    type="button"
-                                    disabled={guardando}
-                                    onClick={() =>
-                                        cambiarEstado(
-                                            especie
-                                        )
-                                    }
-                                >
-                                    {especie.activo
-                                        ? "Deshabilitar"
-                                        : "Habilitar"}
-                                </button>
+                                    <span>
+                                        ACCIONES
+                                    </span>
+
+                                </div>
+
+
+                                {especies.map((especie) => (
+
+                                    <div
+                                        className={
+                                            editandoId === especie.id
+                                                ? "species-row species-row-editing"
+                                                : "species-row"
+                                        }
+                                        key={especie.id}
+                                    >
+
+                                        {editandoId === especie.id ? (
+
+                                            <div className="species-edit">
+
+                                                <input
+                                                    type="text"
+                                                    value={nombreEditado}
+                                                    onChange={(evento) => {
+                                                        setNombreEditado(
+                                                            evento.target.value
+                                                        );
+
+                                                        setError("");
+                                                        setMensaje("");
+                                                    }}
+                                                    maxLength="50"
+                                                    autoFocus
+                                                    disabled={guardando}
+                                                />
+
+                                                <div className="species-edit-actions">
+
+                                                    <button
+                                                        type="button"
+                                                        className="species-save-button"
+                                                        disabled={guardando}
+                                                        onClick={() =>
+                                                            guardarEdicion(
+                                                                especie
+                                                            )
+                                                        }
+                                                    >
+                                                        {guardando
+                                                            ? "Guardando..."
+                                                            : "Guardar"}
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        className="species-cancel-button"
+                                                        disabled={guardando}
+                                                        onClick={
+                                                            cancelarEdicion
+                                                        }
+                                                    >
+                                                        Cancelar
+                                                    </button>
+
+                                                </div>
+
+                                            </div>
+
+                                        ) : (
+
+                                            <>
+                                                <div className="species-name">
+
+                                                    <div className="species-name-mark">
+                                                        {especie.nombre
+                                                            .charAt(0)
+                                                            .toUpperCase()}
+                                                    </div>
+
+                                                    <div>
+
+                                                        <strong>
+                                                            {especie.nombre}
+                                                        </strong>
+
+                                                        <small>
+                                                            Catálogo de especies
+                                                        </small>
+
+                                                    </div>
+
+                                                </div>
+
+
+                                                <div>
+
+                                                    <span
+                                                        className={
+                                                            especie.activo
+                                                                ? "species-status species-status-active"
+                                                                : "species-status species-status-inactive"
+                                                        }
+                                                    >
+                                                        <span></span>
+
+                                                        {especie.activo
+                                                            ? "Activa"
+                                                            : "Deshabilitada"}
+                                                    </span>
+
+                                                </div>
+
+
+                                                <div className="species-actions">
+
+                                                    <button
+                                                        type="button"
+                                                        className="species-edit-button"
+                                                        disabled={guardando}
+                                                        onClick={() =>
+                                                            iniciarEdicion(
+                                                                especie
+                                                            )
+                                                        }
+                                                    >
+                                                        Editar
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        className={
+                                                            especie.activo
+                                                                ? "species-disable-button"
+                                                                : "species-enable-button"
+                                                        }
+                                                        disabled={guardando}
+                                                        onClick={() =>
+                                                            cambiarEstado(
+                                                                especie
+                                                            )
+                                                        }
+                                                    >
+                                                        {especie.activo
+                                                            ? "Deshabilitar"
+                                                            : "Habilitar"}
+                                                    </button>
+
+                                                </div>
+                                            </>
+
+                                        )}
+
+                                    </div>
+
+                                ))}
 
                             </div>
 
                         )}
 
-                        <hr />
+                    </section>
 
-                    </div>
+                </div>
 
-                ))
-            )}
+            </section>
 
-        </div>
+        </main>
     );
 }
 

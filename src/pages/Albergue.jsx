@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 
 import {
-    obtenerAlberguePorUsuario,
     registrarAlbergue,
+    obtenerAlberguePorUsuario,
     actualizarAlbergue
 } from "../services/albergueService";
 
@@ -15,586 +16,865 @@ import {
 
 import MapaUbicacion from "../components/MapaUbicacion";
 
-
 function Albergue() {
 
-    const { usuarioFirebase, perfil } = useAuth();
+    const navigate = useNavigate();
+
+    const {
+        usuarioFirebase,
+        perfil
+    } = useAuth();
 
     const [albergueId, setAlbergueId] = useState("");
-    const [estadoVerificacion, setEstadoVerificacion] = useState("");
-const [motivoRechazo, setMotivoRechazo] = useState("");
 
     const [nombreRefugio, setNombreRefugio] = useState("");
     const [descripcion, setDescripcion] = useState("");
-    const [departamentoId, setDepartamentoId] = useState("");
-    const [municipioId, setMunicipioId] = useState("");
     const [direccion, setDireccion] = useState("");
     const [telefonoContacto, setTelefonoContacto] = useState("");
     const [horariosAtencion, setHorariosAtencion] = useState("");
 
-    const [posicion, setPosicion] = useState(null);
-
     const [departamentos, setDepartamentos] = useState([]);
     const [municipios, setMunicipios] = useState([]);
+
+    const [departamentoId, setDepartamentoId] = useState("");
+    const [municipioId, setMunicipioId] = useState("");
+
+    const [posicion, setPosicion] = useState(null);
+
+    const [estadoVerificacion, setEstadoVerificacion] = useState("");
+    const [motivoRechazo, setMotivoRechazo] = useState("");
 
     const [cargando, setCargando] = useState(true);
     const [guardando, setGuardando] = useState(false);
 
-    const [errores, setErrores] = useState({});
+    const [error, setError] = useState("");
     const [mensaje, setMensaje] = useState("");
 
+
     useEffect(() => {
-        cargarDatos();
-    }, []);
 
-    async function cargarDatos() {
+        async function cargarDatos() {
 
-        try {
+            try {
 
-            const listaDepartamentos = await obtenerDepartamentos();
+                setCargando(true);
+                setError("");
 
-            setDepartamentos(listaDepartamentos);
+                const listaDepartamentos =
+                    await obtenerDepartamentos();
 
-            if (usuarioFirebase) {
+                setDepartamentos(
+                    listaDepartamentos
+                );
+
+                if (!usuarioFirebase) {
+                    return;
+                }
 
                 const datosAlbergue =
-                    await obtenerAlberguePorUsuario(usuarioFirebase.uid);
+                    await obtenerAlberguePorUsuario(
+                        usuarioFirebase.uid
+                    );
 
                 if (datosAlbergue) {
-                  setEstadoVerificacion(
-    datosAlbergue.estadoVerificacion || ""
-);
 
-setMotivoRechazo(
-    datosAlbergue.motivoRechazo || ""
-);
+                    setAlbergueId(
+                        datosAlbergue.id
+                    );
 
-                    setAlbergueId(datosAlbergue.id);
-                    setNombreRefugio(datosAlbergue.nombreRefugio || "");
-                    setDescripcion(datosAlbergue.descripcion || "");
-                    setDepartamentoId(datosAlbergue.departamentoId || "");
-                    setMunicipioId(datosAlbergue.municipioId || "");
-                    setDireccion(datosAlbergue.direccion || "");
-                    setHorariosAtencion(datosAlbergue.horariosAtencion || "");
+                    setNombreRefugio(
+                        datosAlbergue.nombreRefugio || ""
+                    );
 
-                    if (datosAlbergue.telefonoContacto) {
-                        setTelefonoContacto(
-                            datosAlbergue.telefonoContacto
-                        );
-                    }
+                    setDescripcion(
+                        datosAlbergue.descripcion || ""
+                    );
+
+                    setDireccion(
+                        datosAlbergue.direccion || ""
+                    );
+
+                    setTelefonoContacto(
+                        datosAlbergue.telefonoContacto || ""
+                    );
+
+                    setHorariosAtencion(
+                        datosAlbergue.horariosAtencion || ""
+                    );
+
+                    setDepartamentoId(
+                        datosAlbergue.departamentoId || ""
+                    );
+
+                    setMunicipioId(
+                        datosAlbergue.municipioId || ""
+                    );
+
+                    setEstadoVerificacion(
+                        datosAlbergue.estadoVerificacion || ""
+                    );
+
+                    setMotivoRechazo(
+                        datosAlbergue.motivoRechazo || ""
+                    );
 
                     if (
-                        datosAlbergue.latitud !== undefined &&
-                        datosAlbergue.longitud !== undefined
+                        datosAlbergue.latitud &&
+                        datosAlbergue.longitud
                     ) {
+
                         setPosicion([
                             datosAlbergue.latitud,
                             datosAlbergue.longitud
                         ]);
                     }
 
-                    if (datosAlbergue.departamentoId) {
+                    if (
+                        datosAlbergue.departamentoId
+                    ) {
 
                         const listaMunicipios =
                             await obtenerMunicipios(
                                 datosAlbergue.departamentoId
                             );
 
-                        setMunicipios(listaMunicipios);
+                        setMunicipios(
+                            listaMunicipios
+                        );
                     }
+
+                } else {
+
+                    if (perfil) {
+
+                        setDepartamentoId(
+                            perfil.departamentoId || ""
+                        );
+
+                        setMunicipioId(
+                            perfil.municipioId || ""
+                        );
+
+                        if (perfil.departamentoId) {
+
+                            const listaMunicipios =
+                                await obtenerMunicipios(
+                                    perfil.departamentoId
+                                );
+
+                            setMunicipios(
+                                listaMunicipios
+                            );
+                        }
+                    }
+
                 }
+
+            } catch (error) {
+
+                console.error(
+                    "Error al cargar el albergue:",
+                    error
+                );
+
+                setError(
+                    "No se pudo cargar la información del albergue."
+                );
+
+            } finally {
+
+                setCargando(false);
+
             }
+        }
 
-        } catch (error) {
+        cargarDatos();
 
-            console.error(error);
+    }, [usuarioFirebase, perfil]);
 
-            setMensaje(
-                "No se pudieron cargar los datos del albergue."
+
+    async function manejarDepartamento(evento) {
+
+        const nuevoDepartamentoId =
+            evento.target.value;
+
+        setDepartamentoId(
+            nuevoDepartamentoId
+        );
+
+        setMunicipioId("");
+        setMunicipios([]);
+        setError("");
+        setMensaje("");
+
+        if (nuevoDepartamentoId) {
+
+            try {
+
+                const listaMunicipios =
+                    await obtenerMunicipios(
+                        nuevoDepartamentoId
+                    );
+
+                setMunicipios(
+                    listaMunicipios
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Error al cargar municipios:",
+                    error
+                );
+
+                setError(
+                    "No se pudieron cargar los municipios."
+                );
+            }
+        }
+    }
+
+
+    function validarFormulario() {
+
+        if (nombreRefugio.trim().length < 3) {
+
+            setError(
+                "El nombre del refugio debe tener al menos 3 caracteres."
             );
 
-        } finally {
-
-            setCargando(false);
+            return false;
         }
-    }
 
-    async function cambiarDepartamento(evento) {
+        if (nombreRefugio.trim().length > 100) {
 
-        const nuevoDepartamentoId = evento.target.value;
+            setError(
+                "El nombre del refugio no puede superar los 100 caracteres."
+            );
 
-        setDepartamentoId(nuevoDepartamentoId);
-        setMunicipioId("");
-
-        if (nuevoDepartamentoId !== "") {
-
-            const listaMunicipios =
-                await obtenerMunicipios(nuevoDepartamentoId);
-
-            setMunicipios(listaMunicipios);
-
-        } else {
-
-            setMunicipios([]);
+            return false;
         }
+
+        if (descripcion.trim().length < 10) {
+
+            setError(
+                "La descripción debe tener al menos 10 caracteres."
+            );
+
+            return false;
+        }
+
+        if (direccion.trim().length < 5) {
+
+            setError(
+                "Ingresa una dirección válida."
+            );
+
+            return false;
+        }
+
+        if (!/^[567]\d{7}$/.test(telefonoContacto.trim())) {
+
+            setError(
+                "El teléfono debe tener 8 dígitos y comenzar con 5, 6 o 7."
+            );
+
+            return false;
+        }
+
+        if (horariosAtencion.trim().length < 3) {
+
+            setError(
+                "Ingresa los horarios de atención."
+            );
+
+            return false;
+        }
+
+        if (!departamentoId) {
+
+            setError(
+                "Selecciona un departamento."
+            );
+
+            return false;
+        }
+
+        if (!municipioId) {
+
+            setError(
+                "Selecciona un municipio."
+            );
+
+            return false;
+        }
+
+        if (!posicion) {
+
+            setError(
+                "Selecciona la ubicación del refugio en el mapa."
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
-    function limpiarError(campo) {
 
-        setErrores({
-            ...errores,
-            [campo]: ""
-        });
-
-        setMensaje("");
-    }
-
-    async function guardar(evento) {
+    async function manejarGuardar(evento) {
 
         evento.preventDefault();
 
-        const nuevosErrores = {};
-
-        const nombreLimpio = nombreRefugio.trim();
-        const descripcionLimpia = descripcion.trim();
-        const direccionLimpia = direccion.trim();
-        const telefonoLimpio = telefonoContacto.trim();
-        const horariosLimpios = horariosAtencion.trim();
-
-        if (nombreLimpio === "") {
-            nuevosErrores.nombreRefugio =
-                "Ingresa el nombre del refugio.";
-        } else if (nombreLimpio.length < 3) {
-            nuevosErrores.nombreRefugio =
-                "El nombre debe tener al menos 3 caracteres.";
-        } else if (nombreLimpio.length > 100) {
-            nuevosErrores.nombreRefugio =
-                "El nombre no puede superar los 100 caracteres.";
-        }
-
-        if (descripcionLimpia === "") {
-            nuevosErrores.descripcion =
-                "Ingresa una descripción del refugio.";
-        } else if (descripcionLimpia.length < 10) {
-            nuevosErrores.descripcion =
-                "La descripción debe tener al menos 10 caracteres.";
-        } else if (descripcionLimpia.length > 500) {
-            nuevosErrores.descripcion =
-                "La descripción no puede superar los 500 caracteres.";
-        }
-
-        if (departamentoId === "") {
-            nuevosErrores.departamentoId =
-                "Selecciona un departamento.";
-        }
-
-        if (municipioId === "") {
-            nuevosErrores.municipioId =
-                "Selecciona un municipio.";
-        }
-
-        if (direccionLimpia === "") {
-            nuevosErrores.direccion =
-                "Ingresa la dirección.";
-        } else if (direccionLimpia.length < 5) {
-            nuevosErrores.direccion =
-                "Ingresa una dirección válida.";
-        } else if (direccionLimpia.length > 200) {
-            nuevosErrores.direccion =
-                "La dirección no puede superar los 200 caracteres.";
-        }
-
-        if (telefonoLimpio === "") {
-            nuevosErrores.telefonoContacto =
-                "Ingresa un teléfono de contacto.";
-        } else if (!/^[0-9]{8}$/.test(telefonoLimpio)) {
-            nuevosErrores.telefonoContacto =
-                "El teléfono debe contener exactamente 8 números.";
-        }
-
-        if (horariosLimpios === "") {
-            nuevosErrores.horariosAtencion =
-                "Ingresa los horarios de atención.";
-        } else if (horariosLimpios.length < 5) {
-            nuevosErrores.horariosAtencion =
-                "Ingresa un horario de atención válido.";
-        } else if (horariosLimpios.length > 200) {
-            nuevosErrores.horariosAtencion =
-                "El horario no puede superar los 200 caracteres.";
-        }
-
-        if (posicion === null) {
-            nuevosErrores.posicion =
-                "Selecciona la ubicación del refugio en el mapa.";
-        } else {
-
-            if (
-                typeof posicion[0] !== "number" ||
-                posicion[0] < -90 ||
-                posicion[0] > 90
-            ) {
-                nuevosErrores.posicion =
-                    "La latitud de la ubicación no es válida.";
-            }
-
-            if (
-                typeof posicion[1] !== "number" ||
-                posicion[1] < -180 ||
-                posicion[1] > 180
-            ) {
-                nuevosErrores.posicion =
-                    "La longitud de la ubicación no es válida.";
-            }
-        }
-
-        setErrores(nuevosErrores);
+        setError("");
         setMensaje("");
 
-        if (Object.keys(nuevosErrores).length > 0) {
+        if (!validarFormulario()) {
             return;
         }
 
-        setGuardando(true);
+        if (!usuarioFirebase) {
+
+            setError(
+                "No hay una sesión activa."
+            );
+
+            return;
+        }
 
         try {
 
+            setGuardando(true);
+
             const datos = {
+
                 userId: usuarioFirebase.uid,
-                nombreRefugio: nombreLimpio,
-                descripcion: descripcionLimpia,
-                departamentoId: departamentoId,
-                municipioId: municipioId,
-                direccion: direccionLimpia,
-                latitud: posicion[0],
-                longitud: posicion[1],
-                telefonoContacto: telefonoLimpio,
-                horariosAtencion: horariosLimpios
+
+                nombreRefugio:
+                    nombreRefugio.trim(),
+
+                descripcion:
+                    descripcion.trim(),
+
+                departamentoId:
+                    departamentoId,
+
+                municipioId:
+                    municipioId,
+
+                direccion:
+                    direccion.trim(),
+
+                latitud:
+                    posicion[0],
+
+                longitud:
+                    posicion[1],
+
+                telefonoContacto:
+                    telefonoContacto.trim(),
+
+                horariosAtencion:
+                    horariosAtencion.trim()
+
             };
 
-            if (albergueId === "") {
+            if (albergueId) {
+
+    await actualizarAlbergue(
+        albergueId,
+        datos
+    );
+
+    if (
+        estadoVerificacion ===
+        "Rechazado"
+    ) {
+        setEstadoVerificacion(
+            "Pendiente_Verificacion"
+        );
+
+        setMotivoRechazo("");
+    }
+
+    setMensaje(
+        "La información del albergue se actualizó correctamente."
+    );
+
+}else {
 
                 const nuevoId =
-                    await registrarAlbergue(datos);
+                    await registrarAlbergue(
+                        datos
+                    );
 
-                setAlbergueId(nuevoId);
-
-                setMensaje(
-                    "Los datos del albergue fueron registrados correctamente. Quedan pendientes de verificación."
+                setAlbergueId(
+                    nuevoId
                 );
 
-            } else {
-
-                await actualizarAlbergue(
-                    albergueId,
-                    datos
+                setEstadoVerificacion(
+                    "Pendiente_Verificacion"
                 );
 
+                setMotivoRechazo("");
+
                 setMensaje(
-                    "Los datos del albergue fueron actualizados correctamente."
+                    "La solicitud del albergue fue registrada y quedó pendiente de verificación."
                 );
             }
 
         } catch (error) {
 
             console.error(
-                "ERROR AL GUARDAR ALBERGUE:",
+                "Error al guardar el albergue:",
                 error
             );
 
-            setMensaje(
-                "No se pudieron guardar los datos del albergue. Intenta nuevamente."
+            setError(
+                "No se pudo guardar la información. Inténtalo nuevamente."
             );
 
         } finally {
 
             setGuardando(false);
+
         }
     }
 
-    if (cargando) {
-        return <p>Cargando información del albergue...</p>;
+
+    function mostrarEstado() {
+
+        if (!estadoVerificacion) {
+            return null;
+        }
+
+        if (
+            estadoVerificacion ===
+            "Pendiente_Verificacion"
+        ) {
+
+            return (
+                <div className="shelter-status shelter-pending">
+
+                    <span>⏳</span>
+
+                    <div>
+
+                        <strong>
+                            Pendiente de verificación
+                        </strong>
+
+                        <p>
+                            Tu solicitud fue registrada.
+                            Un administrador debe revisar la
+                            información antes de publicar el refugio.
+                        </p>
+
+                    </div>
+
+                </div>
+            );
+        }
+
+        if (
+            estadoVerificacion ===
+            "Verificado"
+        ) {
+
+            return (
+                <div className="shelter-status shelter-approved">
+
+                    <span>✅</span>
+
+                    <div>
+
+                        <strong>
+                            Albergue verificado
+                        </strong>
+
+                        <p>
+                            La información de tu refugio fue
+                            verificada correctamente.
+                        </p>
+
+                    </div>
+
+                </div>
+            );
+        }
+
+        if (
+            estadoVerificacion ===
+            "Rechazado"
+        ) {
+
+            return (
+                <div className="shelter-status shelter-rejected">
+
+                    <span>⚠️</span>
+
+                    <div>
+
+                        <strong>
+                            Solicitud rechazada
+                        </strong>
+
+                        <p>
+                            Revisa el motivo indicado por el
+                            administrador y corrige la información.
+                        </p>
+
+                        {motivoRechazo && (
+                            <div className="shelter-reason">
+
+                                <strong>
+                                    Motivo:
+                                </strong>
+
+                                <p>
+                                    {motivoRechazo}
+                                </p>
+
+                            </div>
+                        )}
+
+                    </div>
+
+                </div>
+            );
+        }
+
+        return null;
     }
 
-    if (
-        perfil &&
-        perfil.rol !== "Albergue/Refugio" &&
-        perfil.rol !== "Admin" &&
-        perfil.rol !== "Superusuario"
-    ) {
+
+    if (cargando) {
+
         return (
-            <div>
-                <h1>Acceso no permitido</h1>
+            <main className="loading-page">
+
+                <div className="loading-spinner"></div>
 
                 <p>
-                    Tu tipo de cuenta no puede registrar un albergue o refugio.
+                    Cargando información del albergue...
                 </p>
-            </div>
+
+            </main>
         );
     }
 
+
     return (
-        <div>
+        <main className="shelter-page">
 
-            <h1>Datos del albergue o refugio</h1>
+            <section className="shelter-container">
 
-            <p>
-                Completa la información de tu refugio para que pueda
-                ser verificado por un administrador.
-            </p>
+                <div className="shelter-header">
 
-            {albergueId !== "" && (
-    <div>
+                    <div>
 
-        <h2>
-            Estado de verificación
-        </h2>
+                        <span className="shelter-label">
+                            RED HUELLA
+                        </span>
 
-        {estadoVerificacion === "Pendiente_Verificacion" && (
-            <p>
-                Tu solicitud está pendiente de verificación por un administrador.
-            </p>
-        )}
+                        <h1>
+                            Mi albergue
+                        </h1>
 
-        {estadoVerificacion === "Aprobado" && (
-            <p>
-                Tu albergue fue aprobado correctamente.
-            </p>
-        )}
-
-        {estadoVerificacion === "Rechazado" && (
-            <div>
-
-                <p>
-                    Tu solicitud de albergue fue rechazada.
-                </p>
-
-                <p>
-                    <strong>
-                        Motivo del rechazo:
-                    </strong>{" "}
-                    {motivoRechazo}
-                </p>
-
-            </div>
-        )}
-
-    </div>
-)}
-
-            {mensaje && (
-                <p>
-                    {mensaje}
-                </p>
-            )}
-
-            <form onSubmit={guardar}>
-
-                <div>
-                    <label>Nombre del refugio</label>
-
-                    <input
-                        type="text"
-                        value={nombreRefugio}
-                        onChange={(evento) => {
-                            setNombreRefugio(evento.target.value);
-                            limpiarError("nombreRefugio");
-                        }}
-                    />
-
-                    {errores.nombreRefugio && (
                         <p>
-                            {errores.nombreRefugio}
+                            Registra y administra la información
+                            de tu refugio.
                         </p>
-                    )}
-                </div>
 
-                <div>
-                    <label>Descripción</label>
+                    </div>
 
-                    <textarea
-                        value={descripcion}
-                        onChange={(evento) => {
-                            setDescripcion(evento.target.value);
-                            limpiarError("descripcion");
-                        }}
-                    />
-
-                    {errores.descripcion && (
-                        <p>
-                            {errores.descripcion}
-                        </p>
-                    )}
-                </div>
-
-                <div>
-                    <label>Departamento</label>
-
-                    <select
-                        value={departamentoId}
-                        onChange={(evento) => {
-                            cambiarDepartamento(evento);
-                            limpiarError("departamentoId");
-                            limpiarError("municipioId");
-                        }}
+                    <button
+                        className="shelter-back"
+                        onClick={() => navigate("/panel")}
                     >
-                        <option value="">
-                            Selecciona un departamento
-                        </option>
-
-                        {departamentos.map((departamento) => (
-                            <option
-                                key={departamento.id}
-                                value={departamento.id}
-                            >
-                                {departamento.nombre}
-                            </option>
-                        ))}
-                    </select>
-
-                    {errores.departamentoId && (
-                        <p>
-                            {errores.departamentoId}
-                        </p>
-                    )}
-                </div>
-
-                <div>
-                    <label>Municipio</label>
-
-                    <select
-                        value={municipioId}
-                        onChange={(evento) => {
-                            setMunicipioId(evento.target.value);
-                            limpiarError("municipioId");
-                        }}
-                        disabled={departamentoId === ""}
-                    >
-                        <option value="">
-                            Selecciona un municipio
-                        </option>
-
-                        {municipios.map((municipio) => (
-                            <option
-                                key={municipio.id}
-                                value={municipio.id}
-                            >
-                                {municipio.nombre}
-                            </option>
-                        ))}
-                    </select>
-
-                    {errores.municipioId && (
-                        <p>
-                            {errores.municipioId}
-                        </p>
-                    )}
-                </div>
-
-                <div>
-                    <label>Dirección</label>
-
-                    <input
-                        type="text"
-                        value={direccion}
-                        onChange={(evento) => {
-                            setDireccion(evento.target.value);
-                            limpiarError("direccion");
-                        }}
-                    />
-
-                    {errores.direccion && (
-                        <p>
-                            {errores.direccion}
-                        </p>
-                    )}
-                </div>
-
-                <div>
-                    <label>Teléfono de contacto</label>
-
-                    <input
-                        type="text"
-                        value={telefonoContacto}
-                        onChange={(evento) => {
-                            setTelefonoContacto(evento.target.value);
-                            limpiarError("telefonoContacto");
-                        }}
-                    />
-
-                    {errores.telefonoContacto && (
-                        <p>
-                            {errores.telefonoContacto}
-                        </p>
-                    )}
-                </div>
-
-                <div>
-                    <label>Horarios de atención</label>
-
-                    <input
-                        type="text"
-                        placeholder="Ej.: Lunes a viernes de 08:00 a 17:00"
-                        value={horariosAtencion}
-                        onChange={(evento) => {
-                            setHorariosAtencion(evento.target.value);
-                            limpiarError("horariosAtencion");
-                        }}
-                    />
-
-                    {errores.horariosAtencion && (
-                        <p>
-                            {errores.horariosAtencion}
-                        </p>
-                    )}
-                </div>
-
-                <div>
-
-                    <h2>Ubicación del refugio</h2>
-
-                    <p>
-                        Haz clic en el mapa para colocar la ubicación exacta
-                        del refugio.
-                    </p>
-
-                    <MapaUbicacion
-                        posicion={posicion}
-                        setPosicion={(nuevaPosicion) => {
-                            setPosicion(nuevaPosicion);
-                            limpiarError("posicion");
-                        }}
-                    />
-
-                    {posicion && (
-                        <p>
-                            Ubicación seleccionada:
-                            <br />
-                            Latitud: {posicion[0]}
-                            <br />
-                            Longitud: {posicion[1]}
-                        </p>
-                    )}
-
-                    {errores.posicion && (
-                        <p>
-                            {errores.posicion}
-                        </p>
-                    )}
+                        Volver al panel
+                    </button>
 
                 </div>
 
-                <button
-                    type="submit"
-                    disabled={guardando}
+
+                {mostrarEstado()}
+
+
+                {error && (
+                    <div className="shelter-message shelter-error">
+                        {error}
+                    </div>
+                )}
+
+
+                {mensaje && (
+                    <div className="shelter-message shelter-success">
+                        {mensaje}
+                    </div>
+                )}
+
+
+                <form
+                    className="shelter-form"
+                    onSubmit={manejarGuardar}
                 >
-                    {guardando
-                        ? "Guardando..."
-                        : "Guardar datos del refugio"}
-                </button>
 
-            </form>
+                    <div className="shelter-section">
 
-        </div>
+                        <h2>
+                            Información del refugio
+                        </h2>
+
+                        <div className="shelter-grid">
+
+                            <div className="shelter-field">
+
+                                <label htmlFor="nombreRefugio">
+                                    Nombre del refugio
+                                </label>
+
+                                <input
+                                    id="nombreRefugio"
+                                    type="text"
+                                    value={nombreRefugio}
+                                    onChange={(evento) => {
+                                        setNombreRefugio(
+                                            evento.target.value
+                                        );
+                                        setError("");
+                                        setMensaje("");
+                                    }}
+                                    maxLength="100"
+                                />
+
+                            </div>
+
+
+                            <div className="shelter-field">
+
+                                <label htmlFor="telefonoContacto">
+                                    Teléfono de contacto
+                                </label>
+
+                                <input
+                                    id="telefonoContacto"
+                                    type="text"
+                                    value={telefonoContacto}
+                                    onChange={(evento) => {
+                                        setTelefonoContacto(
+                                            evento.target.value
+                                        );
+                                        setError("");
+                                        setMensaje("");
+                                    }}
+                                    maxLength="8"
+                                />
+
+                            </div>
+
+
+                            <div className="shelter-field shelter-field-full">
+
+                                <label htmlFor="descripcion">
+                                    Descripción
+                                </label>
+
+                                <textarea
+                                    id="descripcion"
+                                    value={descripcion}
+                                    onChange={(evento) => {
+                                        setDescripcion(
+                                            evento.target.value
+                                        );
+                                        setError("");
+                                        setMensaje("");
+                                    }}
+                                    rows="5"
+                                    maxLength="500"
+                                />
+
+                            </div>
+
+
+                            <div className="shelter-field shelter-field-full">
+
+                                <label htmlFor="horariosAtencion">
+                                    Horarios de atención
+                                </label>
+
+                                <input
+                                    id="horariosAtencion"
+                                    type="text"
+                                    value={horariosAtencion}
+                                    onChange={(evento) => {
+                                        setHorariosAtencion(
+                                            evento.target.value
+                                        );
+                                        setError("");
+                                        setMensaje("");
+                                    }}
+                                    maxLength="200"
+                                    placeholder="Ej. Lunes a viernes de 09:00 a 18:00"
+                                />
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div className="shelter-section">
+
+                        <h2>
+                            Ubicación y contacto
+                        </h2>
+
+                        <div className="shelter-grid">
+
+                            <div className="shelter-field">
+
+                                <label htmlFor="departamento">
+                                    Departamento
+                                </label>
+
+                                <select
+                                    id="departamento"
+                                    value={departamentoId}
+                                    onChange={manejarDepartamento}
+                                >
+
+                                    <option value="">
+                                        Selecciona un departamento
+                                    </option>
+
+                                    {departamentos.map(
+                                        (departamento) => (
+                                            <option
+                                                key={departamento.id}
+                                                value={departamento.id}
+                                            >
+                                                {departamento.nombre}
+                                            </option>
+                                        )
+                                    )}
+
+                                </select>
+
+                            </div>
+
+
+                            <div className="shelter-field">
+
+                                <label htmlFor="municipio">
+                                    Municipio
+                                </label>
+
+                                <select
+                                    id="municipio"
+                                    value={municipioId}
+                                    onChange={(evento) => {
+                                        setMunicipioId(
+                                            evento.target.value
+                                        );
+                                        setError("");
+                                        setMensaje("");
+                                    }}
+                                    disabled={
+                                        !departamentoId
+                                    }
+                                >
+
+                                    <option value="">
+                                        Selecciona un municipio
+                                    </option>
+
+                                    {municipios.map(
+                                        (municipio) => (
+                                            <option
+                                                key={municipio.id}
+                                                value={municipio.id}
+                                            >
+                                                {municipio.nombre}
+                                            </option>
+                                        )
+                                    )}
+
+                                </select>
+
+                            </div>
+
+
+                            <div className="shelter-field shelter-field-full">
+
+                                <label htmlFor="direccion">
+                                    Dirección
+                                </label>
+
+                                <input
+                                    id="direccion"
+                                    type="text"
+                                    value={direccion}
+                                    onChange={(evento) => {
+                                        setDireccion(
+                                            evento.target.value
+                                        );
+                                        setError("");
+                                        setMensaje("");
+                                    }}
+                                    maxLength="200"
+                                />
+
+                            </div>
+
+                        </div>
+
+
+                        <div className="shelter-map-info">
+
+                            <p>
+                                Selecciona en el mapa la ubicación
+                                exacta del refugio.
+                            </p>
+
+                        </div>
+
+                        <MapaUbicacion
+                            posicion={posicion}
+                            setPosicion={setPosicion}
+                        />
+
+                    </div>
+
+
+                    <div className="shelter-actions">
+
+                        <button
+                            type="button"
+                            className="shelter-cancel"
+                            onClick={() => navigate("/panel")}
+                        >
+                            Cancelar
+                        </button>
+
+                        <button
+                            type="submit"
+                            className="shelter-save"
+                            disabled={guardando}
+                        >
+                            {guardando
+                                ? "Guardando..."
+                                : "Guardar información"}
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+        </main>
     );
 }
 

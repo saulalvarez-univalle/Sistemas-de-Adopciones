@@ -2,32 +2,29 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
-import {
-    obtenerPerfil,
-    actualizarPerfil
-} from "../services/userService";
-
+import { actualizarPerfil } from "../services/userService";
 import {
     obtenerDepartamentos,
     obtenerMunicipios
 } from "../services/territorioService";
 
 function Perfil() {
+
     const navigate = useNavigate();
-    const { usuarioFirebase } = useAuth();
+
+    const {
+        usuarioFirebase,
+        perfil
+    } = useAuth();
 
     const [nombreCompleto, setNombreCompleto] = useState("");
     const [telefono, setTelefono] = useState("");
 
     const [departamentos, setDepartamentos] = useState([]);
-const [municipios, setMunicipios] = useState([]);
+    const [municipios, setMunicipios] = useState([]);
 
-const [departamentoId, setDepartamentoId] = useState("");
-const [municipioId, setMunicipioId] = useState("");
-
-    const [email, setEmail] = useState("");
-    const [rol, setRol] = useState("");
-    const [estadoCuenta, setEstadoCuenta] = useState("");
+    const [departamentoId, setDepartamentoId] = useState("");
+    const [municipioId, setMunicipioId] = useState("");
 
     const [cargando, setCargando] = useState(true);
     const [guardando, setGuardando] = useState(false);
@@ -36,390 +33,550 @@ const [municipioId, setMunicipioId] = useState("");
     const [mensaje, setMensaje] = useState("");
 
     useEffect(() => {
-        async function cargarPerfil() {
-            if (!usuarioFirebase) {
-                navigate("/login");
-                return;
-            }
+
+        async function cargarDatos() {
 
             try {
-                const perfil = await obtenerPerfil(
-                    usuarioFirebase.uid
-                );
 
-                setNombreCompleto(perfil.nombreCompleto || "");
-                setTelefono(perfil.telefono || "");
+                setCargando(true);
+                setError("");
 
-                setEmail(perfil.email || "");
-                setRol(perfil.rol || "");
-                setEstadoCuenta(perfil.estadoCuenta || "");
-                setDepartamentoId(perfil.departamentoId || "");
-                setMunicipioId(perfil.municipioId || "");
+                const listaDepartamentos =
+                    await obtenerDepartamentos();
+
+                setDepartamentos(listaDepartamentos);
+
+                if (perfil) {
+
+                    setNombreCompleto(
+                        perfil.nombreCompleto || ""
+                    );
+
+                    setTelefono(
+                        perfil.telefono || ""
+                    );
+
+                    setDepartamentoId(
+                        perfil.departamentoId || ""
+                    );
+
+                    setMunicipioId(
+                        perfil.municipioId || ""
+                    );
+
+                    if (perfil.departamentoId) {
+
+                        const listaMunicipios =
+                            await obtenerMunicipios(
+                                perfil.departamentoId
+                            );
+
+                        setMunicipios(listaMunicipios);
+                    }
+                }
+
             } catch (error) {
+
                 console.error(
                     "Error al cargar el perfil:",
                     error
                 );
 
                 setError(
-                    "No se pudo cargar tu información. Intenta nuevamente."
+                    "No se pudo cargar la información del perfil."
                 );
+
             } finally {
+
                 setCargando(false);
+
             }
         }
 
-        cargarPerfil();
-    }, [usuarioFirebase, navigate]);
+        cargarDatos();
 
-    useEffect(() => {
-    async function cargarDepartamentos() {
-        try {
-            const datos = await obtenerDepartamentos();
+    }, [perfil]);
 
-            setDepartamentos(datos);
-        } catch (error) {
-            console.error(
-                "Error al cargar los departamentos:",
-                error
-            );
 
-            setError(
-                "No se pudieron cargar los departamentos."
-            );
-        }
-    }
+    async function manejarDepartamento(evento) {
 
-    cargarDepartamentos();
-}, []);
+        const nuevoDepartamentoId =
+            evento.target.value;
 
-    useEffect(() => {
-    async function cargarMunicipios() {
-        if (departamentoId === "") {
-            setMunicipios([]);
-            return;
-        }
+        setDepartamentoId(
+            nuevoDepartamentoId
+        );
 
-        try {
-            const datos = await obtenerMunicipios(
-                departamentoId
-            );
+        setMunicipioId("");
+        setMunicipios([]);
+        setError("");
+        setMensaje("");
 
-            setMunicipios(datos);
+        if (nuevoDepartamentoId) {
 
-            const municipioExiste = datos.some(
-                (municipio) =>
-                    municipio.id === municipioId
-            );
+            try {
 
-            if (!municipioExiste) {
-                setMunicipioId("");
+                const listaMunicipios =
+                    await obtenerMunicipios(
+                        nuevoDepartamentoId
+                    );
+
+                setMunicipios(
+                    listaMunicipios
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Error al cargar municipios:",
+                    error
+                );
+
+                setError(
+                    "No se pudieron cargar los municipios."
+                );
             }
-        } catch (error) {
-            console.error(
-                "Error al cargar los municipios:",
-                error
-            );
-
-            setError(
-                "No se pudieron cargar los municipios."
-            );
         }
     }
 
-    cargarMunicipios();
-}, [departamentoId]);
 
     function validarFormulario() {
-        const nombre = nombreCompleto.trim();
-        const numero = telefono.trim();
 
-        if (nombre === "") {
-            return "El nombre completo es obligatorio.";
+        const nombreLimpio =
+            nombreCompleto.trim();
+
+        const telefonoLimpio =
+            telefono.trim();
+
+        if (nombreLimpio.length < 3) {
+
+            setError(
+                "El nombre debe tener al menos 3 caracteres."
+            );
+
+            return false;
         }
 
-        if (nombre.length < 3) {
-            return "El nombre completo debe tener al menos 3 caracteres.";
+        if (nombreLimpio.length > 100) {
+
+            setError(
+                "El nombre no puede superar los 100 caracteres."
+            );
+
+            return false;
         }
 
-        if (nombre.length > 100) {
-            return "El nombre completo no puede superar los 100 caracteres.";
+        const patronNombre =
+            /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/;
+
+        if (!patronNombre.test(nombreLimpio)) {
+
+            setError(
+                "El nombre solo puede contener letras y espacios."
+            );
+
+            return false;
         }
 
-        const nombreValido = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/;
+        if (!/^[567]\d{7}$/.test(telefonoLimpio)) {
 
-        if (!nombreValido.test(nombre)) {
-            return "El nombre solo puede contener letras y espacios.";
+            setError(
+                "El teléfono debe tener 8 dígitos y comenzar con 5, 6 o 7."
+            );
+
+            return false;
         }
 
-        if (numero === "") {
-            return "El número de teléfono es obligatorio.";
+        if (!departamentoId) {
+
+            setError(
+                "Selecciona un departamento."
+            );
+
+            return false;
         }
 
-        if (!/^[567][0-9]{7}$/.test(numero)) {
-            return "El teléfono debe tener 8 dígitos y comenzar con 5, 6 o 7.";
+        if (!municipioId) {
+
+            setError(
+                "Selecciona un municipio."
+            );
+
+            return false;
         }
 
-        if (departamentoId === "") {
-    return "Debes seleccionar un departamento.";
-}
-
-if (municipioId === "") {
-    return "Debes seleccionar un municipio.";
-}
-
-        return "";
+        return true;
     }
 
-    async function manejarGuardar(event) {
-        event.preventDefault();
+
+    async function manejarGuardar(evento) {
+
+        evento.preventDefault();
 
         setError("");
         setMensaje("");
 
-        const errorValidacion = validarFormulario();
-
-        if (errorValidacion !== "") {
-            setError(errorValidacion);
+        if (!validarFormulario()) {
             return;
         }
 
         if (!usuarioFirebase) {
-            setError("Tu sesión ya no está disponible.");
+
+            setError(
+                "No hay una sesión activa."
+            );
+
             return;
         }
 
-        setGuardando(true);
-
         try {
+
+            setGuardando(true);
+
             await actualizarPerfil(
-              usuarioFirebase.uid,
-              nombreCompleto.trim(),
-              telefono.trim(),
-              departamentoId,
-              municipioId
-          );
+                usuarioFirebase.uid,
+                nombreCompleto.trim(),
+                telefono.trim(),
+                departamentoId,
+                municipioId
+            );
 
-            setNombreCompleto(nombreCompleto.trim());
-            setTelefono(telefono.trim());
+            setMensaje(
+                "Tu perfil se actualizó correctamente."
+            );
 
-            setMensaje("Tus datos se actualizaron correctamente.");
         } catch (error) {
+
             console.error(
                 "Error al actualizar el perfil:",
                 error
             );
 
             setError(
-                "No se pudieron guardar los cambios. Intenta nuevamente."
+                "No se pudo actualizar el perfil. Inténtalo nuevamente."
             );
+
         } finally {
+
             setGuardando(false);
+
         }
     }
 
+
     if (cargando) {
+
         return (
-            <div className="loading-page">
+            <main className="loading-page">
+
                 <div className="loading-spinner"></div>
-                <p>Cargando tu perfil...</p>
-            </div>
+
+                <p>
+                    Cargando perfil...
+                </p>
+
+            </main>
         );
     }
 
+
     return (
         <main className="profile-page">
-            <section className="profile-card">
+
+            <section className="profile-container">
 
                 <div className="profile-header">
-                    <p className="profile-eyebrow">
-                        MI CUENTA
-                    </p>
 
-                    <h1>Mi perfil</h1>
+                    <div>
 
-                    <p>
-                        Consulta y actualiza tu información personal.
-                    </p>
+                        <span className="profile-label">
+                            RED HUELLA
+                        </span>
+
+                        <h1>
+                            Mi perfil
+                        </h1>
+
+                        <p>
+                            Administra la información de tu cuenta.
+                        </p>
+
+                    </div>
+
+                    <button
+                        className="profile-back"
+                        onClick={() => navigate("/panel")}
+                    >
+                        Volver al panel
+                    </button>
+
                 </div>
 
-                {error !== "" && (
-                    <div className="form-error">
+
+                {error && (
+                    <div className="profile-message profile-error">
                         {error}
                     </div>
                 )}
 
-                {mensaje !== "" && (
-                    <div className="form-success">
+
+                {mensaje && (
+                    <div className="profile-message profile-success">
                         {mensaje}
                     </div>
                 )}
 
-                <form onSubmit={manejarGuardar}>
 
-                    <div className="form-group">
-                        <label htmlFor="nombreCompleto">
-                            Nombre completo
-                        </label>
+                <form
+                    className="profile-form"
+                    onSubmit={manejarGuardar}
+                >
 
-                        <input
-                            id="nombreCompleto"
-                            type="text"
-                            value={nombreCompleto}
-                            onChange={(event) =>
-                                setNombreCompleto(
-                                    event.target.value
-                                )
-                            }
-                            maxLength="100"
+                    <div className="profile-section">
+
+                        <h2>
+                            Información personal
+                        </h2>
+
+                        <div className="profile-grid">
+
+                            <div className="profile-field">
+
+                                <label htmlFor="nombreCompleto">
+                                    Nombre completo
+                                </label>
+
+                                <input
+                                    id="nombreCompleto"
+                                    type="text"
+                                    value={nombreCompleto}
+                                    onChange={(evento) => {
+                                        setNombreCompleto(
+                                            evento.target.value
+                                        );
+                                        setError("");
+                                        setMensaje("");
+                                    }}
+                                    maxLength="100"
+                                />
+
+                            </div>
+
+
+                            <div className="profile-field">
+
+                                <label htmlFor="telefono">
+                                    Teléfono
+                                </label>
+
+                                <input
+                                    id="telefono"
+                                    type="text"
+                                    value={telefono}
+                                    onChange={(evento) => {
+                                        setTelefono(
+                                            evento.target.value
+                                        );
+                                        setError("");
+                                        setMensaje("");
+                                    }}
+                                    maxLength="8"
+                                />
+
+                            </div>
+
+
+                            <div className="profile-field profile-field-full">
+
+                                <label>
+                                    Correo electrónico
+                                </label>
+
+                                <input
+                                    type="email"
+                                    value={
+                                        perfil?.email || ""
+                                    }
+                                    disabled
+                                />
+
+                                <small>
+                                    El correo está asociado a tu cuenta
+                                    de autenticación.
+                                </small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div className="profile-section">
+
+                        <h2>
+                            Ubicación
+                        </h2>
+
+                        <div className="profile-grid">
+
+                            <div className="profile-field">
+
+                                <label htmlFor="departamento">
+                                    Departamento
+                                </label>
+
+                                <select
+                                    id="departamento"
+                                    value={departamentoId}
+                                    onChange={manejarDepartamento}
+                                >
+
+                                    <option value="">
+                                        Selecciona un departamento
+                                    </option>
+
+                                    {departamentos.map(
+                                        (departamento) => (
+                                            <option
+                                                key={departamento.id}
+                                                value={departamento.id}
+                                            >
+                                                {departamento.nombre}
+                                            </option>
+                                        )
+                                    )}
+
+                                </select>
+
+                            </div>
+
+
+                            <div className="profile-field">
+
+                                <label htmlFor="municipio">
+                                    Municipio
+                                </label>
+
+                                <select
+                                    id="municipio"
+                                    value={municipioId}
+                                    onChange={(evento) => {
+                                        setMunicipioId(
+                                            evento.target.value
+                                        );
+                                        setError("");
+                                        setMensaje("");
+                                    }}
+                                    disabled={
+                                        !departamentoId
+                                    }
+                                >
+
+                                    <option value="">
+                                        Selecciona un municipio
+                                    </option>
+
+                                    {municipios.map(
+                                        (municipio) => (
+                                            <option
+                                                key={municipio.id}
+                                                value={municipio.id}
+                                            >
+                                                {municipio.nombre}
+                                            </option>
+                                        )
+                                    )}
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div className="profile-section">
+
+                        <h2>
+                            Información de cuenta
+                        </h2>
+
+                        <div className="profile-grid">
+
+                            <div className="profile-field">
+
+                                <label>
+                                    Tipo de cuenta
+                                </label>
+
+                                <input
+                                    type="text"
+                                    value={
+                                        perfil?.rol || ""
+                                    }
+                                    disabled
+                                />
+
+                            </div>
+
+
+                            <div className="profile-field">
+
+                                <label>
+                                    Estado de cuenta
+                                </label>
+
+                                <input
+                                    type="text"
+                                    value={
+                                        perfil?.estadoCuenta || ""
+                                    }
+                                    disabled
+                                />
+
+                            </div>
+
+                        </div>
+
+                        <p className="profile-security-note">
+                            El tipo y estado de tu cuenta son administrados
+                            por el sistema y no pueden modificarse desde
+                            este formulario.
+                        </p>
+
+                    </div>
+
+
+                    <div className="profile-actions">
+
+                        <button
+                            type="button"
+                            className="profile-cancel"
+                            onClick={() => navigate("/panel")}
+                        >
+                            Cancelar
+                        </button>
+
+                        <button
+                            type="submit"
+                            className="profile-save"
                             disabled={guardando}
-                        />
+                        >
+                            {guardando
+                                ? "Guardando..."
+                                : "Guardar cambios"}
+                        </button>
+
                     </div>
-
-                    <div className="form-group">
-                        <label htmlFor="telefono">
-                            Teléfono
-                        </label>
-
-                        <input
-                            id="telefono"
-                            type="tel"
-                            value={telefono}
-                            onChange={(event) =>
-                                setTelefono(
-                                    event.target.value
-                                )
-                            }
-                            maxLength="8"
-                            disabled={guardando}
-                        />
-                    </div>
-                    <div className="form-group">
-    <label htmlFor="departamento">
-        Departamento
-    </label>
-
-    <select
-        id="departamento"
-        value={departamentoId}
-        onChange={(event) => {
-            setDepartamentoId(event.target.value);
-            setMunicipioId("");
-        }}
-        disabled={guardando}
-    >
-        <option value="">
-            Selecciona un departamento
-        </option>
-
-        {departamentos.map((departamento) => (
-            <option
-                key={departamento.id}
-                value={departamento.id}
-            >
-                {departamento.nombre}
-            </option>
-        ))}
-    </select>
-</div>
-
-<div className="form-group">
-    <label htmlFor="municipio">
-        Municipio
-    </label>
-
-    <select
-        id="municipio"
-        value={municipioId}
-        onChange={(event) =>
-            setMunicipioId(event.target.value)
-        }
-        disabled={
-            guardando ||
-            departamentoId === ""
-        }
-    >
-        <option value="">
-            Selecciona un municipio
-        </option>
-
-        {municipios.map((municipio) => (
-            <option
-                key={municipio.id}
-                value={municipio.id}
-            >
-                {municipio.nombre}
-            </option>
-        ))}
-    </select>
-</div>
-                    <div className="form-group">
-                        <label htmlFor="email">
-                            Correo electrónico
-                        </label>
-
-                        <input
-                            id="email"
-                            type="email"
-                            value={email}
-                            disabled
-                        />
-
-                        <small>
-                            El correo electrónico no se puede modificar desde este formulario.
-                        </small>
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="rol">
-                            Tipo de cuenta
-                        </label>
-
-                        <input
-                            id="rol"
-                            type="text"
-                            value={rol}
-                            disabled
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="estadoCuenta">
-                            Estado de cuenta
-                        </label>
-
-                        <input
-                            id="estadoCuenta"
-                            type="text"
-                            value={estadoCuenta}
-                            disabled
-                        />
-                    </div>
-
-                    <button
-                        className="auth-button"
-                        type="submit"
-                        disabled={guardando}
-                    >
-                        {guardando
-                            ? "Guardando..."
-                            : "Guardar cambios"}
-                    </button>
 
                 </form>
 
-                <button
-                    className="link-button"
-                    type="button"
-                    onClick={() => navigate("/panel")}
-                    disabled={guardando}
-                >
-                    Volver al panel
-                </button>
-
             </section>
+
         </main>
     );
-  }
+}
 
 export default Perfil;

@@ -1,0 +1,613 @@
+/* =========================================
+   PANEL - RED HUELLA
+   ========================================= */
+
+.panel-page {
+    min-height: calc(100vh - 74px);
+    background: #f6f8f9;
+    padding: 48px 24px 70px;
+}
+
+.panel-container {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+}
+
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+.panel-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 38px;
+}
+
+.panel-header-brand {
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-label {
+    display: inline-block;
+    margin-bottom: 8px;
+
+    color: #2f7d6d;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.7px;
+}
+
+.panel-header h1 {
+    margin: 0;
+
+    color: #173f5f;
+    font-size: 34px;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+}
+
+.panel-header-user {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.panel-user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.panel-user-info span {
+    color: #263f4e;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.panel-user-info small {
+    margin-top: 3px;
+    color: #7b8990;
+    font-size: 12px;
+}
+
+.panel-logout {
+    padding: 10px 16px;
+
+    border: 1px solid #d8e1e4;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #52636d;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        border-color 0.2s ease,
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.panel-logout:hover {
+    color: #a13f3f;
+    border-color: #e4caca;
+    background: #fffafa;
+    transform: translateY(-1px);
+}
+
+
+/* =========================================
+   WELCOME
+   ========================================= */
+
+.panel-welcome {
+    position: relative;
+    overflow: hidden;
+
+    min-height: 215px;
+    padding: 38px 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 40px;
+
+    border: 1px solid #dce7e8;
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            115deg,
+            #edf5f3 0%,
+            #f5f9f8 55%,
+            #ffffff 100%
+        );
+
+    box-shadow:
+        0 8px 30px rgba(23, 63, 95, 0.045);
+
+    margin-bottom: 48px;
+}
+
+.panel-welcome::after {
+    content: "";
+
+    position: absolute;
+    width: 260px;
+    height: 260px;
+
+    right: -100px;
+    top: -120px;
+
+    border: 1px solid rgba(47, 125, 109, 0.10);
+    border-radius: 50%;
+}
+
+.panel-welcome-content {
+    position: relative;
+    z-index: 1;
+
+    max-width: 700px;
+}
+
+.panel-section-label {
+    display: block;
+    margin-bottom: 12px;
+
+    color: #2f7d6d;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.panel-welcome h2 {
+    margin: 0 0 10px;
+
+    color: #173f5f;
+    font-size: 28px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.panel-welcome p {
+    max-width: 610px;
+    margin: 0;
+
+    color: #62727a;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.panel-welcome-mark {
+    position: relative;
+    z-index: 1;
+
+    width: 110px;
+    height: 110px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.75);
+
+    box-shadow:
+        0 8px 25px rgba(23, 63, 95, 0.07);
+}
+
+.panel-welcome-mark img {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+}
+
+
+/* =========================================
+   ROLE BADGE
+   ========================================= */
+
+.panel-role-badge {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 9px 13px;
+
+    border: 1px solid #d5e5df;
+    border-radius: 20px;
+
+    background: rgba(255, 255, 255, 0.8);
+
+    color: #2f6f63;
+    font-size: 12px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+.panel-status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+    background: #3d927f;
+
+    box-shadow: 0 0 0 3px rgba(61, 146, 127, 0.10);
+}
+
+
+/* =========================================
+   SECTION
+   ========================================= */
+
+.panel-section {
+    width: 100%;
+}
+
+.panel-section-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+.panel-overline {
+    display: block;
+    margin-bottom: 6px;
+
+    color: #8a989e;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+.panel-section-heading h2 {
+    margin: 0;
+
+    color: #263f4e;
+    font-size: 21px;
+    font-weight: 650;
+    letter-spacing: -0.25px;
+}
+
+
+/* =========================================
+   CARDS
+   ========================================= */
+
+.panel-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.panel-cards-two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 800px;
+}
+
+.panel-card {
+    min-height: 265px;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 25px 25px 22px;
+
+    border: 1px solid #e0e7e8;
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 4px 18px rgba(23, 63, 95, 0.035);
+
+    transition:
+        transform 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.panel-card:hover {
+    transform: translateY(-3px);
+
+    border-color: #cadbd8;
+
+    box-shadow:
+        0 12px 28px rgba(23, 63, 95, 0.07);
+}
+
+.panel-card-featured {
+    border-color: #d2e4df;
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #f8fbfa 100%
+        );
+}
+
+.panel-card-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 25px;
+
+    border: 1px solid #dce5e8;
+    border-radius: 10px;
+
+    background: #f5f8f9;
+
+    color: #31566f;
+}
+
+.panel-card-icon span {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.panel-card-icon-green {
+    border-color: #d5e6e1;
+    background: #eff7f5;
+    color: #2f7d6d;
+}
+
+.panel-card-icon-soft {
+    border-color: #dce6ec;
+    background: #f2f6f8;
+    color: #557487;
+}
+
+.panel-card-content {
+    flex: 1;
+}
+
+.panel-card h3 {
+    margin: 0 0 9px;
+
+    color: #263f4e;
+    font-size: 17px;
+    font-weight: 650;
+}
+
+.panel-card p {
+    margin: 0;
+
+    color: #718087;
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+.panel-card-link {
+    width: fit-content;
+
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+
+    margin-top: 25px;
+    padding: 0;
+
+    border: none;
+    background: transparent;
+
+    color: #2f7d6d;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 650;
+
+    cursor: pointer;
+}
+
+.panel-card-link span {
+    font-size: 17px;
+    line-height: 1;
+
+    transition: transform 0.2s ease;
+}
+
+.panel-card-link:hover span {
+    transform: translateX(4px);
+}
+
+
+/* =========================================
+   EMPTY / ERROR
+   ========================================= */
+
+.panel-empty {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 45px 35px;
+
+    text-align: center;
+
+    border: 1px solid #e1e7e8;
+    border-radius: 15px;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 8px 25px rgba(23, 63, 95, 0.04);
+}
+
+.panel-empty-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 18px;
+
+    border-radius: 50%;
+
+    background: #fff4f4;
+    color: #a13f3f;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.panel-empty h2 {
+    margin: 0 0 8px;
+
+    color: #263f4e;
+    font-size: 20px;
+}
+
+.panel-empty p {
+    margin: 0;
+
+    color: #748188;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 900px) {
+
+    .panel-page {
+        padding: 38px 20px 60px;
+    }
+
+    .panel-header {
+        align-items: flex-start;
+    }
+
+    .panel-header h1 {
+        font-size: 30px;
+    }
+
+    .panel-cards {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-cards-two {
+        grid-template-columns: 1fr;
+        max-width: none;
+    }
+
+    .panel-card {
+        min-height: 225px;
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .panel-page {
+        padding: 28px 15px 50px;
+    }
+
+    .panel-header {
+        flex-direction: column;
+        gap: 18px;
+        margin-bottom: 28px;
+    }
+
+    .panel-header-user {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .panel-user-info {
+        align-items: flex-start;
+    }
+
+    .panel-welcome {
+        min-height: auto;
+
+        padding: 30px 25px;
+
+        align-items: flex-start;
+        flex-direction: column;
+
+        margin-bottom: 38px;
+    }
+
+    .panel-welcome h2 {
+        font-size: 24px;
+    }
+
+    .panel-welcome p {
+        font-size: 14px;
+    }
+
+    .panel-welcome-mark {
+        display: none;
+    }
+
+    .panel-role-badge {
+        align-self: flex-start;
+    }
+
+    .panel-section-heading h2 {
+        font-size: 19px;
+    }
+
+    .panel-card {
+        padding: 22px;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .panel-header h1 {
+        font-size: 27px;
+    }
+
+    .panel-header-user {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .panel-logout {
+        width: 100%;
+    }
+
+    .panel-welcome {
+        padding: 26px 21px;
+        border-radius: 14px;
+    }
+
+    .panel-welcome h2 {
+        font-size: 22px;
+    }
+
+    .panel-card {
+        min-height: 215px;
+        padding: 20px;
+    }
+}
