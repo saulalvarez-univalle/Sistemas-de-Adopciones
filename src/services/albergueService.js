@@ -1,6 +1,7 @@
 import {
     collection,
     addDoc,
+    getDoc,
     getDocs,
     query,
     where,
@@ -49,6 +50,22 @@ export async function obtenerAlberguePorUsuario(userId) {
     }
 
     const documento = resultado.docs[0];
+
+    return {
+        id: documento.id,
+        ...documento.data()
+    };
+}
+
+export async function obtenerAlberguePorId(id) {
+
+    const referencia = doc(db, "albergues", id);
+
+    const documento = await getDoc(referencia);
+
+    if (!documento.exists()) {
+        return null;
+    }
 
     return {
         id: documento.id,

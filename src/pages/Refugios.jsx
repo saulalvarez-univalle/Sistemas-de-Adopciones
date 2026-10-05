@@ -8,7 +8,7 @@ import "../styles/refugios.css";
 
 function Refugios() {
 
-    const { perfil, usuarioFirebase } = useAuth();
+    const { perfil } = useAuth();
 
     const [albergues, setAlbergues] = useState([]);
     const [alberguesFiltrados, setAlberguesFiltrados] = useState([]);
