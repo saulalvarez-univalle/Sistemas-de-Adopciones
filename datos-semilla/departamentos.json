@@ -1,0 +1,29 @@
+{
+  "chuquisaca": {
+    "nombre": "Chuquisaca"
+  },
+  "la_paz": {
+    "nombre": "La Paz"
+  },
+  "cochabamba": {
+    "nombre": "Cochabamba"
+  },
+  "oruro": {
+    "nombre": "Oruro"
+  },
+  "potosi": {
+    "nombre": "Potosí"
+  },
+  "tarija": {
+    "nombre": "Tarija"
+  },
+  "santa_cruz": {
+    "nombre": "Santa Cruz"
+  },
+  "beni": {
+    "nombre": "Beni"
+  },
+  "pando": {
+    "nombre": "Pando"
+  }
+}
