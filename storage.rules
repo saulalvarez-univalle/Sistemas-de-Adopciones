@@ -1,0 +1,54 @@
+rules_version = '2';
+
+// =========================================================
+// RED HUELLA - Reglas de seguridad de Firebase Storage
+// Sprint 2
+//
+// Las fotografías de las mascotas son de lectura pública porque
+// se muestran en el catálogo abierto. La escritura está limitada
+// al albergue propietario y acotada en tipo y tamaño de archivo.
+// =========================================================
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    function esImagenValida() {
+      return request.resource.contentType.matches("image/(jpeg|jpg|png)") &&
+        request.resource.size < 3 * 1024 * 1024;
+    }
+
+    function albergueDelUsuario(albergueId) {
+      return autenticado() &&
+        firestore.get(
+          /databases/(default)/documents/albergues/$(albergueId)
+        ).data.userId == request.auth.uid;
+    }
+
+    // Fotografías de mascotas (HU-08).
+    match /mascotas/{albergueId}/{archivo} {
+
+      allow read: if true;
+
+      allow write: if albergueDelUsuario(albergueId) &&
+        esImagenValida();
+    }
+
+    // Fotografía de perfil del usuario.
+    match /perfiles/{userId}/{archivo} {
+
+      allow read: if true;
+
+      allow write: if autenticado() &&
+        request.auth.uid == userId &&
+        esImagenValida();
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
