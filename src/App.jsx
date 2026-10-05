@@ -24,6 +24,20 @@ import Navbar from "./components/Navbar";
 
 import Refugios from "./pages/Refugios";
 
+import Mascotas from "./pages/Mascotas";
+
+import DetalleMascota from "./pages/DetalleMascota";
+
+import MisMascotas from "./pages/MisMascotas";
+
+import Favoritos from "./pages/Favoritos";
+
+import SolicitudAdopcion from "./pages/SolicitudAdopcion";
+
+import MisSolicitudes from "./pages/MisSolicitudes";
+
+import SolicitudesAlbergue from "./pages/SolicitudesAlbergue";
+
 function App() {
     return (
         <BrowserRouter>
@@ -91,6 +105,55 @@ function App() {
                 />
 
                 <Route path="/refugios" element={<Refugios />} />
+
+                <Route path="/mascotas" element={<Mascotas />} />
+
+                <Route path="/mascotas/:id" element={<DetalleMascota />} />
+
+                <Route
+                  path="/mis-mascotas"
+                  element={
+                      <ProtectedRoute>
+                        <MisMascotas />
+                      </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/favoritos"
+                  element={
+                      <ProtectedRoute>
+                        <Favoritos />
+                      </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/solicitar/:mascotaId"
+                  element={
+                      <ProtectedRoute>
+                        <SolicitudAdopcion />
+                      </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/mis-solicitudes"
+                  element={
+                      <ProtectedRoute>
+                        <MisSolicitudes />
+                      </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/solicitudes-albergue"
+                  element={
+                      <ProtectedRoute>
+                        <SolicitudesAlbergue />
+                      </ProtectedRoute>
+                  }
+                />
             </Routes>
 
         </BrowserRouter>

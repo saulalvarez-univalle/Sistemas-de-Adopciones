@@ -1,0 +1,690 @@
+/* =========================================================
+   GESTIÓN DE MASCOTAS DEL ALBERGUE
+========================================================= */
+
+.mascotas-admin-page {
+    background: var(--color-background);
+
+    padding: 50px 0 100px;
+
+    min-height: 70vh;
+}
+
+.mascotas-admin-container {
+    width: min(960px, 90%);
+
+    margin: auto;
+}
+
+
+/* =========================================================
+   ENCABEZADO
+========================================================= */
+
+.mascotas-admin-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 30px;
+
+    margin-bottom: 30px;
+}
+
+.mascotas-admin-label {
+    display: inline-block;
+
+    color: var(--color-primary);
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 1.4px;
+}
+
+.mascotas-admin-header h1 {
+    color: var(--color-text);
+
+    font-size: 32px;
+
+    letter-spacing: -0.6px;
+
+    margin: 10px 0 10px;
+}
+
+.mascotas-admin-header p {
+    max-width: 520px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+.mascotas-admin-counter {
+    padding: 18px 26px;
+
+    text-align: center;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+}
+
+.mascotas-admin-counter strong {
+    display: block;
+
+    color: var(--color-primary);
+
+    font-size: 30px;
+
+    line-height: 1;
+}
+
+.mascotas-admin-counter span {
+    display: block;
+
+    margin-top: 6px;
+
+    color: var(--color-text-light);
+
+    font-size: 11px;
+
+    letter-spacing: 0.5px;
+}
+
+
+/* =========================================================
+   MENSAJES
+========================================================= */
+
+.mascotas-admin-success,
+.mascotas-admin-error {
+    padding: 14px 18px;
+
+    border-radius: var(--radius-sm);
+
+    font-size: 13.5px;
+
+    margin-bottom: 20px;
+}
+
+.mascotas-admin-success {
+    border: 1px solid #cfe7dd;
+
+    background: var(--color-success-light);
+
+    color: var(--color-success);
+}
+
+.mascotas-admin-error {
+    border: 1px solid #f0d6d6;
+
+    background: var(--color-danger-light);
+
+    color: var(--color-danger);
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.mascotas-admin-primary {
+    display: inline-block;
+
+    padding: 14px 26px;
+
+    border: none;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-primary);
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    margin-bottom: 30px;
+
+    transition: background 0.2s ease;
+}
+
+.mascotas-admin-primary:hover {
+    background: var(--color-primary-dark);
+}
+
+
+/* =========================================================
+   FORMULARIO
+========================================================= */
+
+.mascotas-admin-form {
+    padding: 32px;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+
+    margin-bottom: 36px;
+}
+
+.mascotas-admin-form-header {
+    margin-bottom: 24px;
+
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.mascotas-admin-form-header h2 {
+    color: var(--color-text);
+
+    font-size: 23px;
+
+    letter-spacing: -0.4px;
+
+    margin-top: 9px;
+}
+
+.mascotas-admin-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 18px;
+}
+
+.mascotas-admin-field-full {
+    grid-column: 1 / -1;
+}
+
+.mascotas-admin-field label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--color-text);
+
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.mascotas-admin-field label span {
+    color: var(--color-text-light);
+
+    font-weight: 500;
+}
+
+.mascotas-admin-field input,
+.mascotas-admin-field select,
+.mascotas-admin-field textarea {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-surface-soft);
+
+    color: var(--color-text);
+
+    font-size: 14px;
+
+    outline: none;
+
+    resize: vertical;
+
+    transition: border-color 0.2s ease;
+}
+
+.mascotas-admin-field input:focus,
+.mascotas-admin-field select:focus,
+.mascotas-admin-field textarea:focus {
+    border-color: var(--color-primary);
+}
+
+.mascotas-admin-field small {
+    display: block;
+
+    margin-top: 6px;
+
+    color: var(--color-text-light);
+
+    font-size: 11.5px;
+}
+
+
+/* =========================================================
+   FOTOGRAFÍAS
+========================================================= */
+
+.mascotas-admin-fotos {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    margin-top: 14px;
+}
+
+.mascotas-admin-foto {
+    width: 110px;
+
+    overflow: hidden;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-surface-soft);
+}
+
+.mascotas-admin-foto img {
+    display: block;
+
+    width: 100%;
+    height: 86px;
+
+    object-fit: cover;
+}
+
+.mascotas-admin-foto button {
+    width: 100%;
+
+    padding: 7px;
+
+    border: none;
+
+    border-top: 1px solid var(--color-border);
+
+    background: var(--color-surface);
+
+    color: var(--color-danger);
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.mascotas-admin-foto button:hover {
+    background: var(--color-danger-light);
+}
+
+.mascotas-admin-nuevas {
+    margin-top: 10px;
+
+    color: var(--color-primary);
+
+    font-size: 12.5px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   ACCIONES DEL FORMULARIO
+========================================================= */
+
+.mascotas-admin-actions {
+    display: flex;
+
+    gap: 12px;
+
+    margin-top: 26px;
+
+    padding-top: 22px;
+
+    border-top: 1px solid var(--color-border-light);
+}
+
+.mascotas-admin-save {
+    padding: 13px 28px;
+
+    border: none;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-primary);
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.mascotas-admin-save:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+.mascotas-admin-cancel {
+    padding: 13px 24px;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-sm);
+
+    background: transparent;
+
+    color: var(--color-text-secondary);
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.mascotas-admin-cancel:hover {
+    background: var(--color-surface-soft);
+}
+
+
+/* =========================================================
+   LISTA DE MASCOTAS
+========================================================= */
+
+.mascotas-admin-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+.mascotas-admin-card {
+    display: grid;
+
+    grid-template-columns: 190px 1fr;
+
+    overflow: hidden;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+.mascotas-admin-card-image img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    min-height: 170px;
+
+    object-fit: cover;
+}
+
+.mascotas-admin-card-body {
+    padding: 22px 24px;
+}
+
+.mascotas-admin-card-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 16px;
+
+    margin-bottom: 12px;
+}
+
+.mascotas-admin-card-header h3 {
+    color: var(--color-text);
+
+    font-size: 20px;
+}
+
+.mascotas-admin-estado {
+    padding: 6px 13px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+.mascotas-admin-estado-disponible {
+    background: var(--color-success-light);
+
+    color: var(--color-success);
+}
+
+.mascotas-admin-estado-en-proceso {
+    background: var(--color-warning-light);
+
+    color: var(--color-warning);
+}
+
+.mascotas-admin-estado-adoptada {
+    background: var(--color-primary-light);
+
+    color: var(--color-primary);
+}
+
+.mascotas-admin-estado-no-disponible {
+    background: var(--color-danger-light);
+
+    color: var(--color-danger);
+}
+
+.mascotas-admin-card-datos {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 7px;
+
+    margin-bottom: 12px;
+}
+
+.mascotas-admin-card-datos span {
+    padding: 4px 10px;
+
+    border-radius: 20px;
+
+    background: var(--color-primary-soft);
+
+    color: var(--color-primary);
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.mascotas-admin-card-body > p {
+    display: -webkit-box;
+
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+
+    color: var(--color-text-secondary);
+
+    font-size: 13.5px;
+
+    line-height: 1.65;
+
+    margin-bottom: 16px;
+}
+
+.mascotas-admin-card-actions {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    align-items: center;
+}
+
+.mascotas-admin-card-actions select {
+    padding: 9px 12px;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-surface-soft);
+
+    color: var(--color-text);
+
+    font-size: 13px;
+
+    outline: none;
+}
+
+.mascotas-admin-card-actions button {
+    padding: 9px 18px;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-sm);
+
+    background: transparent;
+
+    color: var(--color-primary);
+
+    font-size: 13px;
+    font-weight: 700;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.mascotas-admin-card-actions button:hover {
+    background: var(--color-primary-light);
+
+    border-color: var(--color-primary);
+}
+
+.mascotas-admin-baja {
+    color: var(--color-danger) !important;
+}
+
+.mascotas-admin-baja:hover {
+    background: var(--color-danger-light) !important;
+
+    border-color: var(--color-danger) !important;
+}
+
+
+/* =========================================================
+   ESTADO VACÍO
+========================================================= */
+
+.mascotas-admin-empty {
+    padding: 70px 30px;
+
+    text-align: center;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+}
+
+.mascotas-admin-empty-icon {
+    width: 62px;
+    height: 62px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 18px;
+
+    border-radius: 50%;
+
+    background: var(--color-primary-light);
+
+    color: var(--color-primary);
+
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.mascotas-admin-empty h2 {
+    margin-bottom: 10px;
+
+    color: var(--color-text);
+
+    font-size: 21px;
+}
+
+.mascotas-admin-empty p {
+    max-width: 420px;
+
+    margin: 0 auto 22px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .mascotas-admin-header {
+        flex-direction: column;
+    }
+
+    .mascotas-admin-header h1 {
+        font-size: 26px;
+    }
+
+    .mascotas-admin-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mascotas-admin-card {
+        grid-template-columns: 1fr;
+    }
+
+    .mascotas-admin-card-image img {
+        height: 200px;
+
+        min-height: 0;
+    }
+
+    .mascotas-admin-form {
+        padding: 22px;
+    }
+
+    .mascotas-admin-actions {
+        flex-direction: column;
+    }
+
+    .mascotas-admin-save,
+    .mascotas-admin-cancel {
+        width: 100%;
+    }
+
+}

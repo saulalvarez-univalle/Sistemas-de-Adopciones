@@ -1,0 +1,843 @@
+/* =========================================================
+   SOLICITUDES DE ADOPCIÓN
+========================================================= */
+
+.solicitud-page {
+    background: var(--color-background);
+
+    padding: 50px 0 100px;
+
+    min-height: 70vh;
+}
+
+.solicitud-container {
+    width: min(900px, 90%);
+
+    margin: auto;
+}
+
+.solicitud-volver {
+    display: inline-block;
+
+    margin-bottom: 24px;
+
+    color: var(--color-primary);
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.solicitud-volver:hover {
+    color: var(--color-primary-dark);
+}
+
+
+/* =========================================================
+   ENCABEZADO
+========================================================= */
+
+.solicitud-header {
+    margin-bottom: 30px;
+}
+
+.solicitud-label {
+    display: inline-block;
+
+    color: var(--color-primary);
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 1.4px;
+}
+
+.solicitud-header h1 {
+    color: var(--color-text);
+
+    font-size: 32px;
+
+    letter-spacing: -0.6px;
+
+    margin: 10px 0 12px;
+}
+
+.solicitud-header p {
+    max-width: 580px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 14px;
+
+    line-height: 1.75;
+}
+
+
+/* =========================================================
+   MENSAJES
+========================================================= */
+
+.solicitud-success,
+.solicitud-error {
+    padding: 14px 18px;
+
+    border-radius: var(--radius-sm);
+
+    font-size: 13.5px;
+
+    margin-bottom: 22px;
+}
+
+.solicitud-success {
+    border: 1px solid #cfe7dd;
+
+    background: var(--color-success-light);
+
+    color: var(--color-success);
+}
+
+.solicitud-error {
+    border: 1px solid #f0d6d6;
+
+    background: var(--color-danger-light);
+
+    color: var(--color-danger);
+}
+
+.solicitud-error strong {
+    display: block;
+
+    margin-bottom: 3px;
+}
+
+.solicitud-error-block {
+    max-width: 480px;
+
+    margin: 50px auto;
+
+    padding: 46px 30px;
+
+    text-align: center;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+}
+
+.solicitud-error-block strong {
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: var(--color-text);
+
+    font-size: 19px;
+}
+
+.solicitud-error-block p {
+    margin-bottom: 20px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   FORMULARIO
+========================================================= */
+
+.solicitud-form {
+    padding: 34px;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+.solicitud-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 18px;
+}
+
+.solicitud-field-full {
+    grid-column: 1 / -1;
+}
+
+.solicitud-field label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--color-text);
+
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.solicitud-field input,
+.solicitud-field select,
+.solicitud-field textarea {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-surface-soft);
+
+    color: var(--color-text);
+
+    font-size: 14px;
+
+    outline: none;
+
+    resize: vertical;
+
+    transition: border-color 0.2s ease;
+}
+
+.solicitud-field input:focus,
+.solicitud-field select:focus,
+.solicitud-field textarea:focus {
+    border-color: var(--color-primary);
+}
+
+.solicitud-field small {
+    display: block;
+
+    margin-top: 6px;
+
+    color: var(--color-text-light);
+
+    font-size: 11.5px;
+}
+
+.solicitud-check {
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 11px;
+
+    margin: 24px 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 13px;
+
+    line-height: 1.65;
+}
+
+.solicitud-check input {
+    margin-top: 3px;
+
+    width: 16px;
+    height: 16px;
+
+    accent-color: var(--color-primary);
+}
+
+.solicitud-enviar {
+    width: 100%;
+
+    padding: 15px;
+
+    border: none;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-primary);
+
+    color: #ffffff;
+
+    font-size: 14.5px;
+    font-weight: 800;
+
+    transition: background 0.2s ease;
+}
+
+.solicitud-enviar:hover {
+    background: var(--color-primary-dark);
+}
+
+.solicitud-enviar:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   CONTADOR
+========================================================= */
+
+.solicitud-counter {
+    display: flex;
+
+    gap: 40px;
+
+    margin-bottom: 28px;
+
+    padding: 20px 26px;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+}
+
+.solicitud-counter strong {
+    display: block;
+
+    color: var(--color-primary);
+
+    font-size: 28px;
+
+    line-height: 1;
+}
+
+.solicitud-counter span {
+    display: block;
+
+    margin-top: 5px;
+
+    color: var(--color-text-light);
+
+    font-size: 11.5px;
+}
+
+
+/* =========================================================
+   LISTA
+========================================================= */
+
+.solicitud-list {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+.solicitud-card {
+    display: grid;
+
+    grid-template-columns: 170px 1fr;
+
+    overflow: hidden;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+.solicitud-card:has(.solicitud-card-body:only-child) {
+    grid-template-columns: 1fr;
+}
+
+.solicitud-card-image img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    min-height: 150px;
+
+    object-fit: cover;
+}
+
+.solicitud-card-body {
+    padding: 22px 24px;
+}
+
+.solicitud-card-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 16px;
+
+    margin-bottom: 8px;
+}
+
+.solicitud-card-header h3 {
+    color: var(--color-text);
+
+    font-size: 19px;
+}
+
+.solicitud-card-fecha {
+    color: var(--color-text-light);
+
+    font-size: 12.5px;
+
+    margin-bottom: 14px;
+}
+
+
+/* =========================================================
+   ESTADOS
+========================================================= */
+
+.solicitud-estado {
+    padding: 6px 13px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+.solicitud-estado-pendiente {
+    background: var(--color-warning-light);
+
+    color: var(--color-warning);
+}
+
+.solicitud-estado-aprobada {
+    background: var(--color-success-light);
+
+    color: var(--color-success);
+}
+
+.solicitud-estado-rechazada {
+    background: var(--color-danger-light);
+
+    color: var(--color-danger);
+}
+
+.solicitud-estado-cancelada {
+    background: var(--color-border-light);
+
+    color: var(--color-text-light);
+}
+
+.solicitud-estado-concretada {
+    background: var(--color-primary-light);
+
+    color: var(--color-primary);
+}
+
+
+/* =========================================================
+   OBSERVACIÓN
+========================================================= */
+
+.solicitud-observacion {
+    padding: 14px 16px;
+
+    border-left: 3px solid var(--color-primary);
+
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+
+    background: var(--color-primary-soft);
+
+    margin-bottom: 14px;
+}
+
+.solicitud-observacion strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--color-primary);
+
+    font-size: 11.5px;
+    font-weight: 800;
+
+    letter-spacing: 0.4px;
+
+    text-transform: uppercase;
+}
+
+.solicitud-observacion p {
+    color: var(--color-text-secondary);
+
+    font-size: 13.5px;
+
+    line-height: 1.65;
+}
+
+.solicitud-card-actions {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    align-items: center;
+
+    gap: 16px;
+}
+
+.solicitud-card-actions a {
+    color: var(--color-primary);
+
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.solicitud-cancelar {
+    padding: 8px 16px;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-sm);
+
+    background: transparent;
+
+    color: var(--color-danger);
+
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.solicitud-cancelar:hover {
+    background: var(--color-danger-light);
+
+    border-color: var(--color-danger);
+}
+
+
+/* =========================================================
+   REVISIÓN DEL ALBERGUE
+========================================================= */
+
+.solicitud-review {
+    padding: 26px 28px;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+.solicitud-review-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 20px;
+
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.solicitud-review-header h3 {
+    color: var(--color-text);
+
+    font-size: 19px;
+
+    margin-bottom: 5px;
+}
+
+.solicitud-review-header p {
+    color: var(--color-text-secondary);
+
+    font-size: 13px;
+}
+
+.solicitud-toggle {
+    padding: 9px 16px;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-sm);
+
+    background: transparent;
+
+    color: var(--color-primary);
+
+    font-size: 12.5px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.solicitud-toggle:hover {
+    background: var(--color-primary-light);
+
+    border-color: var(--color-primary);
+}
+
+.solicitud-datos {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 16px;
+
+    padding: 20px 0;
+
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.solicitud-datos-full {
+    grid-column: 1 / -1;
+}
+
+.solicitud-datos span {
+    display: block;
+
+    margin-bottom: 4px;
+
+    color: var(--color-text-light);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 0.4px;
+
+    text-transform: uppercase;
+}
+
+.solicitud-datos strong {
+    color: var(--color-text);
+
+    font-size: 13.5px;
+    font-weight: 600;
+
+    line-height: 1.6;
+}
+
+.solicitud-review-footer {
+    padding-top: 20px;
+}
+
+.solicitud-review-footer label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: var(--color-text);
+
+    font-size: 12.5px;
+    font-weight: 700;
+}
+
+.solicitud-review-footer label span {
+    color: var(--color-text-light);
+
+    font-weight: 500;
+}
+
+.solicitud-review-footer textarea {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-surface-soft);
+
+    color: var(--color-text);
+
+    font-size: 14px;
+
+    outline: none;
+
+    resize: vertical;
+}
+
+.solicitud-review-footer textarea:focus {
+    border-color: var(--color-primary);
+}
+
+.solicitud-review-actions {
+    display: flex;
+
+    gap: 12px;
+
+    margin-top: 16px;
+}
+
+.solicitud-aprobar {
+    padding: 12px 24px;
+
+    border: none;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-success);
+
+    color: #ffffff;
+
+    font-size: 13.5px;
+    font-weight: 800;
+}
+
+.solicitud-aprobar:hover {
+    opacity: 0.9;
+}
+
+.solicitud-rechazar {
+    padding: 12px 24px;
+
+    border: 1px solid var(--color-danger);
+
+    border-radius: var(--radius-sm);
+
+    background: transparent;
+
+    color: var(--color-danger);
+
+    font-size: 13.5px;
+    font-weight: 800;
+}
+
+.solicitud-rechazar:hover {
+    background: var(--color-danger-light);
+}
+
+
+/* =========================================================
+   HISTORIAL
+========================================================= */
+
+.solicitud-historial {
+    margin-top: 46px;
+}
+
+.solicitud-historial h2 {
+    margin-bottom: 18px;
+
+    color: var(--color-text);
+
+    font-size: 22px;
+
+    letter-spacing: -0.4px;
+}
+
+
+/* =========================================================
+   ESTADO VACÍO
+========================================================= */
+
+.solicitud-empty {
+    padding: 70px 30px;
+
+    text-align: center;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+}
+
+.solicitud-empty-number {
+    display: block;
+
+    margin-bottom: 14px;
+
+    color: var(--color-primary-light);
+
+    font-size: 50px;
+    font-weight: 800;
+
+    line-height: 1;
+}
+
+.solicitud-empty strong {
+    display: block;
+
+    margin-bottom: 9px;
+
+    color: var(--color-text);
+
+    font-size: 19px;
+}
+
+.solicitud-empty p {
+    max-width: 400px;
+
+    margin: 0 auto 20px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .solicitud-header h1 {
+        font-size: 26px;
+    }
+
+    .solicitud-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .solicitud-form {
+        padding: 22px;
+    }
+
+    .solicitud-card {
+        grid-template-columns: 1fr;
+    }
+
+    .solicitud-card-image img {
+        height: 190px;
+
+        min-height: 0;
+    }
+
+    .solicitud-counter {
+        gap: 26px;
+    }
+
+    .solicitud-review {
+        padding: 20px;
+    }
+
+    .solicitud-review-header {
+        flex-direction: column;
+    }
+
+    .solicitud-datos {
+        grid-template-columns: 1fr;
+    }
+
+    .solicitud-review-actions {
+        flex-direction: column;
+    }
+
+    .solicitud-aprobar,
+    .solicitud-rechazar {
+        width: 100%;
+    }
+
+}
