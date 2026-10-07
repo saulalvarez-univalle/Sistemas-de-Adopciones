@@ -1,0 +1,282 @@
+{
+  "sucre": {
+    "nombre": "Sucre",
+    "departamentoId": "chuquisaca",
+    "activo": true
+  },
+  "monteagudo": {
+    "nombre": "Monteagudo",
+    "departamentoId": "chuquisaca",
+    "activo": true
+  },
+  "camargo": {
+    "nombre": "Camargo",
+    "departamentoId": "chuquisaca",
+    "activo": true
+  },
+  "san_lucas": {
+    "nombre": "San Lucas",
+    "departamentoId": "chuquisaca",
+    "activo": true
+  },
+  "tarabuco": {
+    "nombre": "Tarabuco",
+    "departamentoId": "chuquisaca",
+    "activo": true
+  },
+  "la_paz": {
+    "nombre": "La Paz",
+    "departamentoId": "la_paz",
+    "activo": true
+  },
+  "el_alto": {
+    "nombre": "El Alto",
+    "departamentoId": "la_paz",
+    "activo": true
+  },
+  "viacha": {
+    "nombre": "Viacha",
+    "departamentoId": "la_paz",
+    "activo": true
+  },
+  "achocalla": {
+    "nombre": "Achocalla",
+    "departamentoId": "la_paz",
+    "activo": true
+  },
+  "mecapaca": {
+    "nombre": "Mecapaca",
+    "departamentoId": "la_paz",
+    "activo": true
+  },
+  "achacachi": {
+    "nombre": "Achacachi",
+    "departamentoId": "la_paz",
+    "activo": true
+  },
+  "copacabana": {
+    "nombre": "Copacabana",
+    "departamentoId": "la_paz",
+    "activo": true
+  },
+  "coroico": {
+    "nombre": "Coroico",
+    "departamentoId": "la_paz",
+    "activo": true
+  },
+  "cochabamba": {
+    "nombre": "Cochabamba",
+    "departamentoId": "cochabamba",
+    "activo": true
+  },
+  "sacaba": {
+    "nombre": "Sacaba",
+    "departamentoId": "cochabamba",
+    "activo": true
+  },
+  "quillacollo": {
+    "nombre": "Quillacollo",
+    "departamentoId": "cochabamba",
+    "activo": true
+  },
+  "colcapirhua": {
+    "nombre": "Colcapirhua",
+    "departamentoId": "cochabamba",
+    "activo": true
+  },
+  "tiquipaya": {
+    "nombre": "Tiquipaya",
+    "departamentoId": "cochabamba",
+    "activo": true
+  },
+  "vinto": {
+    "nombre": "Vinto",
+    "departamentoId": "cochabamba",
+    "activo": true
+  },
+  "cliza": {
+    "nombre": "Cliza",
+    "departamentoId": "cochabamba",
+    "activo": true
+  },
+  "punata": {
+    "nombre": "Punata",
+    "departamentoId": "cochabamba",
+    "activo": true
+  },
+  "oruro": {
+    "nombre": "Oruro",
+    "departamentoId": "oruro",
+    "activo": true
+  },
+  "huanuni": {
+    "nombre": "Huanuni",
+    "departamentoId": "oruro",
+    "activo": true
+  },
+  "challapata": {
+    "nombre": "Challapata",
+    "departamentoId": "oruro",
+    "activo": true
+  },
+  "caracollo": {
+    "nombre": "Caracollo",
+    "departamentoId": "oruro",
+    "activo": true
+  },
+  "machacamarca": {
+    "nombre": "Machacamarca",
+    "departamentoId": "oruro",
+    "activo": true
+  },
+  "potosi": {
+    "nombre": "Potosí",
+    "departamentoId": "potosi",
+    "activo": true
+  },
+  "uyuni": {
+    "nombre": "Uyuni",
+    "departamentoId": "potosi",
+    "activo": true
+  },
+  "villazon": {
+    "nombre": "Villazón",
+    "departamentoId": "potosi",
+    "activo": true
+  },
+  "tupiza": {
+    "nombre": "Tupiza",
+    "departamentoId": "potosi",
+    "activo": true
+  },
+  "llallagua": {
+    "nombre": "Llallagua",
+    "departamentoId": "potosi",
+    "activo": true
+  },
+  "betanzos": {
+    "nombre": "Betanzos",
+    "departamentoId": "potosi",
+    "activo": true
+  },
+  "tarija": {
+    "nombre": "Tarija",
+    "departamentoId": "tarija",
+    "activo": true
+  },
+  "yacuiba": {
+    "nombre": "Yacuiba",
+    "departamentoId": "tarija",
+    "activo": true
+  },
+  "bermejo": {
+    "nombre": "Bermejo",
+    "departamentoId": "tarija",
+    "activo": true
+  },
+  "villamontes": {
+    "nombre": "Villamontes",
+    "departamentoId": "tarija",
+    "activo": true
+  },
+  "entre_rios": {
+    "nombre": "Entre Ríos",
+    "departamentoId": "tarija",
+    "activo": true
+  },
+  "san_lorenzo": {
+    "nombre": "San Lorenzo",
+    "departamentoId": "tarija",
+    "activo": true
+  },
+  "santa_cruz_de_la_sierra": {
+    "nombre": "Santa Cruz de la Sierra",
+    "departamentoId": "santa_cruz",
+    "activo": true
+  },
+  "montero": {
+    "nombre": "Montero",
+    "departamentoId": "santa_cruz",
+    "activo": true
+  },
+  "warnes": {
+    "nombre": "Warnes",
+    "departamentoId": "santa_cruz",
+    "activo": true
+  },
+  "la_guardia": {
+    "nombre": "La Guardia",
+    "departamentoId": "santa_cruz",
+    "activo": true
+  },
+  "cotoca": {
+    "nombre": "Cotoca",
+    "departamentoId": "santa_cruz",
+    "activo": true
+  },
+  "camiri": {
+    "nombre": "Camiri",
+    "departamentoId": "santa_cruz",
+    "activo": true
+  },
+  "yapacani": {
+    "nombre": "Yapacaní",
+    "departamentoId": "santa_cruz",
+    "activo": true
+  },
+  "el_torno": {
+    "nombre": "El Torno",
+    "departamentoId": "santa_cruz",
+    "activo": true
+  },
+  "trinidad": {
+    "nombre": "Trinidad",
+    "departamentoId": "beni",
+    "activo": true
+  },
+  "riberalta": {
+    "nombre": "Riberalta",
+    "departamentoId": "beni",
+    "activo": true
+  },
+  "guayaramerin": {
+    "nombre": "Guayaramerín",
+    "departamentoId": "beni",
+    "activo": true
+  },
+  "san_borja": {
+    "nombre": "San Borja",
+    "departamentoId": "beni",
+    "activo": true
+  },
+  "santa_ana_del_yacuma": {
+    "nombre": "Santa Ana del Yacuma",
+    "departamentoId": "beni",
+    "activo": true
+  },
+  "cobija": {
+    "nombre": "Cobija",
+    "departamentoId": "pando",
+    "activo": true
+  },
+  "porvenir": {
+    "nombre": "Porvenir",
+    "departamentoId": "pando",
+    "activo": true
+  },
+  "puerto_rico": {
+    "nombre": "Puerto Rico",
+    "departamentoId": "pando",
+    "activo": true
+  },
+  "filadelfia": {
+    "nombre": "Filadelfia",
+    "departamentoId": "pando",
+    "activo": true
+  },
+  "bella_flor": {
+    "nombre": "Bella Flor",
+    "departamentoId": "pando",
+    "activo": true
+  }
+}

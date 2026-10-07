@@ -1,0 +1,282 @@
+rules_version = '2';
+
+// =========================================================
+// RED HUELLA - Reglas de seguridad de Cloud Firestore
+// Sprint 2
+//
+// Principio general: la base de datos NO es pública (RNF-04).
+// Solo se expone en lectura abierta la información destinada a
+// consulta ciudadana: albergues verificados, mascotas publicadas,
+// especies y la división territorial.
+// =========================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -----------------------------------------------------
+    // Funciones auxiliares
+    // -----------------------------------------------------
+
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    function esDueno(userId) {
+      return autenticado() && request.auth.uid == userId;
+    }
+
+    function perfil() {
+      return get(
+        /databases/$(database)/documents/users/$(request.auth.uid)
+      ).data;
+    }
+
+    function rol() {
+      return autenticado() ? perfil().rol : "";
+    }
+
+    function esAdmin() {
+      return rol() == "Admin" || rol() == "Superusuario";
+    }
+
+    function esSuperusuario() {
+      return rol() == "Superusuario";
+    }
+
+    function esAlbergue() {
+      return rol() == "Albergue/Refugio";
+    }
+
+    // El albergue indicado pertenece al usuario autenticado.
+    function albergueDelUsuario(albergueId) {
+      return autenticado() &&
+        get(
+          /databases/$(database)/documents/albergues/$(albergueId)
+        ).data.userId == request.auth.uid;
+    }
+
+    function albergueVerificado(albergueId) {
+      return get(
+        /databases/$(database)/documents/albergues/$(albergueId)
+      ).data.estadoVerificacion == "Verificado";
+    }
+
+    // Impide que el usuario se auto-asigne un rol administrativo
+    // o reactive una cuenta suspendida.
+    function conservaCamposCriticos() {
+      return request.resource.data.rol == resource.data.rol &&
+        request.resource.data.estadoCuenta == resource.data.estadoCuenta &&
+        request.resource.data.uid == resource.data.uid &&
+        request.resource.data.email == resource.data.email;
+    }
+
+
+    // -----------------------------------------------------
+    // users
+    // Cada usuario lee y edita únicamente su propio perfil.
+    // El rol y el estado de cuenta solo los cambia un administrador.
+    // -----------------------------------------------------
+
+    match /users/{userId} {
+
+      allow get: if esDueno(userId) || esAdmin();
+      allow list: if esAdmin();
+
+      allow create: if esDueno(userId) &&
+        request.resource.data.uid == userId &&
+        request.resource.data.estadoCuenta == "Activo" &&
+        request.resource.data.rol in [
+          "Adoptante",
+          "Albergue/Refugio",
+          "Servicio"
+        ];
+
+      allow update: if (esDueno(userId) && conservaCamposCriticos()) ||
+        esAdmin();
+
+      // RNF-08: las cuentas se suspenden, no se eliminan.
+      allow delete: if false;
+    }
+
+
+    // -----------------------------------------------------
+    // departamentos y municipios
+    // Catálogo territorial: lectura pública, escritura administrativa.
+    // -----------------------------------------------------
+
+    match /departamentos/{departamentoId} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
+
+    match /municipios/{municipioId} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
+
+
+    // -----------------------------------------------------
+    // especies
+    // Parametrización (HU-06): lectura pública, escritura del admin.
+    // -----------------------------------------------------
+
+    match /especies/{especieId} {
+      allow read: if true;
+      allow create, update: if esAdmin();
+      allow delete: if false;
+    }
+
+
+    // -----------------------------------------------------
+    // albergues
+    // RN-01: solo los verificados son visibles públicamente.
+    // El albergue administra su propio registro; el estado de
+    // verificación únicamente lo cambia un administrador.
+    // -----------------------------------------------------
+
+    match /albergues/{albergueId} {
+
+      allow read: if true;
+
+      allow create: if esAlbergue() &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.estadoVerificacion == "Pendiente_Verificacion";
+
+      allow update: if esAdmin() ||
+        (
+          esDueno(resource.data.userId) &&
+          request.resource.data.userId == resource.data.userId &&
+          request.resource.data.estadoVerificacion in [
+            resource.data.estadoVerificacion,
+            "Pendiente_Verificacion"
+          ]
+        );
+
+      allow delete: if esSuperusuario();
+    }
+
+
+    // -----------------------------------------------------
+    // mascotas
+    // RN-03: el catálogo público muestra Disponible y En proceso.
+    // RN-05: cada albergue administra solo sus propias mascotas.
+    // RN-01: solo un albergue verificado puede publicar.
+    // -----------------------------------------------------
+
+    match /mascotas/{mascotaId} {
+
+      allow get: if true;
+
+      allow list: if true;
+
+      allow create: if esAlbergue() &&
+        albergueDelUsuario(request.resource.data.albergueId) &&
+        albergueVerificado(request.resource.data.albergueId) &&
+        request.resource.data.estadoAdopcion == "Disponible" &&
+        request.resource.data.activo == true;
+
+      allow update: if esAdmin() ||
+        (
+          albergueDelUsuario(resource.data.albergueId) &&
+          request.resource.data.albergueId == resource.data.albergueId
+        );
+
+      // RNF-08: baja lógica mediante el campo activo.
+      allow delete: if false;
+    }
+
+
+    // -----------------------------------------------------
+    // solicitudes_adopcion
+    // Visible solo para el adoptante que la emitió, el albergue
+    // destinatario y la administración. Nunca es pública.
+    // -----------------------------------------------------
+
+    match /solicitudes_adopcion/{solicitudId} {
+
+      allow get: if esAdmin() ||
+        esDueno(resource.data.adoptanteUserId) ||
+        albergueDelUsuario(resource.data.albergueId);
+
+      allow list: if autenticado();
+
+      allow create: if autenticado() &&
+        request.resource.data.adoptanteUserId == request.auth.uid &&
+        request.resource.data.estado == "Pendiente" &&
+        request.resource.data.observacionesAlbergue == "";
+
+      // El adoptante solo puede cancelar; el albergue evalúa.
+      allow update: if esAdmin() ||
+        (
+          esDueno(resource.data.adoptanteUserId) &&
+          request.resource.data.estado == "Cancelada" &&
+          resource.data.estado == "Pendiente"
+        ) ||
+        (
+          albergueDelUsuario(resource.data.albergueId) &&
+          request.resource.data.estado in [
+            "Aprobada",
+            "Rechazada",
+            "Concretada"
+          ]
+        );
+
+      // RNF-08: las adopciones no se eliminan físicamente.
+      allow delete: if false;
+    }
+
+
+    // -----------------------------------------------------
+    // favoritos
+    // Lista estrictamente personal.
+    // -----------------------------------------------------
+
+    match /favoritos/{favoritoId} {
+
+      allow get: if esDueno(resource.data.userId);
+      allow list: if autenticado();
+
+      allow create: if autenticado() &&
+        request.resource.data.userId == request.auth.uid;
+
+      allow update: if false;
+
+      allow delete: if esDueno(resource.data.userId);
+    }
+
+
+    // -----------------------------------------------------
+    // Colecciones previstas para el Sprint 3.
+    // Se dejan cerradas hasta que se implementen sus módulos.
+    // -----------------------------------------------------
+
+    match /servicios/{servicioId} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
+
+    match /alertas_perdidas/{alertaId} {
+      allow read: if true;
+      allow write: if esAdmin();
+    }
+
+    match /notificaciones/{notificacionId} {
+      allow read: if esDueno(resource.data.userId) || esAdmin();
+      allow write: if esAdmin();
+    }
+
+    match /denuncias/{denunciaId} {
+      allow read: if esAdmin();
+      allow write: if esAdmin();
+    }
+
+
+    // -----------------------------------------------------
+    // Todo lo no declarado queda denegado.
+    // -----------------------------------------------------
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,377 @@
+/* =========================================
+   NAVBAR - RED HUELLA
+   ========================================= */
+
+.navbar {
+    width: 100%;
+    height: 74px;
+
+    background: rgba(255, 255, 255, 0.97);
+    border-bottom: 1px solid #e7edef;
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    box-shadow: 0 2px 12px rgba(23, 63, 95, 0.04);
+}
+
+.navbar-container {
+    width: 100%;
+    max-width: 1240px;
+    height: 100%;
+
+    margin: 0 auto;
+    padding: 0 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+/* =========================================
+   LOGO
+   ========================================= */
+
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: #173f5f;
+    text-decoration: none;
+
+    flex-shrink: 0;
+}
+
+.navbar-logo-image {
+    width: 100px;
+    height: 100px;
+
+    object-fit: contain;
+
+    display: block;
+}
+
+
+
+/* =========================================
+   NAVEGACIÓN
+   ========================================= */
+
+.navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.navbar-links > a {
+    position: relative;
+
+    padding: 9px 11px;
+
+    color: #52636d;
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 500;
+
+    border-radius: 8px;
+
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.navbar-links > a:hover {
+    color: #173f5f;
+    background: #f1f7f6;
+}
+
+
+/* =========================================
+   EFECTO DEL ENLACE ACTIVO / HOVER
+   ========================================= */
+
+.navbar-links > a::after {
+    content: "";
+
+    position: absolute;
+
+    left: 11px;
+    right: 11px;
+    bottom: 4px;
+
+    height: 2px;
+
+    background: #2f7d6d;
+
+    border-radius: 2px;
+
+    transform: scaleX(0);
+    transform-origin: center;
+
+    transition: transform 0.2s ease;
+}
+
+.navbar-links > a:hover::after {
+    transform: scaleX(1);
+}
+
+
+/* =========================================
+   ACCIONES
+   ========================================= */
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    margin-left: 12px;
+    padding-left: 14px;
+
+    border-left: 1px solid #e5eaec;
+}
+
+.navbar-login,
+.navbar-profile {
+    color: #31566f !important;
+}
+
+.navbar-register {
+    padding: 10px 17px !important;
+
+    background: #2f7d6d !important;
+    color: #ffffff !important;
+
+    border-radius: 9px !important;
+
+    font-weight: 600 !important;
+
+    box-shadow: 0 3px 8px rgba(47, 125, 109, 0.16);
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.navbar-register:hover {
+    background: #276b5d !important;
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 5px 12px rgba(47, 125, 109, 0.22);
+}
+
+.navbar-register::after {
+    display: none;
+}
+
+
+/* =========================================
+   CERRAR SESIÓN
+   ========================================= */
+
+.navbar-logout {
+    border: none;
+    background: transparent;
+
+    color: #8a5555;
+
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+
+    padding: 9px 11px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.navbar-logout:hover {
+    color: #a13f3f;
+    background: #fff4f4;
+}
+
+
+/* =========================================
+   MENÚ MÓVIL
+   ========================================= */
+
+.navbar-menu-button {
+    display: none;
+
+    width: 40px;
+    height: 40px;
+
+    border: 1px solid #dfe7e9;
+    border-radius: 9px;
+
+    background: #ffffff;
+    color: #31566f;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.navbar-menu-button:hover {
+    background: #f1f7f6;
+    border-color: #cddcda;
+}
+
+
+/* =========================================
+   TABLET
+   ========================================= */
+
+@media (max-width: 1100px) {
+
+    .navbar-container {
+        padding: 0 20px;
+    }
+
+    .navbar-links {
+        gap: 0;
+    }
+
+    .navbar-links > a {
+        padding: 8px 8px;
+        font-size: 13px;
+    }
+
+    .navbar-actions {
+        margin-left: 6px;
+        padding-left: 8px;
+    }
+
+}
+
+
+/* =========================================
+   MÓVIL
+   ========================================= */
+
+@media (max-width: 850px) {
+
+    .navbar {
+        height: 68px;
+    }
+
+    .navbar-container {
+        padding: 0 18px;
+    }
+
+    .navbar-logo-image {
+        width: 42px;
+        height: 42px;
+    }
+
+    .navbar-logo-text {
+        font-size: 19px;
+    }
+
+    .navbar-menu-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .navbar-links {
+        display: none;
+
+        position: absolute;
+        top: 68px;
+        left: 0;
+
+        width: 100%;
+
+        padding: 12px 18px 18px;
+
+        background: #ffffff;
+
+        border-bottom: 1px solid #e7edef;
+
+        box-shadow: 0 10px 25px rgba(23, 63, 95, 0.08);
+
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 3px;
+    }
+
+    .navbar-links-open {
+        display: flex;
+    }
+
+    .navbar-links > a {
+        width: 100%;
+
+        padding: 11px 12px;
+
+        font-size: 14px;
+    }
+
+    .navbar-links > a::after {
+        display: none;
+    }
+
+    .navbar-actions {
+        width: 100%;
+
+        margin: 8px 0 0;
+        padding: 10px 0 0;
+
+        border-left: none;
+        border-top: 1px solid #e5eaec;
+
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 5px;
+    }
+
+    .navbar-login,
+    .navbar-profile,
+    .navbar-register,
+    .navbar-logout {
+        width: 100%;
+        text-align: center;
+    }
+
+}
+
+
+/* =========================================
+   MÓVIL PEQUEÑO
+   ========================================= */
+
+@media (max-width: 480px) {
+
+    .navbar-container {
+        padding: 0 14px;
+    }
+
+    .navbar-logo-image {
+        width: 42px;
+        height: 42px;
+    }
+
+    .navbar-logo-text {
+        font-size: 18px;
+    }
+
+}

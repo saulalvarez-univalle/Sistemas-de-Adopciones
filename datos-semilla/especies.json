@@ -1,0 +1,26 @@
+{
+  "perro": {
+    "nombre": "Perro",
+    "activo": true
+  },
+  "gato": {
+    "nombre": "Gato",
+    "activo": true
+  },
+  "conejo": {
+    "nombre": "Conejo",
+    "activo": true
+  },
+  "ave": {
+    "nombre": "Ave",
+    "activo": true
+  },
+  "hamster": {
+    "nombre": "Hámster",
+    "activo": true
+  },
+  "tortuga": {
+    "nombre": "Tortuga",
+    "activo": true
+  }
+}

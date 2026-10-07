@@ -1,0 +1,1366 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f7faf9;
+    color: #263238;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+button,
+a {
+    cursor: pointer;
+}
+
+a {
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   HOME
+========================================================= */
+
+.home {
+    width: 100%;
+    background: #f6f8f9;
+    color: #173f5f;
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.home-hero {
+    width: 100%;
+    min-height: calc(100vh - 74px);
+    position: relative;
+
+    display: grid;
+    grid-template-columns: 1fr 0.85fr;
+
+    overflow: hidden;
+
+    background: #173f5f;
+}
+
+
+/* =========================================================
+   HERO - CONTENIDO
+========================================================= */
+
+.home-hero-content {
+    min-height: calc(100vh - 74px);
+
+    display: flex;
+    flex-direction: column;
+
+    /* CENTRADO VERTICAL */
+    justify-content: center;
+
+    /* CENTRADO DEL CONTENIDO */
+    align-items: center;
+    text-align: center;
+
+    padding: 70px clamp(40px, 7vw, 110px);
+
+    position: relative;
+    z-index: 3;
+}
+
+
+/* =========================================================
+   TAG
+========================================================= */
+
+.home-tag {
+    width: fit-content;
+
+    margin-bottom: 30px;
+
+    padding: 8px 13px;
+
+    border: 1px solid rgba(255, 255, 255, 0.3);
+
+    color: #d7eee8;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 2px;
+}
+
+
+/* =========================================================
+   TITULO
+========================================================= */
+
+.home-hero h1 {
+    max-width: 760px;
+
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: clamp(54px, 6vw, 88px);
+
+    line-height: 0.98;
+
+    letter-spacing: -4px;
+
+    font-weight: 700;
+
+    text-align: center;
+}
+
+
+.home-hero h1 span {
+    display: block;
+
+    color: #82c7b5;
+}
+
+
+/* =========================================================
+   DESCRIPCION HERO
+========================================================= */
+
+.home-hero-content > p {
+    max-width: 550px;
+
+    margin: 32px auto 0;
+
+    color: #d8e4e9;
+
+    font-size: 17px;
+
+    line-height: 1.75;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   BOTONES
+========================================================= */
+
+.home-hero-buttons {
+    display: flex;
+
+    gap: 12px;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+    margin-top: 40px;
+}
+
+
+.home-button-primary,
+.home-button-secondary {
+    min-height: 54px;
+
+    padding: 0 26px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    transition: 0.25s ease;
+}
+
+
+.home-button-primary {
+    background: #2f7d6d;
+
+    color: #ffffff;
+}
+
+
+.home-button-primary:hover {
+    background: #3a8e7d;
+
+    transform: translateY(-2px);
+}
+
+
+.home-button-secondary {
+    border: 1px solid rgba(255, 255, 255, 0.4);
+
+    color: #ffffff;
+
+    background: transparent;
+}
+
+
+.home-button-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+
+/* =========================================================
+   HERO MASCOTA
+========================================================= */
+
+.home-hero-pet {
+    min-height: calc(100vh - 74px);
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    overflow: visible;
+}
+
+
+/* =========================================================
+   CIRCULO VERDE
+========================================================= */
+
+.home-hero-circle {
+    position: absolute;
+
+    width: min(48vw, 680px);
+    height: min(48vw, 680px);
+
+    right: -90px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    border-radius: 50%;
+
+    background: #2f7d6d;
+
+    opacity: 0.9;
+}
+
+
+/* =========================================================
+   PERRITO
+========================================================= */
+
+.home-hero-pet img {
+    position: relative;
+
+    z-index: 2;
+
+    /* PERRITO MÁS GRANDE */
+    width: min(58vw, 760px);
+
+    /* PERMITE QUE OCUPE MÁS ALTURA */
+    max-height: 850px;
+
+    object-fit: contain;
+
+    object-position: center bottom;
+
+    align-self: flex-end;
+
+    /* LO ACERCA AL BORDE DERECHO */
+    margin-right: -70px;
+
+    margin-bottom: -20px;
+
+    filter: drop-shadow(
+        0 25px 35px rgba(0, 0, 0, 0.22)
+    );
+}
+
+
+/* =========================================================
+   TARJETA DEL HERO
+========================================================= */
+
+.home-hero-card {
+    position: absolute;
+
+    left: 20px;
+
+    bottom: 45px;
+
+    z-index: 4;
+
+    min-width: 300px;
+
+    padding: 20px 24px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 18px;
+
+    background: #ffffff;
+
+    border-left: 4px solid #2f7d6d;
+
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+}
+
+
+.home-hero-card-index {
+    color: #2f7d6d;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+
+.home-hero-card strong {
+    display: block;
+
+    color: #173f5f;
+
+    font-size: 14px;
+}
+
+
+.home-hero-card p {
+    margin: 5px 0 0;
+
+    color: #6a7880;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   EXPLORA
+========================================================= */
+
+.home-explore,
+.home-section,
+.home-services,
+.home-how,
+.home-about {
+    width: min(100% - 80px, 1380px);
+
+    margin: 0 auto;
+}
+
+
+.home-explore {
+    padding: 120px 0;
+}
+
+
+.home-section-heading {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(280px, 420px);
+
+    gap: 60px;
+
+    align-items: end;
+
+    margin-bottom: 55px;
+}
+
+
+.home-section-tag {
+    display: block;
+
+    margin-bottom: 15px;
+
+    color: #2f7d6d;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 2px;
+}
+
+
+.home-section-heading h2,
+.home-shelters-content h2,
+.home-services-content h2,
+.home-how-content h2,
+.home-about-content h2 {
+    max-width: 760px;
+
+    margin: 0;
+
+    color: #173f5f;
+
+    font-size: clamp(36px, 4vw, 58px);
+
+    line-height: 1.04;
+
+    letter-spacing: -2px;
+}
+
+
+.home-section-heading h2 span,
+.home-shelters-content h2 span,
+.home-services-content h2 span,
+.home-how-content h2 span,
+.home-about-content h2 span {
+    color: #2f7d6d;
+}
+
+
+.home-section-heading > p {
+    margin: 0;
+
+    color: #68777f;
+
+    font-size: 15px;
+
+    line-height: 1.8;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   CATEGORIAS
+========================================================= */
+
+.home-category-grid {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 22px;
+}
+
+
+.home-category-card {
+    min-width: 0;
+
+    background: #ffffff;
+
+    color: inherit;
+
+    text-decoration: none;
+
+    border: 1px solid #e3eaec;
+
+    transition: 0.3s ease;
+}
+
+
+.home-category-card:hover {
+    transform: translateY(-7px);
+
+    border-color: #b8d6cf;
+
+    box-shadow: 0 20px 45px rgba(23, 63, 95, 0.10);
+}
+
+
+.home-category-image {
+    height: 410px;
+
+    overflow: hidden;
+}
+
+
+.home-category-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+    transition: transform 0.5s ease;
+}
+
+
+.home-category-card:hover .home-category-image img {
+    transform: scale(1.04);
+}
+
+
+.home-category-content {
+    min-height: 170px;
+
+    padding: 25px;
+
+    display: grid;
+
+    grid-template-columns: 42px 1fr 20px;
+
+    gap: 15px;
+
+    align-items: start;
+}
+
+
+.home-category-icon {
+    color: #2f7d6d;
+
+    font-size: 13px;
+
+    font-weight: 800;
+}
+
+
+.home-category-content h3 {
+    margin: 0 0 8px;
+
+    color: #173f5f;
+
+    font-size: 22px;
+}
+
+
+.home-category-content p {
+    margin: 0;
+
+    color: #738087;
+
+    font-size: 14px;
+
+    line-height: 1.65;
+}
+
+
+.home-category-content strong {
+    color: #2f7d6d;
+
+    font-size: 20px;
+}
+
+
+/* =========================================================
+   ADOPCIONES
+========================================================= */
+
+.home-section {
+    padding: 110px 0;
+}
+
+
+.pet-cards {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 22px;
+}
+
+
+.pet-card {
+    overflow: hidden;
+
+    background: #ffffff;
+
+    border: 1px solid #e3eaec;
+}
+
+
+.pet-card-image {
+    height: 450px;
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+.pet-card-image img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+.pet-card-image span {
+    position: absolute;
+
+    left: 18px;
+
+    top: 18px;
+
+    padding: 7px 10px;
+
+    background: #ffffff;
+
+    color: #2f7d6d;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+
+.pet-card-content {
+    padding: 27px;
+}
+
+
+.pet-card-content h3 {
+    margin: 0 0 10px;
+
+    color: #173f5f;
+
+    font-size: 23px;
+}
+
+
+.pet-card-content p {
+    margin: 0 0 20px;
+
+    color: #738087;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+
+.pet-card-content a {
+    color: #2f7d6d;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   REFUGIOS
+========================================================= */
+
+.home-shelters {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns: 2fr 2fr;
+
+    background: #eaf2f0;
+}
+
+
+.home-shelters-image {
+    min-height: 650px;
+}
+
+
+.home-shelters-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+.home-shelters-content {
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 80px clamp(40px, 7vw, 110px);
+
+    text-align: center;
+}
+
+
+.home-shelters-content h2 {
+    text-align: center;
+}
+
+
+.home-shelters-content p {
+    max-width: 600px;
+
+    margin: 25px 0 0;
+
+    color: #65757d;
+
+    line-height: 1.8;
+
+    font-size: 15px;
+
+    text-align: center;
+}
+
+
+.home-shelters-content .home-button-primary {
+    width: fit-content;
+
+    margin-top: 32px;
+}
+
+
+/* =========================================================
+   SERVICIOS
+========================================================= */
+
+.home-services {
+    padding: 120px 0;
+
+    display: grid;
+
+    grid-template-columns: 1fr 0.85fr;
+
+    gap: 90px;
+
+    align-items: center;
+}
+
+
+.home-services-content > p,
+.home-how-content > p,
+.home-about-content > p {
+    max-width: 600px;
+
+    color: #68777f;
+
+    line-height: 1.8;
+
+    font-size: 15px;
+
+    margin-top: 25px;
+}
+
+
+.home-service-list {
+    margin-top: 45px;
+
+    border-top: 1px solid #dfe7e9;
+}
+
+
+.home-service-item {
+    display: grid;
+
+    grid-template-columns: 45px 1fr;
+
+    gap: 18px;
+
+    padding: 24px 0;
+
+    border-bottom: 1px solid #dfe7e9;
+}
+
+
+.home-service-item > span {
+    color: #2f7d6d;
+
+    font-size: 12px;
+
+    font-weight: 800;
+}
+
+
+.home-service-item h3 {
+    margin: 0 0 5px;
+
+    color: #173f5f;
+
+    font-size: 18px;
+}
+
+
+.home-service-item p {
+    margin: 0;
+
+    color: #78858b;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+.home-services-image {
+    height: 650px;
+
+    overflow: hidden;
+}
+
+
+.home-services-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+/* =========================================================
+   COMO FUNCIONA
+========================================================= */
+
+.home-how {
+    padding: 110px 0;
+
+    display: grid;
+
+    grid-template-columns: 0.85fr 1fr;
+
+    gap: 90px;
+
+    align-items: center;
+}
+
+
+.home-how-image {
+    height: 650px;
+}
+
+
+.home-how-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+.home-steps {
+    margin-top: 45px;
+
+    border-top: 1px solid #dfe7e9;
+}
+
+
+.home-step {
+    display: grid;
+
+    grid-template-columns: 65px 1fr;
+
+    gap: 20px;
+
+    padding: 23px 0;
+
+    border-bottom: 1px solid #dfe7e9;
+}
+
+
+.home-step > span {
+    color: #2f7d6d;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+
+.home-step h3 {
+    margin: 0 0 6px;
+
+    color: #173f5f;
+
+    font-size: 17px;
+}
+
+
+.home-step p {
+    margin: 0;
+
+    color: #77858b;
+
+    font-size: 13px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   NOSOTROS
+========================================================= */
+
+.home-about {
+    padding: 110px 0 130px;
+
+    display: grid;
+
+    grid-template-columns: 0.85fr 1fr;
+
+    gap: 90px;
+
+    align-items: center;
+}
+
+
+.home-about-image {
+    height: 570px;
+}
+
+
+.home-about-image img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+.home-about-values {
+    margin-top: 38px;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    border-top: 1px solid #dfe7e9;
+
+    border-bottom: 1px solid #dfe7e9;
+}
+
+
+.home-about-values div {
+    padding: 20px 15px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+.home-about-values div + div {
+    border-left: 1px solid #dfe7e9;
+}
+
+
+.home-about-values strong {
+    color: #2f7d6d;
+
+    font-size: 12px;
+}
+
+
+.home-about-values span {
+    color: #52636d;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   CTA
+========================================================= */
+
+.home-cta {
+    width: calc(100% - 80px);
+
+    max-width: 1380px;
+
+    min-height: 300px;
+
+    margin: 0 auto 80px;
+
+    padding: 55px 70px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 50px;
+
+    background: #173f5f;
+}
+
+
+.home-cta > div > span {
+    color: #82c7b5;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 2px;
+}
+
+
+.home-cta h2 {
+    max-width: 700px;
+
+    margin: 15px 0 0;
+
+    color: #ffffff;
+
+    font-size: clamp(30px, 3vw, 46px);
+
+    line-height: 1.1;
+}
+
+
+.home-cta-button {
+    flex-shrink: 0;
+
+    padding: 15px 25px;
+
+    background: #2f7d6d;
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.home-footer {
+    width: 100%;
+
+    padding: 70px max(40px, calc((100% - 1380px) / 2));
+
+    display: grid;
+
+    grid-template-columns: 1.5fr repeat(3, 1fr);
+
+    gap: 60px;
+
+    background: #102f47;
+}
+
+
+.home-footer-brand p {
+    max-width: 300px;
+
+    color: #b8c8d0;
+
+    font-size: 13px;
+
+    line-height: 1.7;
+}
+
+
+.home-footer-logo {
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 22px;
+
+    font-weight: 700;
+}
+
+
+.home-footer-column {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+
+.home-footer-column h3 {
+    margin: 0 0 8px;
+
+    color: #ffffff;
+
+    font-size: 13px;
+}
+
+
+.home-footer-column a {
+    color: #9eb0ba;
+
+    text-decoration: none;
+
+    font-size: 13px;
+}
+
+
+.home-footer-column a:hover {
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .home-hero {
+        grid-template-columns: 1fr;
+    }
+
+
+    .home-hero-content {
+        min-height: 580px;
+
+        padding: 70px 45px;
+    }
+
+
+    .home-hero-pet {
+        min-height: 560px;
+    }
+
+
+    .home-hero-circle {
+        width: 560px;
+        height: 560px;
+
+        right: 50%;
+
+        transform: translate(50%, -45%);
+    }
+
+
+    .home-hero-pet img {
+        width: 650px;
+
+        max-width: 95%;
+
+        margin-right: 0;
+    }
+
+
+    .home-hero-card {
+        left: 25px;
+
+        bottom: 30px;
+    }
+
+
+    .home-category-grid,
+    .pet-cards {
+        grid-template-columns: 1fr;
+    }
+
+
+    .home-shelters,
+    .home-services,
+    .home-how,
+    .home-about {
+        grid-template-columns: 1fr;
+    }
+
+
+    .home-services-image,
+    .home-how-image {
+        height: 500px;
+    }
+
+
+    .home-about-image {
+        height: 500px;
+    }
+
+
+    .home-section-heading {
+        grid-template-columns: 1fr;
+
+        gap: 20px;
+    }
+
+
+    .home-footer {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* =========================================================
+   CELULAR
+========================================================= */
+
+@media (max-width: 650px) {
+
+    .home-explore,
+    .home-section,
+    .home-services,
+    .home-how,
+    .home-about {
+        width: calc(100% - 36px);
+    }
+
+
+    .home-explore,
+    .home-section,
+    .home-services,
+    .home-how,
+    .home-about {
+        padding: 75px 0;
+    }
+
+
+    .home-hero-content {
+        min-height: auto;
+
+        padding: 60px 24px 45px;
+    }
+
+
+    .home-hero h1 {
+        font-size: 48px;
+
+        letter-spacing: -2px;
+    }
+
+
+    .home-hero-content > p {
+        margin-top: 25px;
+
+        font-size: 14px;
+    }
+
+
+    .home-hero-buttons {
+        margin-top: 30px;
+
+        flex-direction: column;
+
+        width: 100%;
+    }
+
+
+    .home-button-primary,
+    .home-button-secondary {
+        width: 100%;
+    }
+
+
+    .home-hero-pet {
+        min-height: 440px;
+    }
+
+
+    .home-hero-circle {
+        width: 430px;
+        height: 430px;
+
+        right: 50%;
+
+        transform: translate(50%, -35%);
+    }
+
+
+    .home-hero-pet img {
+        width: 470px;
+
+        max-width: 115%;
+
+        margin-right: 0;
+
+        margin-bottom: -10px;
+    }
+
+
+    .home-hero-card {
+        left: 20px;
+
+        right: 20px;
+
+        bottom: 20px;
+
+        min-width: 0;
+    }
+
+
+    .home-category-image,
+    .pet-card-image {
+        height: 280px;
+    }
+
+
+    .home-shelters-content {
+        padding: 70px 24px;
+    }
+
+
+    .home-services-image,
+    .home-how-image,
+    .home-about-image {
+        height: 400px;
+    }
+
+
+    .home-about-values {
+        grid-template-columns: 1fr;
+    }
+
+
+    .home-about-values div + div {
+        border-left: none;
+
+        border-top: 1px solid #dfe7e9;
+    }
+
+
+    .home-cta {
+        width: calc(100% - 36px);
+
+        margin-bottom: 40px;
+
+        padding: 40px 25px;
+
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+
+    .home-footer {
+        grid-template-columns: 1fr;
+
+        padding: 55px 24px;
+
+        gap: 35px;
+    }
+}

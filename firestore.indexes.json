@@ -1,0 +1,45 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "mascotas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "estadoAdopcion", "order": "ASCENDING" },
+        { "fieldPath": "nombre", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "mascotas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "albergueId", "order": "ASCENDING" },
+        { "fieldPath": "nombre", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "solicitudes_adopcion",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "adoptanteUserId", "order": "ASCENDING" },
+        { "fieldPath": "mascotaId", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "solicitudes_adopcion",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "albergueId", "order": "ASCENDING" },
+        { "fieldPath": "estado", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "favoritos",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "userId", "order": "ASCENDING" },
+        { "fieldPath": "mascotaId", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
