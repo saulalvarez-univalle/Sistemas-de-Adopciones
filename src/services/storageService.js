@@ -17,6 +17,39 @@ const TAMANO_MAXIMO = 3 * 1024 * 1024;
 
 export const MAXIMO_FOTOS_POR_MASCOTA = 5;
 
+// El proyecto está en el plan Spark de Firebase, que no habilita Cloud
+// Storage. Mientras tanto, las fotografías se registran por enlace: el
+// albergue pega la dirección de una imagen ya publicada (su página de
+// Facebook, Google Drive, Imgur). Las funciones de subida de más abajo
+// quedan listas para cuando el proyecto pase al plan Blaze.
+export function validarUrlImagen(url) {
+
+    const direccion = (url || "").trim();
+
+    if (direccion === "") {
+        return "Ingresa el enlace de la imagen.";
+    }
+
+    if (direccion.length > 600) {
+        return "El enlace es demasiado largo.";
+    }
+
+    if (
+        !direccion.startsWith("https://") &&
+        !direccion.startsWith("http://")
+    ) {
+        return "El enlace debe empezar con https://";
+    }
+
+    try {
+        new URL(direccion);
+    } catch {
+        return "El enlace no tiene un formato válido.";
+    }
+
+    return "";
+}
+
 export function validarImagen(archivo) {
 
     if (!archivo) {
