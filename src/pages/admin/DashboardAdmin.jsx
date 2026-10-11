@@ -272,6 +272,49 @@ function DashboardAdmin() {
                         </article>
 
 
+                        <article className="admin-card">
+
+                            <div className="admin-card-top">
+
+                                <div className="admin-card-number">
+                                    04
+                                </div>
+
+                                <span className="admin-card-status">
+                                    ACTIVO
+                                </span>
+
+                            </div>
+
+                            <div className="admin-card-content">
+
+                                <h3>
+                                    Establecimientos
+                                </h3>
+
+                                <p>
+                                    Verifica las veterinarias, tiendas y
+                                    peluquerías antes de publicarlas en el
+                                    directorio.
+                                </p>
+
+                            </div>
+
+                            <button
+                                className="admin-card-action"
+                                onClick={() => {
+                                    navigate("/gestion-servicios");
+                                }}
+                            >
+                                Gestionar establecimientos
+                                <span>
+                                    →
+                                </span>
+                            </button>
+
+                        </article>
+
+
                         <article className="admin-card admin-card-disabled">
 
                             <div className="admin-card-top">

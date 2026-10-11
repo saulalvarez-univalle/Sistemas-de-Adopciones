@@ -40,6 +40,12 @@ import MisSolicitudes from "./pages/MisSolicitudes";
 
 import MisAdopciones from "./pages/MisAdopciones";
 
+import Servicios from "./pages/Servicios";
+
+import MiServicio from "./pages/MiServicio";
+
+import GestionServicios from "./pages/admin/GestionServicios";
+
 import SolicitudesAlbergue from "./pages/SolicitudesAlbergue";
 
 function App() {
@@ -115,6 +121,26 @@ function App() {
                   element={
                       <AdminRoute>
                         <CargarDatos />
+                      </AdminRoute>
+                  }
+                />
+
+                <Route path="/servicios" element={<Servicios />} />
+
+                <Route
+                  path="/mi-servicio"
+                  element={
+                      <ProtectedRoute>
+                        <MiServicio />
+                      </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/gestion-servicios"
+                  element={
+                      <AdminRoute>
+                        <GestionServicios />
                       </AdminRoute>
                   }
                 />

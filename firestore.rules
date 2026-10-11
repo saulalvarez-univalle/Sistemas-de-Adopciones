@@ -47,6 +47,10 @@ service cloud.firestore {
       return rol() == "Albergue/Refugio";
     }
 
+    function esServicio() {
+      return rol() == "Servicio";
+    }
+
     // El albergue indicado pertenece al usuario autenticado.
     function albergueDelUsuario(albergueId) {
       return autenticado() &&
@@ -250,9 +254,33 @@ service cloud.firestore {
     // Se dejan cerradas hasta que se implementen sus módulos.
     // -----------------------------------------------------
 
+    // -----------------------------------------------------
+    // servicios
+    // RN-06: los establecimientos requieren validación del
+    // Administrador antes de publicarse en el directorio y en el mapa.
+    // Mismo patrón que albergues: el dueño administra su registro, el
+    // estado de verificación solo lo cambia un administrador.
+    // -----------------------------------------------------
+
     match /servicios/{servicioId} {
+
       allow read: if true;
-      allow write: if esAdmin();
+
+      allow create: if esServicio() &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.estadoVerificacion == "Pendiente_Verificacion";
+
+      allow update: if esAdmin() ||
+        (
+          esDueno(resource.data.userId) &&
+          request.resource.data.userId == resource.data.userId &&
+          request.resource.data.estadoVerificacion in [
+            resource.data.estadoVerificacion,
+            "Pendiente_Verificacion"
+          ]
+        );
+
+      allow delete: if esSuperusuario();
     }
 
     match /alertas_perdidas/{alertaId} {

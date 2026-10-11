@@ -92,6 +92,27 @@ function Navbar() {
             );
         }
 
+        if (perfil.rol === "Servicio") {
+
+            return (
+                <>
+                    <Link
+                        to="/panel"
+                        onClick={cerrarMenu}
+                    >
+                        Mi panel
+                    </Link>
+
+                    <Link
+                        to="/mi-servicio"
+                        onClick={cerrarMenu}
+                    >
+                        Mi establecimiento
+                    </Link>
+                </>
+            );
+        }
+
         if (perfil.rol === "Adoptante") {
 
             return (
@@ -191,6 +212,13 @@ function Navbar() {
                         onClick={cerrarMenu}
                     >
                         Refugios
+                    </Link>
+
+                    <Link
+                        to="/servicios"
+                        onClick={cerrarMenu}
+                    >
+                        Servicios
                     </Link>
 
                     <a

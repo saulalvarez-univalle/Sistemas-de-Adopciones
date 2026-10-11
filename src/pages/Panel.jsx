@@ -570,22 +570,22 @@ function Panel() {
                                 <div className="panel-card-content">
 
                                     <h3>
-                                        Mi servicio
+                                        Mi establecimiento
                                     </h3>
 
                                     <p>
-                                        Próximamente podrás registrar y
-                                        administrar tu veterinaria, tienda
-                                        o peluquería.
+                                        Registra tu veterinaria, tienda o
+                                        peluquería, marca su ubicación en el
+                                        mapa y gestiona sus datos.
                                     </p>
 
                                 </div>
 
                                 <button
                                     className="panel-card-link"
-                                    onClick={() => navigate("/")}
+                                    onClick={() => navigate("/mi-servicio")}
                                 >
-                                    Volver al inicio
+                                    Gestionar establecimiento
                                     <span>→</span>
                                 </button>
 
