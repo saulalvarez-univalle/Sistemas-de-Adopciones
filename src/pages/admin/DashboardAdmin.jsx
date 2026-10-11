@@ -1,6 +1,12 @@
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../context/AuthContext";
+
+import {
+    obtenerDatosDelSistema,
+    calcularIndicadores
+} from "../../services/reporteService";
 
 import "../../styles/admin.css";
 
@@ -11,6 +17,49 @@ function DashboardAdmin() {
     const {
         perfil
     } = useAuth();
+
+    // HU-26. El panel dejó de mostrar rótulos fijos: ahora cada número
+    // sale de la base de datos, de modo que el administrador ve de
+    // entrada qué requiere su atención.
+    const [indicadores, setIndicadores] = useState(null);
+
+    const cargarIndicadores = useCallback(async () => {
+
+        try {
+
+            setIndicadores(
+                calcularIndicadores(
+                    await obtenerDatosDelSistema()
+                )
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Error al calcular los indicadores:",
+                error
+            );
+        }
+
+    }, []);
+
+
+    useEffect(() => {
+
+        cargarIndicadores();
+
+    }, [cargarIndicadores]);
+
+
+    function pendiente(valor) {
+
+        if (indicadores === null) {
+            return "—";
+        }
+
+        return valor;
+    }
+
 
     return (
         <main className="admin-page">
@@ -67,17 +116,30 @@ function DashboardAdmin() {
 
                         <div className="admin-overview-top">
                             <span>
-                                MÓDULOS DISPONIBLES
+                                PENDIENTES DE VERIFICAR
                             </span>
 
-                            <strong>
-                                05
+                            <strong
+                                className={
+                                    indicadores &&
+                                    indicadores.alberguesPendientes +
+                                        indicadores.serviciosPendientes > 0
+                                        ? "admin-number-alerta"
+                                        : "admin-number-green"
+                                }
+                            >
+                                {pendiente(
+                                    indicadores
+                                        ? indicadores.alberguesPendientes +
+                                          indicadores.serviciosPendientes
+                                        : 0
+                                )}
                             </strong>
                         </div>
 
                         <p>
-                            Módulos administrativos activos
-                            actualmente.
+                            Refugios y establecimientos esperando
+                            tu revisión.
                         </p>
 
                     </div>
@@ -87,35 +149,73 @@ function DashboardAdmin() {
 
                         <div className="admin-overview-top">
                             <span>
-                                VERIFICACIÓN
+                                REPORTES SIN RESOLVER
+                            </span>
+
+                            <strong
+                                className={
+                                    indicadores &&
+                                    indicadores.denunciasPendientes > 0
+                                        ? "admin-number-alerta"
+                                        : "admin-number-green"
+                                }
+                            >
+                                {pendiente(
+                                    indicadores
+                                        ? indicadores.denunciasPendientes
+                                        : 0
+                                )}
+                            </strong>
+                        </div>
+
+                        <p>
+                            Denuncias de la comunidad en espera.
+                        </p>
+
+                    </div>
+
+
+                    <div className="admin-overview-card">
+
+                        <div className="admin-overview-top">
+                            <span>
+                                MASCOTAS PUBLICADAS
+                            </span>
+
+                            <strong>
+                                {pendiente(
+                                    indicadores
+                                        ? indicadores.mascotasTotal
+                                        : 0
+                                )}
+                            </strong>
+                        </div>
+
+                        <p>
+                            Registros activos en el catálogo público.
+                        </p>
+
+                    </div>
+
+
+                    <div className="admin-overview-card">
+
+                        <div className="admin-overview-top">
+                            <span>
+                                ADOPCIONES CONCRETADAS
                             </span>
 
                             <strong className="admin-number-green">
-                                ACTIVA
+                                {pendiente(
+                                    indicadores
+                                        ? indicadores.adopcionesConcretadas
+                                        : 0
+                                )}
                             </strong>
                         </div>
 
                         <p>
-                            Gestión de solicitudes de albergues.
-                        </p>
-
-                    </div>
-
-
-                    <div className="admin-overview-card">
-
-                        <div className="admin-overview-top">
-                            <span>
-                                CATÁLOGO
-                            </span>
-
-                            <strong>
-                                ACTIVO
-                            </strong>
-                        </div>
-
-                        <p>
-                            Parametrización de especies disponible.
+                            Mascotas que ya están en un hogar.
                         </p>
 
                     </div>
@@ -358,7 +458,7 @@ function DashboardAdmin() {
                         </article>
 
 
-                        <article className="admin-card admin-card-disabled">
+                        <article className="admin-card">
 
                             <div className="admin-card-top">
 
@@ -366,8 +466,8 @@ function DashboardAdmin() {
                                     06
                                 </div>
 
-                                <span className="admin-card-status admin-status-soon">
-                                    PRÓXIMAMENTE
+                                <span className="admin-card-status">
+                                    ACTIVO
                                 </span>
 
                             </div>
@@ -379,18 +479,67 @@ function DashboardAdmin() {
                                 </h3>
 
                                 <p>
-                                    Gestiona las mascotas registradas,
-                                    su información, disponibilidad y
-                                    procesos relacionados con adopciones.
+                                    Supervisa el catálogo completo,
+                                    corrige un estado mal cargado y
+                                    retira publicaciones que incumplan
+                                    las normas.
                                 </p>
 
                             </div>
 
                             <button
-                                className="admin-card-action admin-action-disabled"
-                                disabled
+                                className="admin-card-action"
+                                onClick={() => {
+                                    navigate("/gestion-mascotas");
+                                }}
                             >
-                                Próximamente
+                                Supervisar catálogo
+                                <span>
+                                    →
+                                </span>
+                            </button>
+
+                        </article>
+
+
+                        <article className="admin-card admin-card-primary">
+
+                            <div className="admin-card-top">
+
+                                <div className="admin-card-number">
+                                    07
+                                </div>
+
+                                <span className="admin-card-status">
+                                    ACTIVO
+                                </span>
+
+                            </div>
+
+                            <div className="admin-card-content">
+
+                                <h3>
+                                    Reportes
+                                </h3>
+
+                                <p>
+                                    Indicadores de gestión, adopciones
+                                    mes a mes y cobertura territorial,
+                                    con descarga en CSV para informes.
+                                </p>
+
+                            </div>
+
+                            <button
+                                className="admin-card-action"
+                                onClick={() => {
+                                    navigate("/reportes");
+                                }}
+                            >
+                                Ver reportes
+                                <span>
+                                    →
+                                </span>
                             </button>
 
                         </article>

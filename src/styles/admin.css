@@ -125,7 +125,7 @@
 
 .admin-overview {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 15px;
 
     margin-bottom: 46px;
@@ -161,13 +161,20 @@
 .admin-overview-top strong {
     color: #31566f;
 
-    font-size: 15px;
+    font-size: 26px;
     font-weight: 700;
+
+    line-height: 1;
 }
 
 .admin-overview-top .admin-number-green {
     color: #2f7d6d;
-    font-size: 11px;
+}
+
+/* Un pendiente sin atender se señala en rojo: el panel tiene que
+   avisar, no solo informar. */
+.admin-overview-top .admin-number-alerta {
+    color: #b65757;
 }
 
 .admin-overview-card p {

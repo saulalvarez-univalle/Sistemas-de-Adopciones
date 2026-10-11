@@ -99,6 +99,13 @@ function Navbar() {
                     >
                         Moderación
                     </Link>
+
+                    <Link
+                        to="/reportes"
+                        onClick={cerrarMenu}
+                    >
+                        Reportes
+                    </Link>
                 </>
             );
         }

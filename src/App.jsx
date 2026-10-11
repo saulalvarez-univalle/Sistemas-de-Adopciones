@@ -54,6 +54,10 @@ import Notificaciones from "./pages/Notificaciones";
 
 import Moderacion from "./pages/admin/Moderacion";
 
+import Reportes from "./pages/admin/Reportes";
+
+import GestionMascotas from "./pages/admin/GestionMascotas";
+
 function App() {
     return (
         <BrowserRouter>
@@ -225,6 +229,24 @@ function App() {
                   element={
                       <AdminRoute>
                         <Moderacion />
+                      </AdminRoute>
+                  }
+                />
+
+                <Route
+                  path="/reportes"
+                  element={
+                      <AdminRoute>
+                        <Reportes />
+                      </AdminRoute>
+                  }
+                />
+
+                <Route
+                  path="/gestion-mascotas"
+                  element={
+                      <AdminRoute>
+                        <GestionMascotas />
                       </AdminRoute>
                   }
                 />
