@@ -2,11 +2,16 @@ rules_version = '2';
 
 // =========================================================
 // RED HUELLA - Reglas de seguridad de Firebase Storage
-// Sprint 2
 //
-// Las fotografías de las mascotas son de lectura pública porque
-// se muestran en el catálogo abierto. La escritura está limitada
-// al albergue propietario y acotada en tipo y tamaño de archivo.
+// NO DESPLEGADO. El proyecto esta en el plan Spark de Firebase, que no
+// habilita Cloud Storage sin pasar a facturacion. Por eso la seccion
+// "storage" no figura en firebase.json: incluirla hace fallar el
+// despliegue completo.
+//
+// Mientras tanto, las fotografias de las mascotas se registran por
+// enlace a una imagen ya publicada. Estas reglas quedan escritas y
+// listas para el dia que el proyecto pase al plan Blaze: bastara con
+// volver a declarar la seccion "storage" en firebase.json.
 // =========================================================
 
 service firebase.storage {
