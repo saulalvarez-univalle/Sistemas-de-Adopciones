@@ -7,7 +7,8 @@ import { obtenerAlberguePorUsuario } from "../services/albergueService";
 
 import {
     obtenerSolicitudesPorAlbergue,
-    evaluarSolicitud
+    evaluarSolicitud,
+    concretarAdopcion
 } from "../services/solicitudService";
 
 import { obtenerMascota } from "../services/mascotaService";
@@ -160,6 +161,38 @@ function SolicitudesAlbergue() {
     }
 
 
+    async function concretar(solicitud) {
+
+        setError("");
+        setMensaje("");
+
+        try {
+
+            await concretarAdopcion(solicitud.id);
+
+            setMensaje(
+                "Adopción registrada. " +
+                (solicitud.mascota ? solicitud.mascota.nombre : "La mascota") +
+                " pasó a estado Adoptada y salió del catálogo público."
+            );
+
+            await cargarSolicitudes();
+
+        } catch (error) {
+
+            console.error(
+                "Error al concretar la adopción:",
+                error
+            );
+
+            setError(
+                error.message ||
+                "No se pudo registrar la adopción."
+            );
+        }
+    }
+
+
     if (cargando) {
 
         return (
@@ -218,8 +251,14 @@ function SolicitudesAlbergue() {
         (solicitud) => solicitud.estado === "Pendiente"
     );
 
+    const aprobadas = solicitudes.filter(
+        (solicitud) => solicitud.estado === "Aprobada"
+    );
+
     const historial = solicitudes.filter(
-        (solicitud) => solicitud.estado !== "Pendiente"
+        (solicitud) =>
+            solicitud.estado !== "Pendiente" &&
+            solicitud.estado !== "Aprobada"
     );
 
 
@@ -276,11 +315,21 @@ function SolicitudesAlbergue() {
 
                     <div>
                         <strong>
+                            {aprobadas.length}
+                        </strong>
+
+                        <span>
+                            aprobadas por concretar
+                        </span>
+                    </div>
+
+                    <div>
+                        <strong>
                             {historial.length}
                         </strong>
 
                         <span>
-                            ya evaluadas
+                            cerradas
                         </span>
                     </div>
 
@@ -484,12 +533,103 @@ function SolicitudesAlbergue() {
                 )}
 
 
+                {aprobadas.length > 0 && (
+
+                    <section className="solicitud-historial">
+
+                        <h2>
+                            Aprobadas · pendientes de concretar
+                        </h2>
+
+                        <p className="solicitud-ayuda">
+                            Cuando la entrega se haya realizado, registra la
+                            adopción. La mascota pasará a estado Adoptada, saldrá
+                            del catálogo público y las demás solicitudes sobre
+                            ella se cerrarán automáticamente.
+                        </p>
+
+                        <div className="solicitud-list">
+
+                            {aprobadas.map((solicitud) => (
+
+                                <article
+                                    key={solicitud.id}
+                                    className="solicitud-card"
+                                >
+
+                                    <div className="solicitud-card-image">
+
+                                        <img
+                                            src={
+                                                solicitud.mascota &&
+                                                solicitud.mascota.fotosUrls &&
+                                                solicitud.mascota.fotosUrls.length > 0
+                                                    ? solicitud.mascota.fotosUrls[0]
+                                                    : "/imagenes/hero-mascota.png"
+                                            }
+                                            alt={
+                                                solicitud.mascota
+                                                    ? solicitud.mascota.nombre
+                                                    : "Mascota"
+                                            }
+                                        />
+
+                                    </div>
+
+                                    <div className="solicitud-card-body">
+
+                                        <div className="solicitud-card-header">
+
+                                            <h3>
+                                                {solicitud.mascota
+                                                    ? solicitud.mascota.nombre
+                                                    : "Mascota"}
+                                            </h3>
+
+                                            <span className="solicitud-estado solicitud-estado-aprobada">
+                                                Aprobada
+                                            </span>
+
+                                        </div>
+
+                                        <p className="solicitud-card-fecha">
+                                            Adoptante: {solicitud.datosSolicitante
+                                                ?.nombreCompleto}
+                                            {" "}· {solicitud.datosSolicitante?.telefono}
+                                        </p>
+
+                                        <div className="solicitud-card-actions">
+
+                                            <button
+                                                type="button"
+                                                className="solicitud-concretar"
+                                                onClick={() =>
+                                                    concretar(solicitud)
+                                                }
+                                            >
+                                                Registrar adopción concretada
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </article>
+
+                            ))}
+
+                        </div>
+
+                    </section>
+                )}
+
+
                 {historial.length > 0 && (
 
                     <section className="solicitud-historial">
 
                         <h2>
-                            Solicitudes ya evaluadas
+                            Solicitudes cerradas
                         </h2>
 
                         <div className="solicitud-list">

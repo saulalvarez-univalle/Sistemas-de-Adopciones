@@ -195,3 +195,93 @@ export async function evaluarSolicitud(
         );
     }
 }
+
+// HU-16: el albergue registra que la adopción se concretó.
+//
+// Cerrar una adopción toca tres cosas a la vez: la solicitud ganadora, la
+// mascota, y las demás solicitudes que quedaron abiertas sobre ese mismo
+// animal. Dejar esas últimas en Pendiente seria dejar a sus adoptantes
+// esperando una respuesta que nunca llegaria.
+export async function concretarAdopcion(id) {
+
+    const referencia = doc(db, "solicitudes_adopcion", id);
+
+    const documento = await getDoc(referencia);
+
+    if (!documento.exists()) {
+        throw new Error("No se encontró la solicitud.");
+    }
+
+    const solicitud = documento.data();
+
+    if (solicitud.estado !== "Aprobada") {
+        throw new Error(
+            "Solo se puede concretar una adopción a partir de una solicitud aprobada."
+        );
+    }
+
+    await updateDoc(referencia, {
+        estado: "Concretada",
+        fechaAdopcion: serverTimestamp()
+    });
+
+    // RN-04: la mascota pasa a Adoptada y deja el catálogo público.
+    await actualizarEstadoMascota(
+        solicitud.mascotaId,
+        "Adoptada"
+    );
+
+    await cerrarSolicitudesPendientes(
+        solicitud.mascotaId,
+        id
+    );
+}
+
+async function cerrarSolicitudesPendientes(mascotaId, solicitudGanadoraId) {
+
+    const consulta = query(
+        collection(db, "solicitudes_adopcion"),
+        where("mascotaId", "==", mascotaId)
+    );
+
+    const resultado = await getDocs(consulta);
+
+    for (const documento of resultado.docs) {
+
+        if (documento.id === solicitudGanadoraId) {
+            continue;
+        }
+
+        if (documento.data().estado !== "Pendiente") {
+            continue;
+        }
+
+        await updateDoc(
+            doc(db, "solicitudes_adopcion", documento.id),
+            {
+                estado: "Rechazada",
+                observacionesAlbergue:
+                    "La mascota fue adoptada por otro solicitante. " +
+                    "Te invitamos a revisar las demás mascotas disponibles."
+            }
+        );
+    }
+}
+
+export async function obtenerAdopcionesConcretadas(adoptanteUserId) {
+
+    const solicitudes = await obtenerSolicitudesPorAdoptante(
+        adoptanteUserId
+    );
+
+    const concretadas = [];
+
+    for (const solicitud of solicitudes) {
+
+        if (solicitud.estado === "Concretada") {
+            concretadas.push(solicitud);
+        }
+    }
+
+    return concretadas;
+}

@@ -841,3 +841,64 @@
     }
 
 }
+
+
+/* =========================================================
+   ADOPCIONES CONCRETADAS
+========================================================= */
+
+.solicitud-ayuda {
+    max-width: 620px;
+
+    margin-bottom: 18px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 13.5px;
+
+    line-height: 1.7;
+}
+
+.solicitud-concretar {
+    padding: 11px 22px;
+
+    border: none;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-primary);
+
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 800;
+
+    transition: background 0.2s ease;
+}
+
+.solicitud-concretar:hover {
+    background: var(--color-primary-dark);
+}
+
+.solicitud-adopcion-datos {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 7px;
+
+    margin-bottom: 14px;
+}
+
+.solicitud-adopcion-datos span {
+    padding: 4px 10px;
+
+    border-radius: 20px;
+
+    background: var(--color-primary-soft);
+
+    color: var(--color-primary);
+
+    font-size: 11px;
+    font-weight: 700;
+}

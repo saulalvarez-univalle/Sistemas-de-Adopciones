@@ -271,6 +271,35 @@ function Panel() {
 
                             </article>
 
+                            <article className="panel-card">
+
+                                <div className="panel-card-icon panel-card-icon-soft">
+                                    <span>06</span>
+                                </div>
+
+                                <div className="panel-card-content">
+
+                                    <h3>
+                                        Mis mascotas adoptadas
+                                    </h3>
+
+                                    <p>
+                                        El historial de las adopciones que
+                                        concretaste a través de la plataforma.
+                                    </p>
+
+                                </div>
+
+                                <button
+                                    className="panel-card-link"
+                                    onClick={() => navigate("/mis-adopciones")}
+                                >
+                                    Ver historial
+                                    <span>→</span>
+                                </button>
+
+                            </article>
+
                         </div>
 
                     </section>

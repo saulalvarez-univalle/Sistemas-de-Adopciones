@@ -116,6 +116,13 @@ function Navbar() {
                     >
                         Mis solicitudes
                     </Link>
+
+                    <Link
+                        to="/mis-adopciones"
+                        onClick={cerrarMenu}
+                    >
+                        Mis adopciones
+                    </Link>
                 </>
             );
         }

@@ -38,6 +38,8 @@ import SolicitudAdopcion from "./pages/SolicitudAdopcion";
 
 import MisSolicitudes from "./pages/MisSolicitudes";
 
+import MisAdopciones from "./pages/MisAdopciones";
+
 import SolicitudesAlbergue from "./pages/SolicitudesAlbergue";
 
 function App() {
@@ -153,6 +155,15 @@ function App() {
                   element={
                       <ProtectedRoute>
                         <MisSolicitudes />
+                      </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/mis-adopciones"
+                  element={
+                      <ProtectedRoute>
+                        <MisAdopciones />
                       </ProtectedRoute>
                   }
                 />
