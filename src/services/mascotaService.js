@@ -5,7 +5,6 @@ import {
     getDocs,
     query,
     where,
-    orderBy,
     updateDoc,
     doc,
     serverTimestamp
@@ -138,17 +137,14 @@ export async function obtenerMascotasPorAlbergue(albergueId) {
     return mascotas;
 }
 
+// RN-03: el catálogo público solo muestra Disponible y En proceso.
+// El filtrado y el orden se resuelven en memoria para no depender de un
+// índice compuesto en Firestore, igual que en obtenerEspeciesActivas.
 export async function obtenerMascotasPublicas() {
 
     const referencia = collection(db, "mascotas");
 
-    const consulta = query(
-        referencia,
-        where("estadoAdopcion", "in", ESTADOS_PUBLICOS),
-        orderBy("nombre")
-    );
-
-    const resultado = await getDocs(consulta);
+    const resultado = await getDocs(referencia);
 
     const mascotas = [];
 
@@ -156,7 +152,10 @@ export async function obtenerMascotasPublicas() {
 
         const datos = documento.data();
 
-        if (datos.activo !== false) {
+        if (
+            datos.activo !== false &&
+            ESTADOS_PUBLICOS.includes(datos.estadoAdopcion)
+        ) {
 
             mascotas.push({
                 id: documento.id,
@@ -164,6 +163,10 @@ export async function obtenerMascotasPublicas() {
             });
         }
     });
+
+    mascotas.sort((a, b) =>
+        (a.nombre || "").localeCompare(b.nombre || "")
+    );
 
     return mascotas;
 }
