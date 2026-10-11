@@ -168,7 +168,7 @@ function Reportes() {
                 mascota.sexo,
                 mascota.tamano,
                 mascota.edadAproximada,
-                mascota.categoriaEdad,
+                mascota.edadCategoria,
                 mascota.estadoAdopcion
             ]);
         }

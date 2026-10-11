@@ -380,7 +380,7 @@ function GestionMascotas() {
                                                 {" · "}
                                                 {mascota.sexo}
                                                 {" · "}
-                                                {mascota.categoriaEdad}
+                                                {mascota.edadCategoria}
                                             </span>
 
                                         </td>
