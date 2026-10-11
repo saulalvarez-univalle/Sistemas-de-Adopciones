@@ -74,6 +74,48 @@ function Navbar() {
                     >
                         Mi albergue
                     </Link>
+
+                    <Link
+                        to="/mis-mascotas"
+                        onClick={cerrarMenu}
+                    >
+                        Mis mascotas
+                    </Link>
+
+                    <Link
+                        to="/solicitudes-albergue"
+                        onClick={cerrarMenu}
+                    >
+                        Solicitudes
+                    </Link>
+                </>
+            );
+        }
+
+        if (perfil.rol === "Adoptante") {
+
+            return (
+                <>
+                    <Link
+                        to="/panel"
+                        onClick={cerrarMenu}
+                    >
+                        Mi panel
+                    </Link>
+
+                    <Link
+                        to="/favoritos"
+                        onClick={cerrarMenu}
+                    >
+                        Favoritos
+                    </Link>
+
+                    <Link
+                        to="/mis-solicitudes"
+                        onClick={cerrarMenu}
+                    >
+                        Mis solicitudes
+                    </Link>
                 </>
             );
         }
@@ -128,6 +170,20 @@ function Navbar() {
                         onClick={cerrarMenu}
                     >
                         Inicio
+                    </Link>
+
+                    <Link
+                        to="/mascotas"
+                        onClick={cerrarMenu}
+                    >
+                        Adoptar
+                    </Link>
+
+                    <Link
+                        to="/refugios"
+                        onClick={cerrarMenu}
+                    >
+                        Refugios
                     </Link>
 
                     <a

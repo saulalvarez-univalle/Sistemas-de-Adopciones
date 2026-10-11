@@ -177,7 +177,7 @@ function Panel() {
 
                                 <button
                                     className="panel-card-link"
-                                    onClick={() => navigate("/")}
+                                    onClick={() => navigate("/mascotas")}
                                 >
                                     Explorar
                                     <span>→</span>
@@ -211,6 +211,64 @@ function Panel() {
     Ver refugios
     <span>→</span>
 </button>
+                            </article>
+
+                            <article className="panel-card">
+
+                                <div className="panel-card-icon">
+                                    <span>04</span>
+                                </div>
+
+                                <div className="panel-card-content">
+
+                                    <h3>
+                                        Mis favoritos
+                                    </h3>
+
+                                    <p>
+                                        Revisa las mascotas que guardaste
+                                        para seguir su disponibilidad.
+                                    </p>
+
+                                </div>
+
+                                <button
+                                    className="panel-card-link"
+                                    onClick={() => navigate("/favoritos")}
+                                >
+                                    Ver favoritos
+                                    <span>→</span>
+                                </button>
+
+                            </article>
+
+                            <article className="panel-card">
+
+                                <div className="panel-card-icon panel-card-icon-green">
+                                    <span>05</span>
+                                </div>
+
+                                <div className="panel-card-content">
+
+                                    <h3>
+                                        Mis solicitudes
+                                    </h3>
+
+                                    <p>
+                                        Consulta el estado de las solicitudes
+                                        de adopción que enviaste.
+                                    </p>
+
+                                </div>
+
+                                <button
+                                    className="panel-card-link"
+                                    onClick={() => navigate("/mis-solicitudes")}
+                                >
+                                    Ver solicitudes
+                                    <span>→</span>
+                                </button>
+
                             </article>
 
                         </div>
@@ -354,6 +412,66 @@ function Panel() {
                                     onClick={() => navigate("/perfil")}
                                 >
                                     Ver perfil
+                                    <span>→</span>
+                                </button>
+
+                            </article>
+
+                            <article className="panel-card panel-card-featured">
+
+                                <div className="panel-card-icon panel-card-icon-green">
+                                    <span>04</span>
+                                </div>
+
+                                <div className="panel-card-content">
+
+                                    <h3>
+                                        Mis mascotas
+                                    </h3>
+
+                                    <p>
+                                        Registra los animales de tu refugio,
+                                        sube sus fotografías y administra su
+                                        estado de adopción.
+                                    </p>
+
+                                </div>
+
+                                <button
+                                    className="panel-card-link"
+                                    onClick={() => navigate("/mis-mascotas")}
+                                >
+                                    Gestionar mascotas
+                                    <span>→</span>
+                                </button>
+
+                            </article>
+
+                            <article className="panel-card">
+
+                                <div className="panel-card-icon">
+                                    <span>05</span>
+                                </div>
+
+                                <div className="panel-card-content">
+
+                                    <h3>
+                                        Solicitudes de adopción
+                                    </h3>
+
+                                    <p>
+                                        Revisa los datos de cada solicitante
+                                        y aprueba o rechaza las solicitudes
+                                        recibidas.
+                                    </p>
+
+                                </div>
+
+                                <button
+                                    className="panel-card-link"
+                                    onClick={() => navigate("/solicitudes-albergue")}
+                                >
+                                    Ver solicitudes
                                     <span>→</span>
                                 </button>
 

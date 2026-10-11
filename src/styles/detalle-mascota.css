@@ -1,0 +1,522 @@
+/* =========================================================
+   FICHA DE MASCOTA
+========================================================= */
+
+.detalle-page {
+    background: var(--color-background);
+
+    padding: 50px 0 100px;
+
+    min-height: 70vh;
+}
+
+.detalle-container {
+    width: min(var(--container), 90%);
+
+    margin: auto;
+}
+
+.detalle-volver {
+    display: inline-block;
+
+    margin-bottom: 26px;
+
+    color: var(--color-primary);
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.detalle-volver:hover {
+    color: var(--color-primary-dark);
+}
+
+
+/* =========================================================
+   BLOQUE PRINCIPAL
+========================================================= */
+
+.detalle-principal {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 54px;
+
+    align-items: start;
+}
+
+
+/* =========================================================
+   GALERÍA
+========================================================= */
+
+.detalle-galeria-principal {
+    overflow: hidden;
+
+    border-radius: var(--radius-xl);
+
+    box-shadow: var(--shadow-md);
+}
+
+.detalle-galeria-principal img {
+    display: block;
+
+    width: 100%;
+    height: 460px;
+
+    object-fit: cover;
+}
+
+.detalle-galeria-miniaturas {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    margin-top: 14px;
+}
+
+.detalle-miniatura {
+    width: 82px;
+    height: 72px;
+
+    overflow: hidden;
+
+    padding: 0;
+
+    border: 2px solid transparent;
+
+    border-radius: var(--radius-sm);
+
+    background: none;
+
+    transition: border-color 0.2s ease;
+}
+
+.detalle-miniatura img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+.detalle-miniatura-activa {
+    border-color: var(--color-primary);
+}
+
+
+/* =========================================================
+   INFORMACIÓN
+========================================================= */
+
+.detalle-eyebrow {
+    display: inline-block;
+
+    padding: 7px 14px;
+
+    border-radius: 20px;
+
+    background: var(--color-primary-light);
+
+    color: var(--color-primary);
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+}
+
+.detalle-informacion h1 {
+    color: var(--color-text);
+
+    font-size: 42px;
+
+    line-height: 1.1;
+
+    letter-spacing: -1px;
+
+    margin: 16px 0 14px;
+}
+
+.detalle-estado {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 8px 15px;
+
+    border-radius: 20px;
+
+    background: var(--color-success-light);
+
+    color: var(--color-success);
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.detalle-status-dot {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: var(--color-success);
+}
+
+.detalle-descripcion {
+    color: var(--color-text-secondary);
+
+    font-size: 15px;
+
+    line-height: 1.85;
+
+    margin: 22px 0 28px;
+}
+
+
+/* =========================================================
+   FICHA TÉCNICA
+========================================================= */
+
+.detalle-ficha {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 1px;
+
+    overflow: hidden;
+
+    background: var(--color-border-light);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+}
+
+.detalle-dato {
+    padding: 16px 18px;
+
+    background: var(--color-surface);
+}
+
+.detalle-dato span {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--color-text-light);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+
+    text-transform: uppercase;
+}
+
+.detalle-dato strong {
+    color: var(--color-text);
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   ACCIONES
+========================================================= */
+
+.detalle-acciones {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    margin-top: 28px;
+}
+
+.detalle-solicitar {
+    padding: 15px 30px;
+
+    border: none;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-primary);
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 800;
+
+    transition: background 0.2s ease;
+}
+
+.detalle-solicitar:hover {
+    background: var(--color-primary-dark);
+}
+
+.detalle-favorito {
+    padding: 15px 26px;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-surface);
+
+    color: var(--color-text-secondary);
+
+    font-size: 14px;
+    font-weight: 700;
+
+    transition:
+        border-color 0.2s ease,
+        color 0.2s ease;
+}
+
+.detalle-favorito:hover {
+    border-color: var(--color-primary);
+
+    color: var(--color-primary);
+}
+
+.detalle-favorito-activo {
+    border-color: var(--color-danger);
+
+    background: var(--color-danger-light);
+
+    color: var(--color-danger);
+}
+
+.detalle-no-disponible {
+    flex: 1;
+
+    padding: 15px 20px;
+
+    border: 1px solid #f0e2c6;
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-warning-light);
+
+    color: var(--color-warning);
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   REFUGIO RESPONSABLE
+========================================================= */
+
+.detalle-albergue {
+    margin-top: 70px;
+
+    padding: 38px;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+.detalle-section-tag {
+    display: inline-block;
+
+    color: var(--color-primary);
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 1.4px;
+}
+
+.detalle-albergue-header h2 {
+    color: var(--color-text);
+
+    font-size: 26px;
+
+    letter-spacing: -0.4px;
+
+    margin: 10px 0 16px;
+}
+
+.detalle-albergue > p {
+    max-width: 720px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 14px;
+
+    line-height: 1.8;
+}
+
+.detalle-albergue-datos {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 22px;
+
+    margin-top: 26px;
+
+    padding-top: 24px;
+
+    border-top: 1px solid var(--color-border-light);
+}
+
+.detalle-albergue-datos span {
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: var(--color-text-light);
+
+    font-size: 11px;
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+
+    text-transform: uppercase;
+}
+
+.detalle-albergue-datos strong {
+    color: var(--color-text);
+
+    font-size: 14px;
+}
+
+.detalle-mapa-link {
+    display: inline-block;
+
+    margin-top: 22px;
+
+    color: var(--color-primary);
+
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.detalle-mapa-link:hover {
+    color: var(--color-primary-dark);
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.detalle-error {
+    max-width: 480px;
+
+    margin: 60px auto;
+
+    padding: 50px 30px;
+
+    text-align: center;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+}
+
+.detalle-error strong {
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: var(--color-text);
+
+    font-size: 19px;
+}
+
+.detalle-error p {
+    margin-bottom: 20px;
+
+    color: var(--color-text-secondary);
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1024px) {
+
+    .detalle-principal {
+        grid-template-columns: 1fr;
+
+        gap: 36px;
+    }
+
+    .detalle-galeria-principal img {
+        height: 360px;
+    }
+
+    .detalle-informacion h1 {
+        font-size: 34px;
+    }
+
+    .detalle-albergue-datos {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+}
+
+
+/* =========================================================
+   CELULAR
+========================================================= */
+
+@media (max-width: 680px) {
+
+    .detalle-galeria-principal img {
+        height: 260px;
+    }
+
+    .detalle-informacion h1 {
+        font-size: 28px;
+    }
+
+    .detalle-ficha {
+        grid-template-columns: 1fr;
+    }
+
+    .detalle-acciones {
+        flex-direction: column;
+    }
+
+    .detalle-solicitar,
+    .detalle-favorito {
+        width: 100%;
+    }
+
+    .detalle-albergue {
+        padding: 24px;
+    }
+
+    .detalle-albergue-datos {
+        grid-template-columns: 1fr;
+    }
+
+}
