@@ -283,9 +283,32 @@ service cloud.firestore {
       allow delete: if esSuperusuario();
     }
 
+    // -----------------------------------------------------
+    // alertas_perdidas
+    // Muro comunitario de mascotas perdidas y encontradas. La lectura es
+    // pública porque su utilidad depende de que la vea cualquiera. Quien
+    // publica solo puede cerrar su propia alerta, no editarla, para que
+    // el contenido que otros ya leyeron no cambie a sus espaldas.
+    // -----------------------------------------------------
+
     match /alertas_perdidas/{alertaId} {
+
       allow read: if true;
-      allow write: if esAdmin();
+
+      allow create: if autenticado() &&
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.estadoAlerta == "Activa" &&
+        request.resource.data.tipoAlerta in ["Perdida", "Encontrada"];
+
+      allow update: if esAdmin() ||
+        (
+          esDueno(resource.data.userId) &&
+          request.resource.data.userId == resource.data.userId &&
+          request.resource.data.tipoAlerta == resource.data.tipoAlerta &&
+          request.resource.data.estadoAlerta == "Resuelta"
+        );
+
+      allow delete: if false;
     }
 
     match /notificaciones/{notificacionId} {

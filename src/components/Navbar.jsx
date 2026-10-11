@@ -221,6 +221,13 @@ function Navbar() {
                         Servicios
                     </Link>
 
+                    <Link
+                        to="/alertas"
+                        onClick={cerrarMenu}
+                    >
+                        Perdidas
+                    </Link>
+
                     <a
                         href="/#nosotros"
                         onClick={cerrarMenu}

@@ -42,6 +42,8 @@ import MisAdopciones from "./pages/MisAdopciones";
 
 import Servicios from "./pages/Servicios";
 
+import Alertas from "./pages/Alertas";
+
 import MiServicio from "./pages/MiServicio";
 
 import GestionServicios from "./pages/admin/GestionServicios";
@@ -126,6 +128,8 @@ function App() {
                 />
 
                 <Route path="/servicios" element={<Servicios />} />
+
+                <Route path="/alertas" element={<Alertas />} />
 
                 <Route
                   path="/mi-servicio"
