@@ -19,8 +19,7 @@ import {
 import { obtenerEspeciesActivas } from "../services/especieService";
 
 import {
-    subirFotosMascota,
-    validarImagen,
+    validarUrlImagen,
     MAXIMO_FOTOS_POR_MASCOTA
 } from "../services/storageService";
 
@@ -49,8 +48,8 @@ function MisMascotas() {
     const [formulario, setFormulario] = useState(FORMULARIO_VACIO);
     const [editandoId, setEditandoId] = useState("");
 
-    const [fotosExistentes, setFotosExistentes] = useState([]);
-    const [archivos, setArchivos] = useState([]);
+    const [fotos, setFotos] = useState([]);
+    const [nuevaUrl, setNuevaUrl] = useState("");
 
     const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
@@ -136,8 +135,8 @@ function MisMascotas() {
 
         setFormulario(FORMULARIO_VACIO);
         setEditandoId("");
-        setFotosExistentes([]);
-        setArchivos([]);
+        setFotos([]);
+        setNuevaUrl("");
         setMostrarFormulario(true);
         setError("");
         setMensaje("");
@@ -157,8 +156,8 @@ function MisMascotas() {
         });
 
         setEditandoId(mascota.id);
-        setFotosExistentes(mascota.fotosUrls || []);
-        setArchivos([]);
+        setFotos(mascota.fotosUrls || []);
+        setNuevaUrl("");
         setMostrarFormulario(true);
         setError("");
         setMensaje("");
@@ -170,20 +169,33 @@ function MisMascotas() {
         setMostrarFormulario(false);
         setEditandoId("");
         setFormulario(FORMULARIO_VACIO);
-        setFotosExistentes([]);
-        setArchivos([]);
+        setFotos([]);
+        setNuevaUrl("");
         setError("");
     }
 
 
-    function manejarArchivos(evento) {
+    function agregarFoto() {
 
-        const seleccionados = Array.from(evento.target.files);
+        const errorUrl = validarUrlImagen(nuevaUrl);
 
-        const total =
-            fotosExistentes.length + seleccionados.length;
+        if (errorUrl !== "") {
 
-        if (total > MAXIMO_FOTOS_POR_MASCOTA) {
+            setError(errorUrl);
+
+            return;
+        }
+
+        const direccion = nuevaUrl.trim();
+
+        if (fotos.includes(direccion)) {
+
+            setError("Esa imagen ya está en la lista.");
+
+            return;
+        }
+
+        if (fotos.length >= MAXIMO_FOTOS_POR_MASCOTA) {
 
             setError(
                 "Puedes tener como máximo " +
@@ -194,28 +206,18 @@ function MisMascotas() {
             return;
         }
 
-        for (const archivo of seleccionados) {
+        setFotos([...fotos, direccion]);
 
-            const errorArchivo = validarImagen(archivo);
-
-            if (errorArchivo !== "") {
-
-                setError(errorArchivo);
-
-                return;
-            }
-        }
+        setNuevaUrl("");
 
         setError("");
-
-        setArchivos(seleccionados);
     }
 
 
-    function quitarFotoExistente(url) {
+    function quitarFoto(url) {
 
-        setFotosExistentes(
-            fotosExistentes.filter(
+        setFotos(
+            fotos.filter(
                 (foto) => foto !== url
             )
         );
@@ -265,10 +267,7 @@ function MisMascotas() {
             return "Selecciona el sexo de la mascota.";
         }
 
-        if (
-            fotosExistentes.length === 0 &&
-            archivos.length === 0
-        ) {
+        if (fotos.length === 0) {
             return "Agrega al menos una fotografía de la mascota.";
         }
 
@@ -300,18 +299,6 @@ function MisMascotas() {
 
             setGuardando(true);
 
-            let urls = [...fotosExistentes];
-
-            if (archivos.length > 0) {
-
-                const nuevasUrls = await subirFotosMascota(
-                    albergue.id,
-                    archivos
-                );
-
-                urls = urls.concat(nuevasUrls);
-            }
-
             const datos = {
                 albergueId: albergue.id,
                 nombre: formulario.nombre.trim(),
@@ -321,7 +308,7 @@ function MisMascotas() {
                 edadAproximada: Number(formulario.edadAproximada),
                 tamano: formulario.tamano,
                 sexo: formulario.sexo,
-                fotosUrls: urls,
+                fotosUrls: fotos,
                 departamentoId: albergue.departamentoId,
                 municipioId: albergue.municipioId
             };
@@ -813,28 +800,53 @@ function MisMascotas() {
 
                                 <div className="mascotas-admin-field mascotas-admin-field-full">
 
-                                    <label htmlFor="fotos">
+                                    <label htmlFor="foto">
                                         Fotografías
                                     </label>
 
-                                    <input
-                                        id="fotos"
-                                        type="file"
-                                        accept="image/jpeg,image/png"
-                                        multiple
-                                        onChange={manejarArchivos}
-                                    />
+                                    <div className="mascotas-admin-url">
+
+                                        <input
+                                            id="foto"
+                                            type="url"
+                                            value={nuevaUrl}
+                                            onChange={(evento) =>
+                                                setNuevaUrl(evento.target.value)
+                                            }
+                                            onKeyDown={(evento) => {
+
+                                                if (evento.key === "Enter") {
+
+                                                    evento.preventDefault();
+
+                                                    agregarFoto();
+                                                }
+                                            }}
+                                            maxLength="600"
+                                            placeholder="https://ejemplo.com/foto-de-lucas.jpg"
+                                        />
+
+                                        <button
+                                            type="button"
+                                            onClick={agregarFoto}
+                                        >
+                                            Agregar
+                                        </button>
+
+                                    </div>
 
                                     <small>
-                                        JPG o PNG, hasta 3 MB cada una.
+                                        Pega el enlace de una imagen ya publicada
+                                        (la página del refugio, Google Drive, Imgur).
                                         Máximo {MAXIMO_FOTOS_POR_MASCOTA} fotografías.
+                                        La primera es la que se muestra en el catálogo.
                                     </small>
 
-                                    {fotosExistentes.length > 0 && (
+                                    {fotos.length > 0 && (
 
                                         <div className="mascotas-admin-fotos">
 
-                                            {fotosExistentes.map((foto) => (
+                                            {fotos.map((foto, indice) => (
 
                                                 <div
                                                     key={foto}
@@ -845,10 +857,16 @@ function MisMascotas() {
                                                         alt="Fotografía de la mascota"
                                                     />
 
+                                                    {indice === 0 && (
+                                                        <span className="mascotas-admin-foto-principal">
+                                                            Principal
+                                                        </span>
+                                                    )}
+
                                                     <button
                                                         type="button"
                                                         onClick={() =>
-                                                            quitarFotoExistente(foto)
+                                                            quitarFoto(foto)
                                                         }
                                                     >
                                                         Quitar
@@ -858,14 +876,6 @@ function MisMascotas() {
                                             ))}
 
                                         </div>
-                                    )}
-
-                                    {archivos.length > 0 && (
-
-                                        <p className="mascotas-admin-nuevas">
-                                            {archivos.length} fotografía(s) nueva(s)
-                                            por subir.
-                                        </p>
                                     )}
 
                                 </div>
