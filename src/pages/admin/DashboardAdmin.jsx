@@ -230,6 +230,48 @@ function DashboardAdmin() {
                         </article>
 
 
+                        <article className="admin-card">
+
+                            <div className="admin-card-top">
+
+                                <div className="admin-card-number">
+                                    03
+                                </div>
+
+                                <span className="admin-card-status">
+                                    ACTIVO
+                                </span>
+
+                            </div>
+
+                            <div className="admin-card-content">
+
+                                <h3>
+                                    Catálogos base
+                                </h3>
+
+                                <p>
+                                    Carga los departamentos, municipios
+                                    y especies iniciales del sistema.
+                                </p>
+
+                            </div>
+
+                            <button
+                                className="admin-card-action"
+                                onClick={() => {
+                                    navigate("/cargar-datos");
+                                }}
+                            >
+                                Cargar datos
+                                <span>
+                                    →
+                                </span>
+                            </button>
+
+                        </article>
+
+
                         <article className="admin-card admin-card-disabled">
 
                             <div className="admin-card-top">

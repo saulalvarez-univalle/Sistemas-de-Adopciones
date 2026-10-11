@@ -20,6 +20,8 @@ import GestionAlbergues from "./pages/GestionAlbergues";
 
 import GestionEspecies from "./pages/admin/GestionEspecies";
 
+import CargarDatos from "./pages/admin/CargarDatos";
+
 import Navbar from "./components/Navbar";
 
 import Refugios from "./pages/Refugios";
@@ -105,6 +107,15 @@ function App() {
                 />
 
                 <Route path="/refugios" element={<Refugios />} />
+
+                <Route
+                  path="/cargar-datos"
+                  element={
+                      <AdminRoute>
+                        <CargarDatos />
+                      </AdminRoute>
+                  }
+                />
 
                 <Route path="/mascotas" element={<Mascotas />} />
 
