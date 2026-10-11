@@ -50,6 +50,10 @@ import GestionServicios from "./pages/admin/GestionServicios";
 
 import SolicitudesAlbergue from "./pages/SolicitudesAlbergue";
 
+import Notificaciones from "./pages/Notificaciones";
+
+import Moderacion from "./pages/admin/Moderacion";
+
 function App() {
     return (
         <BrowserRouter>
@@ -204,6 +208,24 @@ function App() {
                       <ProtectedRoute>
                         <SolicitudesAlbergue />
                       </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/notificaciones"
+                  element={
+                      <ProtectedRoute>
+                        <Notificaciones />
+                      </ProtectedRoute>
+                  }
+                />
+
+                <Route
+                  path="/moderacion"
+                  element={
+                      <AdminRoute>
+                        <Moderacion />
+                      </AdminRoute>
                   }
                 />
             </Routes>

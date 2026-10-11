@@ -12,6 +12,8 @@ import {
 
 import { db } from "./firebase";
 
+import { crearNotificacion } from "./notificacionService";
+
 // RNF-10: los establecimientos se modelan en una sola colección con un
 // campo categoria. Incorporar una categoría nueva es agregar un valor a
 // esta lista; la estructura de datos no cambia.
@@ -205,13 +207,33 @@ export async function actualizarEstadoServicio(
         throw new Error("Debes registrar el motivo del rechazo.");
     }
 
+    const referencia = doc(db, "servicios", id);
+
+    const documento = await getDoc(referencia);
+
     await updateDoc(
-        doc(db, "servicios", id),
+        referencia,
         {
             estadoVerificacion: estadoVerificacion,
             motivoRechazo: motivoRechazo
         }
     );
+
+    if (documento.exists()) {
+
+        await crearNotificacion({
+            userId: documento.data().userId,
+            titulo:
+                estadoVerificacion === "Verificado"
+                    ? "Tu establecimiento fue verificado"
+                    : "Tu solicitud fue rechazada",
+            mensaje:
+                estadoVerificacion === "Verificado"
+                    ? "Ya apareces en el directorio público y en el mapa de servicios."
+                    : "Motivo: " + motivoRechazo,
+            tipo: "Verificacion"
+        });
+    }
 }
 
 export function filtrarServicios(servicios, filtros) {

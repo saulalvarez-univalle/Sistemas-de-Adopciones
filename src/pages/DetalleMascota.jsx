@@ -17,7 +17,10 @@ import {
     alternarFavorito
 } from "../services/favoritoService";
 
+import BotonDenunciar from "../components/BotonDenunciar";
+
 import "../styles/detalle-mascota.css";
+import "../styles/notificaciones.css";
 
 function DetalleMascota() {
 
@@ -507,6 +510,20 @@ function DetalleMascota() {
 
                     </section>
                 )}
+
+
+                <section className="detalle-reporte">
+
+                    <BotonDenunciar
+                        tipoContenido="Mascota"
+                        contenidoReferenciaId={mascota.id}
+                        contenidoUserId={albergue ? albergue.userId : ""}
+                        contenidoTitulo={
+                            "Mascota: " + mascota.nombre
+                        }
+                    />
+
+                </section>
 
             </div>
 

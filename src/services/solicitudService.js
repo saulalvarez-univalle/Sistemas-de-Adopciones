@@ -12,7 +12,8 @@ import {
 
 import { db } from "./firebase";
 
-import { actualizarEstadoMascota } from "./mascotaService";
+import { actualizarEstadoMascota, obtenerMascota } from "./mascotaService";
+import { crearNotificacion } from "./notificacionService";
 
 export const ESTADOS_SOLICITUD = [
     "Pendiente",
@@ -194,6 +195,23 @@ export async function evaluarSolicitud(
             "En proceso"
         );
     }
+
+    const mascota = await obtenerMascota(solicitud.mascotaId);
+
+    await crearNotificacion({
+        userId: solicitud.adoptanteUserId,
+        titulo:
+            estado === "Aprobada"
+                ? "Tu solicitud fue aprobada"
+                : "Tu solicitud fue rechazada",
+        mensaje:
+            (mascota ? mascota.nombre : "La mascota") +
+            ": " +
+            (observacionesAlbergue.trim() !== ""
+                ? observacionesAlbergue.trim()
+                : "El refugio revisó tu solicitud."),
+        tipo: "Solicitud"
+    });
 }
 
 // HU-16: el albergue registra que la adopción se concretó.
@@ -235,6 +253,18 @@ export async function concretarAdopcion(id) {
         solicitud.mascotaId,
         id
     );
+
+    const mascota = await obtenerMascota(solicitud.mascotaId);
+
+    await crearNotificacion({
+        userId: solicitud.adoptanteUserId,
+        titulo: "Adopción concretada",
+        mensaje:
+            "La adopción de " +
+            (mascota ? mascota.nombre : "tu mascota") +
+            " quedó registrada. Puedes verla en Mis mascotas adoptadas.",
+        tipo: "Adopcion"
+    });
 }
 
 async function cerrarSolicitudesPendientes(mascotaId, solicitudGanadoraId) {
@@ -265,6 +295,15 @@ async function cerrarSolicitudesPendientes(mascotaId, solicitudGanadoraId) {
                     "Te invitamos a revisar las demás mascotas disponibles."
             }
         );
+
+        await crearNotificacion({
+            userId: documento.data().adoptanteUserId,
+            titulo: "Tu solicitud se cerró",
+            mensaje:
+                "La mascota que solicitaste fue adoptada por otra persona. " +
+                "Hay más animales esperando un hogar en el catálogo.",
+            tipo: "Solicitud"
+        });
     }
 }
 

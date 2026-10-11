@@ -18,6 +18,26 @@ export async function obtenerPerfil(uid) {
     return documento.data();
 }
 
+// HU-25. La suspensión no borra la cuenta ni su historial: solo cambia
+// estadoCuenta, y Login.jsx rechaza el acceso a cualquier cuenta que no
+// esté "Activo". Así una medida de moderación es reversible y queda
+// rastro de lo que pasó.
+export async function suspenderCuenta(uid) {
+    const referenciaUsuario = doc(db, "users", uid);
+
+    await updateDoc(referenciaUsuario, {
+        estadoCuenta: "Suspendido"
+    });
+}
+
+export async function reactivarCuenta(uid) {
+    const referenciaUsuario = doc(db, "users", uid);
+
+    await updateDoc(referenciaUsuario, {
+        estadoCuenta: "Activo"
+    });
+}
+
 export async function actualizarPerfil(
     uid,
     nombreCompleto,

@@ -11,6 +11,8 @@ import {
 
 import { db } from "./firebase";
 
+import { crearNotificacion } from "./notificacionService";
+
 export async function registrarAlbergue(datos) {
 
     const referencia = collection(db, "albergues");
@@ -166,6 +168,8 @@ export async function actualizarEstadoAlbergue(
     const referencia =
         doc(db, "albergues", id);
 
+    const documento = await getDoc(referencia);
+
     await updateDoc(
         referencia,
         {
@@ -176,6 +180,22 @@ export async function actualizarEstadoAlbergue(
                 motivoRechazo
         }
     );
+
+    if (documento.exists()) {
+
+        await crearNotificacion({
+            userId: documento.data().userId,
+            titulo:
+                estadoVerificacion === "Verificado"
+                    ? "Tu refugio fue verificado"
+                    : "Tu solicitud fue rechazada",
+            mensaje:
+                estadoVerificacion === "Verificado"
+                    ? "Ya puedes publicar mascotas y apareces en el listado público de refugios."
+                    : "Motivo: " + motivoRechazo,
+            tipo: "Verificacion"
+        });
+    }
 }
 
 export async function obtenerAlberguesVerificados() {

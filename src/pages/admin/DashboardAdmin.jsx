@@ -71,7 +71,7 @@ function DashboardAdmin() {
                             </span>
 
                             <strong>
-                                02
+                                05
                             </strong>
                         </div>
 
@@ -315,16 +315,16 @@ function DashboardAdmin() {
                         </article>
 
 
-                        <article className="admin-card admin-card-disabled">
+                        <article className="admin-card">
 
                             <div className="admin-card-top">
 
                                 <div className="admin-card-number">
-                                    03
+                                    05
                                 </div>
 
-                                <span className="admin-card-status admin-status-soon">
-                                    PRÓXIMAMENTE
+                                <span className="admin-card-status">
+                                    ACTIVO
                                 </span>
 
                             </div>
@@ -332,22 +332,27 @@ function DashboardAdmin() {
                             <div className="admin-card-content">
 
                                 <h3>
-                                    Usuarios
+                                    Moderación y cuentas
                                 </h3>
 
                                 <p>
-                                    La administración y supervisión
-                                    de las cuentas registradas estará
-                                    disponible en una siguiente etapa.
+                                    Revisa los reportes de la comunidad
+                                    sobre publicaciones y suspende o
+                                    reactiva las cuentas responsables.
                                 </p>
 
                             </div>
 
                             <button
-                                className="admin-card-action admin-action-disabled"
-                                disabled
+                                className="admin-card-action"
+                                onClick={() => {
+                                    navigate("/moderacion");
+                                }}
                             >
-                                Próximamente
+                                Revisar reportes
+                                <span>
+                                    →
+                                </span>
                             </button>
 
                         </article>
@@ -358,7 +363,7 @@ function DashboardAdmin() {
                             <div className="admin-card-top">
 
                                 <div className="admin-card-number">
-                                    04
+                                    06
                                 </div>
 
                                 <span className="admin-card-status admin-status-soon">

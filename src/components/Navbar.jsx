@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { cerrarSesion } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 
+import { contarNoLeidas } from "../services/notificacionService";
+
 import "../styles/navbar.css";
+import "../styles/notificaciones.css";
 
 function Navbar() {
     const navigate = useNavigate();
@@ -16,6 +19,41 @@ function Navbar() {
     } = useAuth();
 
     const [menuAbierto, setMenuAbierto] = useState(false);
+
+    const [sinLeer, setSinLeer] = useState(0);
+
+    // HU-23. El contador se consulta una vez al montar y cada vez que
+    // cambia el usuario. No es tiempo real: con onSnapshot lo sería, pero
+    // eso deja una escucha abierta en cada pantalla de la aplicación.
+    useEffect(() => {
+
+        if (!usuarioFirebase) {
+
+            setSinLeer(0);
+
+            return;
+        }
+
+        async function cargarContador() {
+
+            try {
+
+                setSinLeer(
+                    await contarNoLeidas(usuarioFirebase.uid)
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Error al contar las notificaciones:",
+                    error
+                );
+            }
+        }
+
+        cargarContador();
+
+    }, [usuarioFirebase]);
 
     function cerrarMenu() {
         setMenuAbierto(false);
@@ -53,6 +91,13 @@ function Navbar() {
                         onClick={cerrarMenu}
                     >
                         Administración
+                    </Link>
+
+                    <Link
+                        to="/moderacion"
+                        onClick={cerrarMenu}
+                    >
+                        Moderación
                     </Link>
                 </>
             );
@@ -261,6 +306,22 @@ function Navbar() {
 
                         {usuarioFirebase && (
                             <>
+                                <Link
+                                    to="/notificaciones"
+                                    className="notif-bell"
+                                    onClick={cerrarMenu}
+                                    aria-label="Notificaciones"
+                                    title="Notificaciones"
+                                >
+                                    ✉
+
+                                    {sinLeer > 0 && (
+                                        <span className="notif-bell-badge">
+                                            {sinLeer > 9 ? "9+" : sinLeer}
+                                        </span>
+                                    )}
+                                </Link>
+
                                 <Link
                                     to="/perfil"
                                     className="navbar-profile"

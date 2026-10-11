@@ -24,7 +24,10 @@ import {
     obtenerMunicipios
 } from "../services/territorioService";
 
+import BotonDenunciar from "../components/BotonDenunciar";
+
 import "../styles/servicios.css";
+import "../styles/notificaciones.css";
 
 // HU-22: marcadores categorizados por color. Se dibujan con un divIcon
 // en lugar de una imagen, para no depender de archivos externos.
@@ -591,6 +594,20 @@ function Servicios() {
                                         Cómo llegar →
                                     </a>
                                 )}
+
+                                <div className="servicio-reporte">
+
+                                    <BotonDenunciar
+                                        tipoContenido="Servicio"
+                                        contenidoReferenciaId={servicio.id}
+                                        contenidoUserId={servicio.userId}
+                                        contenidoTitulo={
+                                            "Establecimiento: " +
+                                            servicio.nombreComercio
+                                        }
+                                    />
+
+                                </div>
 
                             </article>
 

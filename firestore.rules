@@ -2,7 +2,7 @@ rules_version = '2';
 
 // =========================================================
 // RED HUELLA - Reglas de seguridad de Cloud Firestore
-// Sprint 2
+// Sprint 3
 //
 // Principio general: la base de datos NO es pública (RNF-04).
 // Solo se expone en lectura abierta la información destinada a
@@ -250,11 +250,6 @@ service cloud.firestore {
 
 
     // -----------------------------------------------------
-    // Colecciones previstas para el Sprint 3.
-    // Se dejan cerradas hasta que se implementen sus módulos.
-    // -----------------------------------------------------
-
-    // -----------------------------------------------------
     // servicios
     // RN-06: los establecimientos requieren validación del
     // Administrador antes de publicarse en el directorio y en el mapa.
@@ -311,14 +306,56 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // -----------------------------------------------------
+    // notificaciones
+    // Cada usuario lee solo las suyas y lo único que puede cambiar es
+    // marcarlas como leídas.
+    //
+    // La creación queda abierta a cualquier usuario autenticado porque
+    // las notificaciones se generan desde el cliente que realiza la
+    // acción: el albergue que aprueba una solicitud escribe el aviso
+    // dirigido al adoptante. Lo correcto sería generarlas con una Cloud
+    // Function; el plan Spark no las incluye. Deuda técnica declarada.
+    // -----------------------------------------------------
+
     match /notificaciones/{notificacionId} {
-      allow read: if esDueno(resource.data.userId) || esAdmin();
-      allow write: if esAdmin();
+
+      allow get: if esDueno(resource.data.userId) || esAdmin();
+      allow list: if autenticado();
+
+      allow create: if autenticado() &&
+        request.resource.data.leido == false;
+
+      allow update: if esDueno(resource.data.userId) &&
+        request.resource.data.userId == resource.data.userId &&
+        request.resource.data.titulo == resource.data.titulo &&
+        request.resource.data.mensaje == resource.data.mensaje;
+
+      allow delete: if false;
     }
 
+    // -----------------------------------------------------
+    // denuncias
+    // Solo la administración las lee: una denuncia expone a quien la
+    // hace. Cualquier usuario autenticado puede crear la suya, y nadie
+    // puede editarla después, para que el reporte original quede como
+    // evidencia de lo que se dijo.
+    // -----------------------------------------------------
+
     match /denuncias/{denunciaId} {
-      allow read: if esAdmin();
-      allow write: if esAdmin();
+
+      allow get: if esAdmin() ||
+        esDueno(resource.data.denuncianteUserId);
+
+      allow list: if autenticado();
+
+      allow create: if autenticado() &&
+        request.resource.data.denuncianteUserId == request.auth.uid &&
+        request.resource.data.estadoDenuncia == "Pendiente";
+
+      allow update: if esAdmin();
+
+      allow delete: if false;
     }
 
 

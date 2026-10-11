@@ -20,7 +20,10 @@ import {
 
 import { validarUrlImagen } from "../services/storageService";
 
+import BotonDenunciar from "../components/BotonDenunciar";
+
 import "../styles/alertas.css";
+import "../styles/notificaciones.css";
 
 const FORMULARIO_VACIO = {
     tipoAlerta: "",
@@ -1021,6 +1024,25 @@ function Alertas() {
                                         >
                                             Marcar como resuelta
                                         </button>
+                                    )}
+
+                                    {(!usuarioFirebase ||
+                                        alerta.userId !== usuarioFirebase.uid) && (
+
+                                        <div className="alerta-reporte">
+
+                                            <BotonDenunciar
+                                                tipoContenido="Alerta"
+                                                contenidoReferenciaId={alerta.id}
+                                                contenidoUserId={alerta.userId}
+                                                contenidoTitulo={
+                                                    "Alerta: " +
+                                                    (alerta.nombreMascota ||
+                                                        "sin nombre")
+                                                }
+                                            />
+
+                                        </div>
                                     )}
 
                                 </div>

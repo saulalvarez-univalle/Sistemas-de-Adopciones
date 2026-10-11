@@ -4,7 +4,10 @@ import { Link } from "react-router-dom";
 import { obtenerAlberguesVerificados } from "../services/albergueService";
 import { useAuth } from "../context/AuthContext";
 
+import BotonDenunciar from "../components/BotonDenunciar";
+
 import "../styles/refugios.css";
+import "../styles/notificaciones.css";
 
 function Refugios() {
 
@@ -595,6 +598,24 @@ function Refugios() {
                                                     <span className="refugio-status">
                                                         Verificado
                                                     </span>
+
+                                                </div>
+
+                                                <div className="refugio-reporte">
+
+                                                    <BotonDenunciar
+                                                        tipoContenido="Albergue"
+                                                        contenidoReferenciaId={
+                                                            albergue.id
+                                                        }
+                                                        contenidoUserId={
+                                                            albergue.userId
+                                                        }
+                                                        contenidoTitulo={
+                                                            "Refugio: " +
+                                                            albergue.nombreRefugio
+                                                        }
+                                                    />
 
                                                 </div>
 
