@@ -240,7 +240,8 @@ function DashboardAdmin() {
                     </div>
 
 
-                    <div className="admin-cards">\n
+                    <div className="admin-cards">
+
                         <article className="admin-card admin-card-primary">
                             <div className="admin-card-top">
                                 <div className="admin-card-number">00</div>
