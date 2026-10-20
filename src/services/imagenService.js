@@ -16,11 +16,16 @@ import { validarImagen } from "./storageService";
 // Si estos dos valores no están configurados, la aplicación sigue
 // funcionando: el formulario simplemente ofrece solo el campo de enlace.
 
+// Los valores por defecto siguen el mismo criterio que firebase.js: el
+// proyecto funciona al clonarlo, sin tener que crear un archivo .env. Si
+// existe un .env local, sus valores tienen prioridad.
 export const CLOUD_NAME =
-    import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "";
+    import.meta.env.VITE_CLOUDINARY_CLOUD_NAME ||
+    "advd7nre";
 
 export const UPLOAD_PRESET =
-    import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "";
+    import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET ||
+    "vitrina_unsigned";
 
 export function subidaDisponible() {
     return CLOUD_NAME !== "" && UPLOAD_PRESET !== "";
