@@ -20,6 +20,11 @@ import {
 
 import { validarUrlImagen } from "../services/storageService";
 
+import {
+    subirImagen,
+    subidaDisponible
+} from "../services/imagenService";
+
 import BotonDenunciar from "../components/BotonDenunciar";
 
 import "../styles/alertas.css";
@@ -65,6 +70,8 @@ function Alertas() {
     const [guardando, setGuardando] = useState(false);
 
     const [error, setError] = useState("");
+
+    const [subiendoFoto, setSubiendoFoto] = useState(false);
     const [mensaje, setMensaje] = useState("");
 
 
@@ -146,6 +153,42 @@ function Alertas() {
 
         setError("");
         setMensaje("");
+    }
+
+
+    async function subirFotoAlerta(evento) {
+
+        const archivo = evento.target.files[0];
+
+        evento.target.value = "";
+
+        if (!archivo) {
+            return;
+        }
+
+        setError("");
+        setSubiendoFoto(true);
+
+        try {
+
+            cambiarCampo("fotoUrl", await subirImagen(archivo));
+
+        } catch (error) {
+
+            console.error(
+                "Error al subir la fotografía:",
+                error
+            );
+
+            setError(
+                error.message ||
+                "No se pudo subir la fotografía."
+            );
+
+        } finally {
+
+            setSubiendoFoto(false);
+        }
     }
 
 
@@ -682,6 +725,34 @@ function Alertas() {
                                     Fotografía
                                 </label>
 
+                                {subidaDisponible() && (
+
+                                    <div className="alertas-subir">
+
+                                        <label
+                                            className="alertas-subir-boton"
+                                            htmlFor="archivo-alerta"
+                                        >
+                                            {subiendoFoto
+                                                ? "Subiendo..."
+                                                : "Subir desde mi computadora"}
+                                        </label>
+
+                                        <input
+                                            id="archivo-alerta"
+                                            type="file"
+                                            accept="image/jpeg,image/png"
+                                            onChange={subirFotoAlerta}
+                                            disabled={subiendoFoto}
+                                        />
+
+                                        <span>
+                                            o pega un enlace
+                                        </span>
+
+                                    </div>
+                                )}
+
                                 <input
                                     id="foto-alerta"
                                     type="url"
@@ -696,8 +767,19 @@ function Alertas() {
                                     placeholder="https://ejemplo.com/foto.jpg"
                                 />
 
+                                {formulario.fotoUrl !== "" && (
+
+                                    <img
+                                        className="alertas-vista-previa"
+                                        src={formulario.fotoUrl}
+                                        alt="Vista previa de la fotografía"
+                                    />
+                                )}
+
                                 <small>
-                                    Pega el enlace de una imagen publicada.
+                                    {subidaDisponible()
+                                        ? "Sube una foto desde tu computadora (JPG o PNG, hasta 3 MB) o pega el enlace de una imagen publicada."
+                                        : "Pega el enlace de una imagen publicada."}
                                 </small>
 
                             </div>

@@ -23,6 +23,11 @@ import {
     MAXIMO_FOTOS_POR_MASCOTA
 } from "../services/storageService";
 
+import {
+    subirImagen,
+    subidaDisponible
+} from "../services/imagenService";
+
 import "../styles/mis-mascotas.css";
 
 const FORMULARIO_VACIO = {
@@ -50,6 +55,8 @@ function MisMascotas() {
 
     const [fotos, setFotos] = useState([]);
     const [nuevaUrl, setNuevaUrl] = useState("");
+
+    const [subiendo, setSubiendo] = useState(false);
 
     const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
@@ -175,6 +182,37 @@ function MisMascotas() {
     }
 
 
+    // Tanto el enlace pegado como el archivo subido terminan aquí: la
+    // lista de fotos guarda direcciones, y de dónde salió cada una deja
+    // de importar a partir de este punto.
+    function incorporarFoto(direccion) {
+
+        if (fotos.includes(direccion)) {
+
+            setError("Esa imagen ya está en la lista.");
+
+            return false;
+        }
+
+        if (fotos.length >= MAXIMO_FOTOS_POR_MASCOTA) {
+
+            setError(
+                "Puedes tener como máximo " +
+                MAXIMO_FOTOS_POR_MASCOTA +
+                " fotografías por mascota."
+            );
+
+            return false;
+        }
+
+        setFotos([...fotos, direccion]);
+
+        setError("");
+
+        return true;
+    }
+
+
     function agregarFoto() {
 
         const errorUrl = validarUrlImagen(nuevaUrl);
@@ -186,12 +224,22 @@ function MisMascotas() {
             return;
         }
 
-        const direccion = nuevaUrl.trim();
+        if (incorporarFoto(nuevaUrl.trim())) {
 
-        if (fotos.includes(direccion)) {
+            setNuevaUrl("");
+        }
+    }
 
-            setError("Esa imagen ya está en la lista.");
 
+    async function subirArchivo(evento) {
+
+        const archivo = evento.target.files[0];
+
+        // El input se limpia enseguida para que elegir dos veces el mismo
+        // archivo vuelva a disparar el evento.
+        evento.target.value = "";
+
+        if (!archivo) {
             return;
         }
 
@@ -206,11 +254,29 @@ function MisMascotas() {
             return;
         }
 
-        setFotos([...fotos, direccion]);
-
-        setNuevaUrl("");
-
         setError("");
+        setSubiendo(true);
+
+        try {
+
+            incorporarFoto(await subirImagen(archivo));
+
+        } catch (error) {
+
+            console.error(
+                "Error al subir la imagen:",
+                error
+            );
+
+            setError(
+                error.message ||
+                "No se pudo subir la imagen."
+            );
+
+        } finally {
+
+            setSubiendo(false);
+        }
     }
 
 
@@ -804,6 +870,34 @@ function MisMascotas() {
                                         Fotografías
                                     </label>
 
+                                    {subidaDisponible() && (
+
+                                        <div className="mascotas-admin-subir">
+
+                                            <label
+                                                className="mascotas-admin-subir-boton"
+                                                htmlFor="archivo-foto"
+                                            >
+                                                {subiendo
+                                                    ? "Subiendo..."
+                                                    : "Subir desde mi computadora"}
+                                            </label>
+
+                                            <input
+                                                id="archivo-foto"
+                                                type="file"
+                                                accept="image/jpeg,image/png"
+                                                onChange={subirArchivo}
+                                                disabled={subiendo}
+                                            />
+
+                                            <span>
+                                                o pega un enlace
+                                            </span>
+
+                                        </div>
+                                    )}
+
                                     <div className="mascotas-admin-url">
 
                                         <input
@@ -836,8 +930,9 @@ function MisMascotas() {
                                     </div>
 
                                     <small>
-                                        Pega el enlace de una imagen ya publicada
-                                        (la página del refugio, Google Drive, Imgur).
+                                        {subidaDisponible()
+                                            ? "Sube una foto desde tu computadora (JPG o PNG, hasta 3 MB) o pega el enlace de una imagen ya publicada. "
+                                            : "Pega el enlace de una imagen ya publicada (la página del refugio, Google Drive, Imgur). "}
                                         Máximo {MAXIMO_FOTOS_POR_MASCOTA} fotografías.
                                         La primera es la que se muestra en el catálogo.
                                     </small>

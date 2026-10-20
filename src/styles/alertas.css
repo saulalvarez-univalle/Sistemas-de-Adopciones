@@ -676,3 +676,67 @@
     }
 
 }
+
+
+/* =========================================================
+   SUBIDA DE LA FOTOGRAFÍA
+========================================================= */
+
+.alertas-subir {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 10px;
+}
+
+.alertas-subir input[type="file"] {
+    display: none;
+}
+
+.alertas-subir-boton {
+    padding: 11px 20px;
+
+    border: 1px solid var(--color-primary);
+
+    border-radius: var(--radius-sm);
+
+    background: var(--color-primary);
+
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: background 0.2s;
+}
+
+.alertas-subir-boton:hover {
+    background: var(--color-primary-dark);
+}
+
+.alertas-subir span {
+    color: var(--color-text-light);
+
+    font-size: 12px;
+}
+
+.alertas-vista-previa {
+    display: block;
+
+    width: 100%;
+    max-width: 240px;
+    height: 150px;
+
+    margin-top: 10px;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-md);
+
+    object-fit: cover;
+}
