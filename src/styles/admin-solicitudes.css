@@ -1,0 +1,183 @@
+.admin-solicitudes-page {
+    min-height: calc(100vh - 74px);
+    background: #f6f8f9;
+    color: #263238;
+    padding: 44px 20px 72px;
+}
+
+.admin-solicitudes-container {
+    width: min(100%, 1040px);
+    margin: 0 auto;
+}
+
+.admin-solicitudes-back {
+    display: inline-block;
+    margin-bottom: 24px;
+    color: #173f5f;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.admin-solicitudes-header span,
+.admin-solicitudes-section-title span {
+    color: #2f8f70;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .12em;
+}
+
+.admin-solicitudes-header h1 {
+    margin: 10px 0;
+    color: #173f5f;
+    font-size: clamp(30px, 5vw, 46px);
+}
+
+.admin-solicitudes-header p {
+    max-width: 700px;
+    color: #687983;
+    line-height: 1.6;
+}
+
+.admin-solicitudes-alert {
+    margin: 22px 0;
+    padding: 14px 16px;
+    border-radius: 12px;
+    line-height: 1.5;
+}
+
+.admin-solicitudes-success { background: #e6f4ee; color: #176342; }
+.admin-solicitudes-error { background: #fff0ee; color: #9d3028; }
+
+.admin-solicitudes-summary {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin: 28px 0 38px;
+}
+
+.admin-solicitudes-summary article {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 18px;
+    border: 1px solid #e3eaed;
+    border-radius: 16px;
+    background: #fff;
+}
+
+.admin-solicitudes-summary strong { color: #173f5f; font-size: 30px; }
+.admin-solicitudes-summary span { color: #687983; font-size: 13px; }
+
+.admin-solicitudes-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.admin-solicitudes-section-title h2 { margin: 5px 0 0; color: #173f5f; }
+.admin-solicitudes-section-title button {
+    padding: 10px 15px;
+    border: 1px solid #cdd9df;
+    border-radius: 9px;
+    background: #fff;
+    color: #173f5f;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.admin-solicitudes-list { display: grid; gap: 16px; }
+
+.admin-solicitud-card,
+.admin-solicitud-history-card,
+.admin-solicitudes-empty {
+    padding: 20px;
+    border: 1px solid #e3eaed;
+    border-radius: 16px;
+    background: #fff;
+}
+
+.admin-solicitud-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.admin-solicitud-kicker { color: #687983; font-size: 11px; font-weight: 800; letter-spacing: .08em; }
+.admin-solicitud-card h3 { margin: 8px 0 4px; color: #173f5f; font-size: 21px; }
+.admin-solicitud-card p { margin: 4px 0 10px; }
+
+.admin-solicitud-status {
+    display: inline-block;
+    flex-shrink: 0;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #fff3d8;
+    color: #965d00;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.admin-solicitud-status-aprobada { background: #e6f4ee; color: #176342; }
+.admin-solicitud-status-rechazada,
+.admin-solicitud-status-cancelada { background: #fff0ee; color: #9d3028; }
+.admin-solicitud-status-concretada { background: #e8eff7; color: #173f5f; }
+
+.admin-solicitud-details-toggle {
+    margin: 6px 0 14px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #2f8f70;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.admin-solicitud-details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 18px;
+    margin-bottom: 18px;
+    padding: 16px;
+    border-radius: 12px;
+    background: #f6f8f9;
+}
+
+.admin-solicitud-details div { display: grid; gap: 4px; }
+.admin-solicitud-details span { color: #687983; font-size: 12px; }
+.admin-solicitud-details strong { overflow-wrap: anywhere; }
+.admin-solicitud-details .admin-solicitud-motivation { grid-column: 1 / -1; }
+.admin-solicitud-motivation p { margin: 0; line-height: 1.5; }
+
+.admin-solicitud-note-label { display: block; margin-bottom: 7px; color: #173f5f; font-size: 13px; font-weight: 700; }
+.admin-solicitud-card textarea {
+    width: 100%;
+    resize: vertical;
+    padding: 11px 12px;
+    border: 1px solid #cdd9df;
+    border-radius: 10px;
+    font: inherit;
+}
+
+.admin-solicitud-actions { display: flex; gap: 10px; margin-top: 12px; }
+.admin-solicitud-actions button { padding: 11px 15px; border: 0; border-radius: 9px; font-weight: 800; cursor: pointer; }
+.admin-solicitud-actions button:disabled { opacity: .6; cursor: wait; }
+.admin-solicitud-approve { background: #2f8f70; color: #fff; }
+.admin-solicitud-reject { background: #fff0ee; color: #9d3028; }
+
+.admin-solicitudes-history-title { margin-top: 42px; }
+.admin-solicitud-history-card { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.admin-solicitud-history-card small { display: block; margin-top: 5px; color: #687983; }
+.admin-solicitud-history-card p { flex-basis: 100%; margin: 0; color: #687983; }
+.admin-solicitudes-empty { color: #687983; }
+
+@media (max-width: 640px) {
+    .admin-solicitudes-page { padding: 28px 14px 48px; }
+    .admin-solicitudes-summary { grid-template-columns: 1fr; }
+    .admin-solicitud-details { grid-template-columns: 1fr; }
+    .admin-solicitudes-section-title { align-items: flex-end; }
+    .admin-solicitud-card-top { flex-direction: column; }
+    .admin-solicitud-actions { flex-direction: column; }
+}

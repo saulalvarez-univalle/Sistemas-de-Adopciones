@@ -7,6 +7,7 @@ import RecuperarPassword from "./pages/RecuperarPassword";
 import Panel from "./pages/Panel";
 
 import DashboardAdmin from "./pages/admin/DashboardAdmin";
+import SolicitudesAdopcionAdmin from "./pages/admin/SolicitudesAdopcionAdmin";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -84,6 +85,15 @@ function App() {
                     element={
                         <AdminRoute>
                             <DashboardAdmin />
+                        </AdminRoute>
+                    }
+                />
+
+                <Route
+                    path="/admin/solicitudes"
+                    element={
+                        <AdminRoute>
+                            <SolicitudesAdopcionAdmin />
                         </AdminRoute>
                     }
                 />

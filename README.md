@@ -144,3 +144,7 @@ Request con revisión obligatoria antes de la fusión, según la Definición de 
 | `dev` | Rama de integración |
 | `saul` | Capa de datos, reglas de seguridad e infraestructura |
 | `yubidsa` | Pantallas, componentes y hojas de estilo |
+
+## Aplicación Android
+
+El proyecto Android nativo para adoptantes está en la carpeta `android/`. Abre esa carpeta en Android Studio para ejecutarlo. Permite explorar mascotas y refugios, crear cuentas comunes, solicitar adopciones y revisar las respuestas guardadas en Firebase. El panel web incorpora `/admin/solicitudes` para que las cuentas administradoras revisen y acepten o rechacen las solicitudes.
