@@ -16,6 +16,8 @@ import {
 
 import MapaUbicacion from "../components/MapaUbicacion";
 
+import CampoImagen from "../components/CampoImagen";
+
 function Albergue() {
 
     const navigate = useNavigate();
@@ -32,6 +34,8 @@ function Albergue() {
     const [direccion, setDireccion] = useState("");
     const [telefonoContacto, setTelefonoContacto] = useState("");
     const [horariosAtencion, setHorariosAtencion] = useState("");
+
+    const [logoUrl, setLogoUrl] = useState("");
 
     const [departamentos, setDepartamentos] = useState([]);
     const [municipios, setMunicipios] = useState([]);
@@ -100,6 +104,10 @@ function Albergue() {
 
                     setHorariosAtencion(
                         datosAlbergue.horariosAtencion || ""
+                    );
+
+                    setLogoUrl(
+                        datosAlbergue.logoUrl || ""
                     );
 
                     setDepartamentoId(
@@ -375,7 +383,10 @@ function Albergue() {
                     telefonoContacto.trim(),
 
                 horariosAtencion:
-                    horariosAtencion.trim()
+                    horariosAtencion.trim(),
+
+                logoUrl:
+                    logoUrl.trim()
 
             };
 
@@ -716,6 +727,23 @@ function Albergue() {
                                     }}
                                     maxLength="200"
                                     placeholder="Ej. Lunes a viernes de 09:00 a 18:00"
+                                />
+
+                            </div>
+
+
+                            <div className="shelter-field shelter-field-full">
+
+                                <CampoImagen
+                                    id="logo-refugio"
+                                    etiqueta="Fotografía o logotipo del refugio"
+                                    ayuda="Es la imagen con la que el refugio aparece en el listado público. Si no cargas ninguna, se muestra una imagen genérica."
+                                    valor={logoUrl}
+                                    alCambiar={(valor) => {
+                                        setLogoUrl(valor);
+                                        setError("");
+                                        setMensaje("");
+                                    }}
                                 />
 
                             </div>

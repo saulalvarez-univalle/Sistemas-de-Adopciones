@@ -17,6 +17,8 @@ import {
 
 import MapaUbicacion from "../components/MapaUbicacion";
 
+import CampoImagen from "../components/CampoImagen";
+
 import "../styles/servicios.css";
 
 function MiServicio() {
@@ -32,6 +34,8 @@ function MiServicio() {
     const [descripcion, setDescripcion] = useState("");
     const [serviciosOfrecidos, setServiciosOfrecidos] = useState("");
     const [horarioAtencion, setHorarioAtencion] = useState("");
+
+    const [fotoUrl, setFotoUrl] = useState("");
     const [telefono, setTelefono] = useState("");
     const [telefonoEmergencias, setTelefonoEmergencias] = useState("");
     const [direccion, setDireccion] = useState("");
@@ -82,6 +86,7 @@ function MiServicio() {
                     (datos.serviciosOfrecidos || []).join(", ")
                 );
                 setHorarioAtencion(datos.horarioAtencion || "");
+                setFotoUrl(datos.fotoUrl || "");
                 setTelefono(datos.telefono || "");
                 setTelefonoEmergencias(datos.telefonoEmergencias || "");
                 setDireccion(datos.direccion || "");
@@ -258,6 +263,7 @@ function MiServicio() {
                 .map((item) => item.trim())
                 .filter((item) => item !== ""),
             horarioAtencion: horarioAtencion.trim(),
+            fotoUrl: fotoUrl.trim(),
             telefono: telefono.trim(),
             telefonoEmergencias: telefonoEmergencias.trim(),
             departamentoId: departamentoId,
@@ -570,6 +576,19 @@ function MiServicio() {
                                 }
                                 maxLength="150"
                                 placeholder="Lunes a viernes de 9:00 a 19:00, sábados de 9:00 a 13:00"
+                            />
+
+                        </div>
+
+
+                        <div className="servicio-field servicio-field-full">
+
+                            <CampoImagen
+                                id="foto-servicio"
+                                etiqueta="Fotografía del establecimiento"
+                                ayuda="Aparece en el directorio y al abrir tu marcador en el mapa. La fachada o el interior del local funcionan bien."
+                                valor={fotoUrl}
+                                alCambiar={setFotoUrl}
                             />
 
                         </div>

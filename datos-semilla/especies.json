@@ -11,16 +11,16 @@
     "nombre": "Conejo",
     "activo": true
   },
-  "ave": {
-    "nombre": "Ave",
+  "cobayo": {
+    "nombre": "Cobayo",
     "activo": true
   },
   "hamster": {
     "nombre": "Hámster",
     "activo": true
   },
-  "tortuga": {
-    "nombre": "Tortuga",
+  "ave_domestica": {
+    "nombre": "Ave doméstica",
     "activo": true
   }
 }

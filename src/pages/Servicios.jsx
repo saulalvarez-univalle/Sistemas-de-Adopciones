@@ -433,6 +433,15 @@ function Servicios() {
 
                                     <Popup>
 
+                                        {servicio.fotoUrl && (
+
+                                            <img
+                                                className="popup-foto"
+                                                src={servicio.fotoUrl}
+                                                alt={servicio.nombreComercio}
+                                            />
+                                        )}
+
                                         <strong>
                                             {servicio.nombreComercio}
                                         </strong>
@@ -496,6 +505,18 @@ function Servicios() {
                                 key={servicio.id}
                                 className="directorio-card"
                             >
+
+                                {servicio.fotoUrl && (
+
+                                    <div className="directorio-card-foto">
+
+                                        <img
+                                            src={servicio.fotoUrl}
+                                            alt={servicio.nombreComercio}
+                                        />
+
+                                    </div>
+                                )}
 
                                 <div className="directorio-card-header">
 

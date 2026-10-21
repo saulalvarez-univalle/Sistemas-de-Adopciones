@@ -79,13 +79,21 @@ function CargarDatos() {
 
             const resumen = await cargarTodosLosCatalogos();
 
-            const total =
-                resumen.departamentos +
-                resumen.municipios +
-                resumen.especies;
+            let escritos = 0;
+            let omitidos = 0;
+
+            for (const catalogo of Object.keys(resumen)) {
+
+                escritos = escritos + resumen[catalogo].escritos;
+                omitidos = omitidos + resumen[catalogo].omitidos;
+            }
 
             setMensaje(
-                "Carga completada: " + total + " documentos escritos."
+                "Carga completada: " + escritos + " documentos escritos." +
+                (omitidos > 0
+                    ? " Se omitieron " + omitidos +
+                      " porque ya existía un registro con el mismo nombre."
+                    : "")
             );
 
             await revisar();

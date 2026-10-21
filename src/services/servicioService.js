@@ -51,6 +51,7 @@ export async function registrarServicio(datos) {
         direccion: datos.direccion,
         latitud: datos.latitud,
         longitud: datos.longitud,
+        fotoUrl: datos.fotoUrl || "",
         estadoVerificacion: "Pendiente_Verificacion",
         motivoRechazo: "",
         fechaSolicitud: serverTimestamp()
@@ -124,7 +125,8 @@ export async function actualizarServicio(id, datos) {
         municipioId: datos.municipioId,
         direccion: datos.direccion,
         latitud: datos.latitud,
-        longitud: datos.longitud
+        longitud: datos.longitud,
+        fotoUrl: datos.fotoUrl || ""
     };
 
     // Mismo criterio que en albergues: corregir un registro rechazado lo

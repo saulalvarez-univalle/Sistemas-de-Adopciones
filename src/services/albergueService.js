@@ -28,6 +28,7 @@ export async function registrarAlbergue(datos) {
         longitud: datos.longitud,
         telefonoContacto: datos.telefonoContacto,
         horariosAtencion: datos.horariosAtencion,
+        logoUrl: datos.logoUrl || "",
         estadoVerificacion: "Pendiente_Verificacion",
         fechaSolicitud: new Date(),
         motivoRechazo: ""
@@ -118,7 +119,10 @@ export async function actualizarAlbergue(id, datos) {
             datos.telefonoContacto,
 
         horariosAtencion:
-            datos.horariosAtencion
+            datos.horariosAtencion,
+
+        logoUrl:
+            datos.logoUrl || ""
     };
 
     if (

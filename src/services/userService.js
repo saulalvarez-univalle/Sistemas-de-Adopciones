@@ -43,14 +43,18 @@ export async function actualizarPerfil(
     nombreCompleto,
     telefono,
     departamentoId,
-    municipioId
+    municipioId,
+    fotoPerfilUrl
 ) {
     const referenciaUsuario = doc(db, "users", uid);
 
+    // RF-04. La fotografía es opcional: si no se envía, el campo queda
+    // en cadena vacía y la interfaz muestra la inicial del nombre.
     await updateDoc(referenciaUsuario, {
         nombreCompleto: nombreCompleto,
         telefono: telefono,
         departamentoId: departamentoId,
-        municipioId: municipioId
+        municipioId: municipioId,
+        fotoPerfilUrl: fotoPerfilUrl || ""
     });
 }

@@ -482,7 +482,10 @@ function Refugios() {
                                             <div className="refugio-card-image">
 
                                                 <img
-                                                    src="/imagenes/perfilref.jpg"
+                                                    src={
+                                                        albergue.logoUrl ||
+                                                        "/imagenes/perfilref.jpg"
+                                                    }
                                                     alt={
                                                         "Refugio " +
                                                         albergue.nombreRefugio

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 import { actualizarPerfil } from "../services/userService";
+
+import CampoImagen from "../components/CampoImagen";
 import {
     obtenerDepartamentos,
     obtenerMunicipios
@@ -19,6 +21,8 @@ function Perfil() {
 
     const [nombreCompleto, setNombreCompleto] = useState("");
     const [telefono, setTelefono] = useState("");
+
+    const [fotoPerfilUrl, setFotoPerfilUrl] = useState("");
 
     const [departamentos, setDepartamentos] = useState([]);
     const [municipios, setMunicipios] = useState([]);
@@ -54,6 +58,10 @@ function Perfil() {
 
                     setTelefono(
                         perfil.telefono || ""
+                    );
+
+                    setFotoPerfilUrl(
+                        perfil.fotoPerfilUrl || ""
                     );
 
                     setDepartamentoId(
@@ -238,7 +246,8 @@ function Perfil() {
                 nombreCompleto.trim(),
                 telefono.trim(),
                 departamentoId,
-                municipioId
+                municipioId,
+                fotoPerfilUrl.trim()
             );
 
             setMensaje(
@@ -545,6 +554,24 @@ function Perfil() {
                             por el sistema y no pueden modificarse desde
                             este formulario.
                         </p>
+
+                    </div>
+
+
+                    <div className="profile-field-full">
+
+                        <CampoImagen
+                            id="foto-perfil"
+                            etiqueta="Fotografía de perfil"
+                            ayuda="Opcional. Si no cargas ninguna, se muestra la inicial de tu nombre."
+                            valor={fotoPerfilUrl}
+                            alCambiar={(valor) => {
+                                setFotoPerfilUrl(valor);
+                                setError("");
+                                setMensaje("");
+                            }}
+                            redonda
+                        />
 
                     </div>
 
