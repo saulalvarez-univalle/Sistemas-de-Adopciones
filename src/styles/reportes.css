@@ -634,3 +634,60 @@
         font-size: 13px;
     }
 }
+
+
+/* =========================================================
+   SELECCIÓN DE RANGO DE FECHAS
+========================================================= */
+
+.reportes-rango {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: var(--color-text-light);
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 0.8px;
+
+    text-transform: uppercase;
+}
+
+.reportes-rango input {
+    background: var(--color-surface-soft);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-sm);
+
+    padding: 8px 11px;
+
+    color: var(--color-text);
+
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+
+    letter-spacing: 0;
+
+    text-transform: none;
+}
+
+.reportes-rango input:focus {
+    outline: none;
+
+    border-color: var(--color-primary);
+}
+
+@media (max-width: 680px) {
+
+    .reportes-rango {
+        justify-content: space-between;
+
+        width: 100%;
+    }
+}

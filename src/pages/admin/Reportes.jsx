@@ -3,7 +3,8 @@ import { useEffect, useState, useCallback } from "react";
 import {
     obtenerDatosDelSistema,
     calcularIndicadores,
-    adopcionesPorMes,
+    adopcionesPorPeriodo,
+    dentroDelRango,
     coberturaPorDepartamento,
     convertirACsv,
     descargarCsv
@@ -24,7 +25,10 @@ function Reportes() {
     const [especies, setEspecies] = useState([]);
     const [departamentos, setDepartamentos] = useState([]);
 
-    const [anio, setAnio] = useState(anioActual);
+    const [desde, setDesde] = useState(anioActual + "-01-01");
+    const [hasta, setHasta] = useState(
+        new Date().toISOString().slice(0, 10)
+    );
 
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
@@ -227,6 +231,11 @@ function Reportes() {
                 continue;
             }
 
+            // El CSV exporta exactamente lo que muestra el gráfico.
+            if (!dentroDelRango(solicitud.fechaAdopcion, desde, hasta)) {
+                continue;
+            }
+
             const fecha = solicitud.fechaAdopcion?.seconds
                 ? new Date(
                     solicitud.fechaAdopcion.seconds * 1000
@@ -318,10 +327,13 @@ function Reportes() {
     }
 
 
-    const serieAdopciones = adopcionesPorMes(
+    const adopciones = adopcionesPorPeriodo(
         datos.solicitudes,
-        anio
+        desde,
+        hasta
     );
+
+    const serieAdopciones = adopciones.serie;
 
     const cobertura = coberturaPorDepartamento(
         departamentos,
@@ -336,17 +348,6 @@ function Reportes() {
         if (punto.cantidad > mayorMes) {
             mayorMes = punto.cantidad;
         }
-    }
-
-    const totalAnio = serieAdopciones.reduce(
-        (acumulado, punto) => acumulado + punto.cantidad,
-        0
-    );
-
-    const anios = [];
-
-    for (let valor = anioActual; valor >= anioActual - 3; valor = valor - 1) {
-        anios.push(valor);
     }
 
 
@@ -466,34 +467,53 @@ function Reportes() {
                         <div>
 
                             <h2>
-                                Adopciones concretadas por mes
+                                Adopciones concretadas
                             </h2>
 
                             <p>
-                                {totalAnio} adopciones registradas
-                                en {anio}.
+                                {adopciones.total}
+                                {adopciones.total === 1
+                                    ? " adopción registrada"
+                                    : " adopciones registradas"}
+                                {" en el período, agrupadas por "}
+                                {adopciones.agrupadoPor}.
                             </p>
 
                         </div>
 
                         <div className="reportes-bloque-acciones">
 
-                            <select
-                                value={anio}
-                                onChange={(evento) =>
-                                    setAnio(Number(evento.target.value))
-                                }
+                            <label
+                                className="reportes-rango"
+                                htmlFor="desde"
                             >
-                                {anios.map((valor) => (
+                                Desde
+                                <input
+                                    id="desde"
+                                    type="date"
+                                    value={desde}
+                                    max={hasta}
+                                    onChange={(evento) =>
+                                        setDesde(evento.target.value)
+                                    }
+                                />
+                            </label>
 
-                                    <option
-                                        key={valor}
-                                        value={valor}
-                                    >
-                                        {valor}
-                                    </option>
-                                ))}
-                            </select>
+                            <label
+                                className="reportes-rango"
+                                htmlFor="hasta"
+                            >
+                                Hasta
+                                <input
+                                    id="hasta"
+                                    type="date"
+                                    value={hasta}
+                                    min={desde}
+                                    onChange={(evento) =>
+                                        setHasta(evento.target.value)
+                                    }
+                                />
+                            </label>
 
                             <button
                                 type="button"
@@ -511,8 +531,12 @@ function Reportes() {
                         {serieAdopciones.map((punto) => (
 
                             <div
-                                key={punto.mes}
+                                key={punto.etiqueta}
                                 className="reportes-columna"
+                                title={
+                                    punto.etiqueta + ": " +
+                                    punto.cantidad
+                                }
                             >
 
                                 <span className="reportes-columna-numero">
@@ -531,7 +555,7 @@ function Reportes() {
                                 ></div>
 
                                 <span className="reportes-columna-mes">
-                                    {punto.mes.substring(0, 3)}
+                                    {punto.corta}
                                 </span>
 
                             </div>
@@ -773,8 +797,9 @@ function Reportes() {
                         year: "numeric"
                     })}
                     {" · "}
-                    Los meses del gráfico corresponden a la fecha en que
-                    cada adopción se registró como concretada.
+                    Período del {desde} al {hasta}. Los tramos del gráfico
+                    corresponden a la fecha en que cada adopción se registró
+                    como concretada.
                 </p>
 
             </div>

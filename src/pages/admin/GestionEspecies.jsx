@@ -3,6 +3,11 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 
 import {
+    ESPECIES_RECOMENDADAS,
+    cargarCatalogo
+} from "../../services/semillaService";
+
+import {
     obtenerEspecies,
     crearEspecie,
     actualizarEspecie
@@ -24,6 +29,8 @@ function GestionEspecies() {
 
     const [cargando, setCargando] = useState(true);
     const [guardando, setGuardando] = useState(false);
+
+    const [cargandoCatalogo, setCargandoCatalogo] = useState(false);
 
     const [error, setError] = useState("");
     const [mensaje, setMensaje] = useState("");
@@ -83,6 +90,59 @@ function GestionEspecies() {
 
         return "";
     }
+
+    // Carga el catálogo recomendado sin salir de esta pantalla. Compara
+    // por nombre, de modo que las especies que ya existen no se duplican
+    // aunque se hayan creado a mano y tengan otro identificador.
+    async function cargarRecomendadas() {
+
+        setError("");
+        setMensaje("");
+        setCargandoCatalogo(true);
+
+        try {
+
+            const resultado = await cargarCatalogo("especies");
+
+            await cargarEspecies();
+
+            if (resultado.escritos === 0) {
+
+                setMensaje(
+                    "El catálogo ya estaba completo: no hizo falta agregar ninguna especie."
+                );
+
+            } else {
+
+                setMensaje(
+                    "Se agregaron " + resultado.escritos +
+                    (resultado.escritos === 1
+                        ? " especie."
+                        : " especies.") +
+                    (resultado.omitidos > 0
+                        ? " Las otras " + resultado.omitidos +
+                          " ya existían y no se duplicaron."
+                        : "")
+                );
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Error al cargar el catálogo recomendado:",
+                error
+            );
+
+            setError(
+                "No se pudo cargar el catálogo. Verifica que tu cuenta tenga rol de administrador."
+            );
+
+        } finally {
+
+            setCargandoCatalogo(false);
+        }
+    }
+
 
     async function guardarNuevaEspecie(evento) {
 
@@ -316,6 +376,14 @@ function GestionEspecies() {
     const especiesInactivas =
         especies.length - especiesActivas;
 
+    const registradas = especies.map(
+        (especie) => (especie.nombre || "").trim().toLowerCase()
+    );
+
+    const faltantes = ESPECIES_RECOMENDADAS.filter(
+        (nombre) => !registradas.includes(nombre.trim().toLowerCase())
+    );
+
     return (
         <main className="species-page">
 
@@ -353,6 +421,42 @@ function GestionEspecies() {
                     </div>
 
                 </header>
+
+
+                {faltantes.length > 0 && (
+
+                    <div className="species-sugerencia">
+
+                        <div>
+
+                            <strong>
+                                Faltan {faltantes.length} de las especies recomendadas
+                            </strong>
+
+                            <p>
+                                {faltantes.join(" · ")}
+                            </p>
+
+                            <span>
+                                Son las que se rehomean habitualmente en
+                                Bolivia. Agregarlas no modifica las especies
+                                que ya tienes ni las mascotas publicadas.
+                            </span>
+
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={cargarRecomendadas}
+                            disabled={cargandoCatalogo}
+                        >
+                            {cargandoCatalogo
+                                ? "Agregando..."
+                                : "Agregar las que faltan"}
+                        </button>
+
+                    </div>
+                )}
 
 
                 {error !== "" && (

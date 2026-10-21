@@ -225,44 +225,150 @@ export function calcularIndicadores(datos) {
     };
 }
 
-// HU-27: adopciones concretadas mes a mes del año indicado.
-// Devuelve siempre los doce meses, aunque algunos estén en cero: un
-// gráfico con huecos se lee peor que uno con ceros explícitos.
-export function adopcionesPorMes(solicitudes, anio) {
+// RF-40. Convierte una fecha escrita como "2026-03-14" en el instante
+// que corresponde. El inicio se toma a las 00:00 y el fin a las 23:59:59,
+// para que el día elegido como "hasta" quede incluido completo: si se
+// tomara a las 00:00, una adopción registrada esa misma tarde quedaría
+// fuera del reporte sin que nadie entienda por qué.
+function limiteDelDia(texto, finDelDia) {
 
-    const serie = [];
-
-    for (let indice = 0; indice < 12; indice = indice + 1) {
-
-        serie.push({
-            mes: MESES[indice],
-            cantidad: 0
-        });
+    if (!texto) {
+        return null;
     }
 
-    for (const solicitud of solicitudes) {
+    const partes = texto.split("-");
 
-        if (solicitud.estado !== "Concretada") {
-            continue;
+    if (partes.length !== 3) {
+        return null;
+    }
+
+    const anio = Number(partes[0]);
+    const mes = Number(partes[1]) - 1;
+    const dia = Number(partes[2]);
+
+    return finDelDia
+        ? new Date(anio, mes, dia, 23, 59, 59, 999)
+        : new Date(anio, mes, dia, 0, 0, 0, 0);
+}
+
+export function dentroDelRango(fecha, desde, hasta) {
+
+    if (!fecha || !fecha.seconds) {
+        return false;
+    }
+
+    const momento = new Date(fecha.seconds * 1000);
+
+    const inicio = limiteDelDia(desde, false);
+    const fin = limiteDelDia(hasta, true);
+
+    if (inicio && momento < inicio) {
+        return false;
+    }
+
+    if (fin && momento > fin) {
+        return false;
+    }
+
+    return true;
+}
+
+// HU-27 y RF-40: adopciones concretadas agrupadas dentro de un rango de
+// fechas. Si el rango abarca doce meses o menos se agrupa por mes; si
+// abarca más, se agrupa por año, porque un gráfico de cuarenta barras no
+// se lee. Devuelve siempre todos los tramos del rango, aunque estén en
+// cero: un gráfico con huecos se lee peor que uno con ceros explícitos.
+export function adopcionesPorPeriodo(solicitudes, desde, hasta) {
+
+    const concretadas = solicitudes.filter(
+        (solicitud) =>
+            solicitud.estado === "Concretada" &&
+            dentroDelRango(solicitud.fechaAdopcion, desde, hasta)
+    );
+
+    const inicio = limiteDelDia(desde, false);
+    const fin = limiteDelDia(hasta, true);
+
+    // Sin rango explícito se usa el año en curso.
+    const primero = inicio || new Date(new Date().getFullYear(), 0, 1);
+    const ultimo = fin || new Date();
+
+    const mesesDeDiferencia =
+        (ultimo.getFullYear() - primero.getFullYear()) * 12 +
+        (ultimo.getMonth() - primero.getMonth());
+
+    const porAnio = mesesDeDiferencia > 11;
+
+    const serie = [];
+    const indicePorClave = {};
+
+    if (porAnio) {
+
+        for (
+            let anio = primero.getFullYear();
+            anio <= ultimo.getFullYear();
+            anio = anio + 1
+        ) {
+            indicePorClave[anio] = serie.length;
+
+            serie.push({
+                etiqueta: String(anio),
+                corta: String(anio).slice(2),
+                cantidad: 0
+            });
         }
 
-        if (!solicitud.fechaAdopcion || !solicitud.fechaAdopcion.seconds) {
-            continue;
+    } else {
+
+        const cursor = new Date(
+            primero.getFullYear(),
+            primero.getMonth(),
+            1
+        );
+
+        while (
+            cursor.getFullYear() < ultimo.getFullYear() ||
+            (cursor.getFullYear() === ultimo.getFullYear() &&
+                cursor.getMonth() <= ultimo.getMonth())
+        ) {
+            const clave =
+                cursor.getFullYear() + "-" + cursor.getMonth();
+
+            indicePorClave[clave] = serie.length;
+
+            serie.push({
+                etiqueta:
+                    MESES[cursor.getMonth()] + " " + cursor.getFullYear(),
+                corta: MESES[cursor.getMonth()].substring(0, 3),
+                cantidad: 0
+            });
+
+            cursor.setMonth(cursor.getMonth() + 1);
         }
+    }
+
+    for (const solicitud of concretadas) {
 
         const fecha = new Date(
             solicitud.fechaAdopcion.seconds * 1000
         );
 
-        if (fecha.getFullYear() !== anio) {
-            continue;
-        }
+        const clave = porAnio
+            ? fecha.getFullYear()
+            : fecha.getFullYear() + "-" + fecha.getMonth();
 
-        serie[fecha.getMonth()].cantidad =
-            serie[fecha.getMonth()].cantidad + 1;
+        const indice = indicePorClave[clave];
+
+        if (indice !== undefined) {
+            serie[indice].cantidad = serie[indice].cantidad + 1;
+        }
     }
 
-    return serie;
+    return {
+        serie: serie,
+        total: concretadas.length,
+        agrupadoPor: porAnio ? "año" : "mes"
+    };
 }
 
 // HU-27: cobertura territorial. Cuántos albergues verificados y cuántas

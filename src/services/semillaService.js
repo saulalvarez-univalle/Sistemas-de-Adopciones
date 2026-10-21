@@ -11,6 +11,12 @@ import departamentos from "../../datos-semilla/departamentos.json";
 import municipios from "../../datos-semilla/municipios.json";
 import especies from "../../datos-semilla/especies.json";
 
+// Se expone para que la pantalla de gestion de especies pueda ofrecer la
+// carga del catalogo recomendado sin salir de ahi.
+export const ESPECIES_RECOMENDADAS = Object.values(especies).map(
+    (especie) => especie.nombre
+);
+
 const CATALOGOS = {
     departamentos: departamentos,
     municipios: municipios,
@@ -79,7 +85,14 @@ export async function cargarCatalogo(nombreColeccion) {
         );
     }
 
-    const usados = await nombresYaUsados(nombreColeccion);
+    // Solo las especies se pueden crear a mano desde el panel, asi que
+    // solo ahi tiene sentido comparar por nombre. Departamentos y
+    // municipios se escriben siempre, y sus nombres pueden repetirse
+    // legitimamente entre departamentos distintos.
+    const usados =
+        nombreColeccion === "especies"
+            ? await nombresYaUsados(nombreColeccion)
+            : {};
 
     let escritos = 0;
     let omitidos = 0;
