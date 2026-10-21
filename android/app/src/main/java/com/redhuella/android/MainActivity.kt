@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -375,7 +376,7 @@ private fun PetCard(pet: Pet, onClick: () -> Unit) {
 @Composable
 private fun PetDetailScreen(pet: Pet, onBack: () -> Unit, onRequest: () -> Unit) {
     Column(Modifier.fillMaxSize().background(HuellaCanvas)) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, contentDescription = "Volver") }
             Text("Ficha de mascota", color = HuellaBlue, fontWeight = FontWeight.SemiBold)
         }
@@ -482,7 +483,7 @@ private fun AdoptionFormScreen(
     val scope = rememberCoroutineScope()
 
     Column(Modifier.fillMaxSize().background(HuellaCanvas)) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, contentDescription = "Volver") }
             Text("Solicitud de adopción", color = HuellaBlue, fontWeight = FontWeight.SemiBold)
         }
@@ -708,7 +709,7 @@ private fun AuthScreen(
     val scope = rememberCoroutineScope()
 
     Column(Modifier.fillMaxSize().background(HuellaCanvas)) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, contentDescription = "Volver") }
             Text("Red Huella", color = HuellaBlue, fontWeight = FontWeight.Bold)
         }
