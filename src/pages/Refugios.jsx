@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import { obtenerAlberguesVerificados } from "../services/albergueService";
+import { obtenerMascotasPublicas } from "../services/mascotaService";
 import { useAuth } from "../context/AuthContext";
 
 import BotonDenunciar from "../components/BotonDenunciar";
@@ -14,6 +15,9 @@ function Refugios() {
     const { perfil } = useAuth();
 
     const [albergues, setAlbergues] = useState([]);
+
+    // Mascotas disponibles agrupadas por refugio: { albergueId: [...] }
+    const [mascotasPorRefugio, setMascotasPorRefugio] = useState({});
     const [alberguesFiltrados, setAlberguesFiltrados] = useState([]);
 
     const [departamentoSeleccionado, setDepartamentoSeleccionado] = useState("");
@@ -61,6 +65,23 @@ function Refugios() {
             const resultado = await obtenerAlberguesVerificados();
 
             setAlbergues(resultado);
+
+            // Una sola lectura del catálogo público, agrupada acá, en
+            // lugar de una consulta por cada tarjeta de refugio.
+            const publicas = await obtenerMascotasPublicas();
+
+            const agrupadas = {};
+
+            for (const mascota of publicas) {
+
+                if (!agrupadas[mascota.albergueId]) {
+                    agrupadas[mascota.albergueId] = [];
+                }
+
+                agrupadas[mascota.albergueId].push(mascota);
+            }
+
+            setMascotasPorRefugio(agrupadas);
 
         } catch (error) {
 
@@ -569,6 +590,80 @@ function Refugios() {
                                                         </strong>
 
                                                     </div>
+
+                                                </div>
+
+
+                                                <div className="refugio-mascotas">
+
+                                                    {(mascotasPorRefugio[albergue.id] || []).length === 0 ? (
+
+                                                        <p className="refugio-mascotas-vacio">
+                                                            Por ahora no tiene mascotas publicadas.
+                                                        </p>
+
+                                                    ) : (
+                                                        <>
+                                                            <div className="refugio-mascotas-cabecera">
+
+                                                                <strong>
+                                                                    {mascotasPorRefugio[albergue.id].length}
+                                                                    {mascotasPorRefugio[albergue.id].length === 1
+                                                                        ? " mascota busca hogar"
+                                                                        : " mascotas buscan hogar"}
+                                                                </strong>
+
+                                                                <Link
+                                                                    to={"/mascotas?albergue=" + albergue.id}
+                                                                >
+                                                                    Ver todas →
+                                                                </Link>
+
+                                                            </div>
+
+                                                            <div className="refugio-mascotas-fila">
+
+                                                                {mascotasPorRefugio[albergue.id]
+                                                                    .slice(0, 4)
+                                                                    .map((mascota) => (
+
+                                                                    <Link
+                                                                        key={mascota.id}
+                                                                        to={"/mascotas/" + mascota.id}
+                                                                        className="refugio-mascota"
+                                                                        title={mascota.nombre}
+                                                                    >
+
+                                                                        <img
+                                                                            src={
+                                                                                mascota.fotosUrls &&
+                                                                                mascota.fotosUrls.length > 0
+                                                                                    ? mascota.fotosUrls[0]
+                                                                                    : "/imagenes/hero-mascota.png"
+                                                                            }
+                                                                            alt={mascota.nombre}
+                                                                        />
+
+                                                                        <span>
+                                                                            {mascota.nombre}
+                                                                        </span>
+
+                                                                    </Link>
+                                                                ))}
+
+                                                                {mascotasPorRefugio[albergue.id].length > 4 && (
+
+                                                                    <Link
+                                                                        to={"/mascotas?albergue=" + albergue.id}
+                                                                        className="refugio-mascota refugio-mascota-mas"
+                                                                    >
+                                                                        +{mascotasPorRefugio[albergue.id].length - 4}
+                                                                    </Link>
+                                                                )}
+
+                                                            </div>
+                                                        </>
+                                                    )}
 
                                                 </div>
 

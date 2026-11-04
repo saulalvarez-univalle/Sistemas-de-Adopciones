@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { useAuth } from "../context/AuthContext";
 
@@ -17,6 +17,8 @@ import {
 } from "../services/territorioService";
 
 import { obtenerEspeciesActivas } from "../services/especieService";
+
+import { obtenerAlberguesVerificados } from "../services/albergueService";
 
 import {
     obtenerIdsFavoritos,
@@ -39,6 +41,7 @@ function Mascotas() {
     const [departamentos, setDepartamentos] = useState([]);
     const [municipios, setMunicipios] = useState([]);
     const [especies, setEspecies] = useState([]);
+    const [albergues, setAlbergues] = useState([]);
 
     const [texto, setTexto] = useState("");
     const [departamentoId, setDepartamentoId] = useState("");
@@ -47,6 +50,12 @@ function Mascotas() {
     const [edadCategoria, setEdadCategoria] = useState("");
     const [tamano, setTamano] = useState("");
     const [sexo, setSexo] = useState("");
+
+    // El listado de refugios enlaza acá con ?albergue=<id> para mostrar
+    // solo las mascotas de ese refugio.
+    const [parametros, setParametros] = useSearchParams();
+
+    const albergueId = parametros.get("albergue") || "";
 
     const [favoritos, setFavoritos] = useState([]);
 
@@ -72,6 +81,10 @@ function Mascotas() {
             setMascotas(listaMascotas);
             setDepartamentos(listaDepartamentos);
             setEspecies(listaEspecies);
+
+            // Se usa solo para poner el nombre del refugio cuando se
+            // llega desde el listado con ?albergue=<id>.
+            setAlbergues(await obtenerAlberguesVerificados());
 
             if (usuarioFirebase) {
 
@@ -160,7 +173,8 @@ function Mascotas() {
             especieId,
             edadCategoria,
             tamano,
-            sexo
+            sexo,
+            albergueId
         });
 
         setMascotasFiltradas(resultado);
@@ -173,8 +187,25 @@ function Mascotas() {
         especieId,
         edadCategoria,
         tamano,
-        sexo
+        sexo,
+        albergueId
     ]);
+
+
+    // Las mascotas públicas no traen el nombre del refugio, así que se
+    // lee del albergue que cargó el listado; si no se encuentra, se
+    // muestra una etiqueta neutra en lugar de un identificador crudo.
+    function nombreDelRefugio() {
+
+        for (const albergue of albergues) {
+
+            if (albergue.id === albergueId) {
+                return albergue.nombreRefugio;
+            }
+        }
+
+        return "este refugio";
+    }
 
 
     function manejarDepartamento(evento) {
@@ -290,6 +321,29 @@ function Mascotas() {
                         o por tamaño y encuentra la compañía que
                         mejor se adapta a tu hogar.
                     </p>
+
+                    {albergueId !== "" && (
+
+                        <div className="mascotas-aviso-refugio">
+
+                            <span>
+                                Estás viendo solo las mascotas de
+                                {" "}
+                                <strong>
+                                    {nombreDelRefugio()}
+                                </strong>.
+                            </span>
+
+                            <button
+                                type="button"
+                                onClick={() => setParametros({})}
+                            >
+                                Ver todo el catálogo
+                            </button>
+
+                        </div>
+                    )}
+
 
                     <div className="mascotas-hero-meta">
 
