@@ -324,3 +324,13 @@ export async function obtenerAdopcionesConcretadas(adoptanteUserId) {
 
     return concretadas;
 }
+
+// El panel de administración puede revisar todas las solicitudes; la ruta
+// que lo usa está protegida por AdminRoute y las reglas de Firestore.
+export async function obtenerSolicitudesAdmin() {
+    const resultado = await getDocs(collection(db, "solicitudes_adopcion"));
+    return resultado.docs.map((documento) => ({
+        id: documento.id,
+        ...documento.data()
+    }));
+}

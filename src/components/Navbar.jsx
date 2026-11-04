@@ -94,6 +94,13 @@ function Navbar() {
                     </Link>
 
                     <Link
+                        to="/admin/solicitudes"
+                        onClick={cerrarMenu}
+                    >
+                        Solicitudes de adopción
+                    </Link>
+
+                    <Link
                         to="/moderacion"
                         onClick={cerrarMenu}
                     >

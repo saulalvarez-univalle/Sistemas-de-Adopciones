@@ -242,6 +242,22 @@ function DashboardAdmin() {
 
                     <div className="admin-cards">
 
+                        <article className="admin-card admin-card-primary">
+                            <div className="admin-card-top">
+                                <div className="admin-card-number">00</div>
+                                <span className="admin-card-status">NUEVO</span>
+                            </div>
+                            <div className="admin-card-content">
+                                <h3>Solicitudes de adopción</h3>
+                                <p>Revisa las respuestas de los adoptantes y acepta o rechaza solicitudes desde la web.</p>
+                            </div>
+                            <button className="admin-card-action" onClick={() => navigate("/admin/solicitudes")}>
+                                Revisar solicitudes <span>→</span>
+                            </button>
+                        </article>
+
+
+
 
                         <article className="admin-card admin-card-primary">
 
