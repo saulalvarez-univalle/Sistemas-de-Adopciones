@@ -22,14 +22,14 @@ import BarraFiltros from "../components/BarraFiltros";
 
 import {
     obtenerTodosLosAlbergues,
-    actualizarEstadoAlbergue
+    actualizarEstadoAlbergue,
+    suspenderRefugio,
+    reactivarRefugio
 } from "../services/albergueService";
 
-import {
-    obtenerPerfil,
-    suspenderCuenta,
-    reactivarCuenta
-} from "../services/userService";
+import { obtenerPerfil } from "../services/userService";
+
+import { formatearFecha } from "../utils/fechas";
 
 import {
     obtenerDepartamentos,
@@ -270,21 +270,31 @@ function GestionAlbergues() {
 
             if (suspender) {
 
-                await suspenderCuenta(albergue.userId);
+                await suspenderRefugio(
+                    albergue.id,
+                    albergue.userId
+                );
 
                 setMensajes({
                     ...mensajes,
                     [albergue.id]:
-                        "Cuenta suspendida. El responsable ya no puede iniciar sesión."
+                        "Cuenta suspendida. El responsable ya no puede " +
+                        "iniciar sesión, el refugio salió del listado " +
+                        "público y sus mascotas salieron del catálogo."
                 });
 
             } else {
 
-                await reactivarCuenta(albergue.userId);
+                await reactivarRefugio(
+                    albergue.id,
+                    albergue.userId
+                );
 
                 setMensajes({
                     ...mensajes,
-                    [albergue.id]: "Cuenta reactivada."
+                    [albergue.id]:
+                        "Cuenta reactivada. Si el refugio está verificado, " +
+                        "volvió al listado público junto con sus mascotas."
                 });
             }
 
@@ -897,13 +907,94 @@ function GestionAlbergues() {
                                         </div>
 
 
-                                        {duenos[albergue.userId] && (
+                                        <section className="admin-ficha">
+
+                                            <h3>
+                                                Datos del registro
+                                            </h3>
+
+                                            <div className="admin-ficha-datos">
+
+                                                <div>
+                                                    <span>
+                                                        Fecha de solicitud
+                                                    </span>
+                                                    <strong>
+                                                        {formatearFecha(
+                                                            albergue.fechaSolicitud
+                                                        )}
+                                                    </strong>
+                                                </div>
+
+                                                <div>
+                                                    <span>
+                                                        Estado de verificación
+                                                    </span>
+                                                    <strong>
+                                                        {albergue.estadoVerificacion ===
+                                                            "Pendiente_Verificacion"
+                                                            ? "Pendiente de revisar"
+                                                            : albergue.estadoVerificacion}
+                                                    </strong>
+                                                </div>
+
+                                                <div>
+                                                    <span>
+                                                        Visible en público
+                                                    </span>
+                                                    <strong>
+                                                        {albergue.estadoVerificacion === "Verificado" &&
+                                                            albergue.activo !== false
+                                                            ? "Sí"
+                                                            : "No"}
+                                                    </strong>
+                                                </div>
+
+                                                <div>
+                                                    <span>
+                                                        Coordenadas
+                                                    </span>
+                                                    <strong>
+                                                        {ubicacionValida
+                                                            ? latitud.toFixed(5) + ", " +
+                                                              longitud.toFixed(5)
+                                                            : "Sin ubicación"}
+                                                    </strong>
+                                                </div>
+
+                                                <div className="admin-ficha-ancho">
+                                                    <span>
+                                                        Identificador interno
+                                                    </span>
+                                                    <strong className="admin-ficha-id">
+                                                        {albergue.id}
+                                                    </strong>
+                                                </div>
+
+                                                {albergue.motivoRechazo && (
+
+                                                    <div className="admin-ficha-ancho">
+                                                        <span>
+                                                            Último motivo registrado
+                                                        </span>
+                                                        <strong>
+                                                            {albergue.motivoRechazo}
+                                                        </strong>
+                                                    </div>
+                                                )}
+
+                                            </div>
+
+                                        </section>
+
+
+                                        {duenos[albergue.userId] ? (
 
                                             <div className="admin-dueno">
 
                                                 <div>
                                                     <span>
-                                                        Cuenta responsable
+                                                        Responsable
                                                     </span>
                                                     <strong>
                                                         {duenos[albergue.userId].nombreCompleto}
@@ -912,7 +1003,44 @@ function GestionAlbergues() {
 
                                                 <div>
                                                     <span>
-                                                        Estado
+                                                        Correo
+                                                    </span>
+                                                    <strong>
+                                                        <a
+                                                            href={
+                                                                "mailto:" +
+                                                                duenos[albergue.userId].email
+                                                            }
+                                                        >
+                                                            {duenos[albergue.userId].email}
+                                                        </a>
+                                                    </strong>
+                                                </div>
+
+                                                <div>
+                                                    <span>
+                                                        Teléfono
+                                                    </span>
+                                                    <strong>
+                                                        {duenos[albergue.userId].telefono ||
+                                                            "Sin registrar"}
+                                                    </strong>
+                                                </div>
+
+                                                <div>
+                                                    <span>
+                                                        Miembro desde
+                                                    </span>
+                                                    <strong>
+                                                        {formatearFecha(
+                                                            duenos[albergue.userId].fechaRegistro
+                                                        )}
+                                                    </strong>
+                                                </div>
+
+                                                <div>
+                                                    <span>
+                                                        Estado de la cuenta
                                                     </span>
                                                     <strong
                                                         className={
@@ -949,6 +1077,22 @@ function GestionAlbergues() {
                                                         Reactivar cuenta
                                                     </button>
                                                 )}
+
+                                            </div>
+
+                                        ) : (
+
+                                            <div className="admin-dueno admin-dueno-huerfano">
+
+                                                <div>
+                                                    <span>
+                                                        Responsable
+                                                    </span>
+                                                    <strong>
+                                                        No se pudo leer la cuenta asociada
+                                                        a este refugio.
+                                                    </strong>
+                                                </div>
 
                                             </div>
                                         )}

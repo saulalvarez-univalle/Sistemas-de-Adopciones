@@ -2,15 +2,15 @@ import { useEffect, useState, useCallback } from "react";
 
 import { useAuth } from "../../context/AuthContext";
 
-import {
-    obtenerPerfil,
-    suspenderCuenta,
-    reactivarCuenta
-} from "../../services/userService";
+import { obtenerPerfil } from "../../services/userService";
+
+import { formatearFecha } from "../../utils/fechas";
 
 import {
     obtenerTodosLosServicios,
     actualizarEstadoServicio,
+    suspenderServicio,
+    reactivarServicio,
     CATEGORIAS_SERVICIO
 } from "../../services/servicioService";
 
@@ -184,17 +184,28 @@ function GestionServicios() {
 
             if (suspender) {
 
-                await suspenderCuenta(registro.userId);
+                await suspenderServicio(
+                    registro.id,
+                    registro.userId
+                );
 
                 setMensaje(
-                    "Cuenta suspendida. El responsable ya no puede iniciar sesión."
+                    "Cuenta suspendida. El responsable ya no puede " +
+                    "iniciar sesión y el establecimiento salió del " +
+                    "directorio y del mapa."
                 );
 
             } else {
 
-                await reactivarCuenta(registro.userId);
+                await reactivarServicio(
+                    registro.id,
+                    registro.userId
+                );
 
-                setMensaje("Cuenta reactivada.");
+                setMensaje(
+                    "Cuenta reactivada. Si el establecimiento está " +
+                    "verificado, volvió al directorio y al mapa."
+                );
             }
 
             await cargarDatos();
@@ -518,19 +529,116 @@ function GestionServicios() {
                         )}
 
 
-                        {duenos[servicio.userId] && (
+                        <section className="admin-ficha">
+
+                            <h3>
+                                Datos del registro
+                            </h3>
+
+                            <div className="admin-ficha-datos">
+
+                                <div>
+                                    <span>Fecha de solicitud</span>
+                                    <strong>
+                                        {formatearFecha(servicio.fechaSolicitud)}
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>Estado de verificación</span>
+                                    <strong>
+                                        {servicio.estadoVerificacion ===
+                                            "Pendiente_Verificacion"
+                                            ? "Pendiente de revisar"
+                                            : servicio.estadoVerificacion}
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>Visible en público</span>
+                                    <strong>
+                                        {servicio.estadoVerificacion === "Verificado" &&
+                                            servicio.activo !== false
+                                            ? "Sí"
+                                            : "No"}
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>Coordenadas</span>
+                                    <strong>
+                                        {servicio.latitud && servicio.longitud
+                                            ? servicio.latitud + ", " + servicio.longitud
+                                            : "Sin ubicación"}
+                                    </strong>
+                                </div>
+
+                                <div className="admin-ficha-ancho">
+                                    <span>Identificador interno</span>
+                                    <strong className="admin-ficha-id">
+                                        {servicio.id}
+                                    </strong>
+                                </div>
+
+                                {servicio.motivoRechazo && (
+
+                                    <div className="admin-ficha-ancho">
+                                        <span>Último motivo registrado</span>
+                                        <strong>
+                                            {servicio.motivoRechazo}
+                                        </strong>
+                                    </div>
+                                )}
+
+                            </div>
+
+                        </section>
+
+
+                        {duenos[servicio.userId] ? (
 
                             <div className="admin-dueno">
 
                                 <div>
-                                    <span>Cuenta responsable</span>
+                                    <span>Responsable</span>
                                     <strong>
                                         {duenos[servicio.userId].nombreCompleto}
                                     </strong>
                                 </div>
 
                                 <div>
-                                    <span>Estado</span>
+                                    <span>Correo</span>
+                                    <strong>
+                                        <a
+                                            href={
+                                                "mailto:" +
+                                                duenos[servicio.userId].email
+                                            }
+                                        >
+                                            {duenos[servicio.userId].email}
+                                        </a>
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>Teléfono</span>
+                                    <strong>
+                                        {duenos[servicio.userId].telefono ||
+                                            "Sin registrar"}
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>Miembro desde</span>
+                                    <strong>
+                                        {formatearFecha(
+                                            duenos[servicio.userId].fechaRegistro
+                                        )}
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>Estado de la cuenta</span>
                                     <strong
                                         className={
                                             estadoCuentaDe(servicio.userId) === "Activo"
@@ -562,6 +670,20 @@ function GestionServicios() {
                                         Reactivar cuenta
                                     </button>
                                 )}
+
+                            </div>
+
+                        ) : (
+
+                            <div className="admin-dueno admin-dueno-huerfano">
+
+                                <div>
+                                    <span>Responsable</span>
+                                    <strong>
+                                        No se pudo leer la cuenta asociada a
+                                        este establecimiento.
+                                    </strong>
+                                </div>
 
                             </div>
                         )}

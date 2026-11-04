@@ -14,6 +14,11 @@ import { db } from "./firebase";
 
 import { crearNotificacion } from "./notificacionService";
 
+import {
+    suspenderCuenta,
+    reactivarCuenta
+} from "./userService";
+
 // RNF-10: los establecimientos se modelan en una sola colección con un
 // campo categoria. Incorporar una categoría nueva es agregar un valor a
 // esta lista; la estructura de datos no cambia.
@@ -53,6 +58,7 @@ export async function registrarServicio(datos) {
         longitud: datos.longitud,
         fotoUrl: datos.fotoUrl || "",
         estadoVerificacion: "Pendiente_Verificacion",
+        activo: true,
         motivoRechazo: "",
         fechaSolicitud: serverTimestamp()
     });
@@ -207,6 +213,11 @@ export async function obtenerServiciosPendientes() {
 
 // RN-06: solo los establecimientos validados aparecen en el directorio
 // y en el mapa.
+// Mismo criterio que en los refugios: aparece en el directorio y en el
+// mapa solo si está verificado y su responsable no está suspendido. El
+// campo "activo" copia aquí el estado de la cuenta, porque el visitante no
+// puede leer la colección "users". El filtro va en memoria para no obligar
+// a un índice compuesto.
 export async function obtenerServiciosVerificados() {
 
     const consulta = query(
@@ -220,9 +231,15 @@ export async function obtenerServiciosVerificados() {
 
     resultado.forEach((documento) => {
 
+        const datos = documento.data();
+
+        if (datos.activo === false) {
+            return;
+        }
+
         servicios.push({
             id: documento.id,
-            ...documento.data()
+            ...datos
         });
     });
 
@@ -346,4 +363,49 @@ export function filtrarServicios(servicios, filtros) {
     }
 
     return resultado;
+}
+
+
+// Igual que en los refugios: suspender la cuenta y sacar el
+// establecimiento del directorio son la misma medida, así que se aplican
+// juntas. Nada se borra; "activo" vuelve a true al reactivar (RNF-08).
+export async function suspenderServicio(servicioId, userId) {
+
+    await suspenderCuenta(userId);
+
+    await updateDoc(
+        doc(db, "servicios", servicioId),
+        { activo: false }
+    );
+
+    await crearNotificacion({
+        userId: userId,
+        titulo: "Tu cuenta fue suspendida",
+        mensaje:
+            "Un administrador suspendió tu cuenta. Tu establecimiento " +
+            "dejó de aparecer en el directorio y en el mapa. Comunícate " +
+            "con la administración de Red Huella para resolverlo.",
+        tipo: "Moderacion"
+    });
+}
+
+
+export async function reactivarServicio(servicioId, userId) {
+
+    await reactivarCuenta(userId);
+
+    await updateDoc(
+        doc(db, "servicios", servicioId),
+        { activo: true }
+    );
+
+    await crearNotificacion({
+        userId: userId,
+        titulo: "Tu cuenta fue reactivada",
+        mensaje:
+            "Ya puedes iniciar sesión otra vez. Si tu establecimiento " +
+            "está verificado, volvió a aparecer en el directorio y en " +
+            "el mapa.",
+        tipo: "Moderacion"
+    });
 }

@@ -146,6 +146,9 @@ service cloud.firestore {
         request.resource.data.userId == request.auth.uid &&
         request.resource.data.estadoVerificacion == "Pendiente_Verificacion";
 
+      // El campo activo refleja si la cuenta responsable esta suspendida
+      // y solo lo escribe un administrador: si el dueno pudiera tocarlo,
+      // podria devolverse al listado publico tras una suspension.
       allow update: if esAdmin() ||
         (
           esDueno(resource.data.userId) &&
@@ -153,7 +156,9 @@ service cloud.firestore {
           request.resource.data.estadoVerificacion in [
             resource.data.estadoVerificacion,
             "Pendiente_Verificacion"
-          ]
+          ] &&
+          request.resource.data.get("activo", true) ==
+            resource.data.get("activo", true)
         );
 
       allow delete: if esSuperusuario();
@@ -265,6 +270,9 @@ service cloud.firestore {
         request.resource.data.userId == request.auth.uid &&
         request.resource.data.estadoVerificacion == "Pendiente_Verificacion";
 
+      // El campo activo refleja si la cuenta responsable esta suspendida
+      // y solo lo escribe un administrador: si el dueno pudiera tocarlo,
+      // podria devolverse al listado publico tras una suspension.
       allow update: if esAdmin() ||
         (
           esDueno(resource.data.userId) &&
@@ -272,7 +280,9 @@ service cloud.firestore {
           request.resource.data.estadoVerificacion in [
             resource.data.estadoVerificacion,
             "Pendiente_Verificacion"
-          ]
+          ] &&
+          request.resource.data.get("activo", true) ==
+            resource.data.get("activo", true)
         );
 
       allow delete: if esSuperusuario();

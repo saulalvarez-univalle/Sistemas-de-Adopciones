@@ -12,6 +12,8 @@ import {
 
 import { db } from "./firebase";
 
+import { obtenerAlberguesVerificados } from "./albergueService";
+
 export const ESTADOS_ADOPCION = [
     "Disponible",
     "En proceso",
@@ -140,7 +142,24 @@ export async function obtenerMascotasPorAlbergue(albergueId) {
 // RN-03: el catálogo público solo muestra Disponible y En proceso.
 // El filtrado y el orden se resuelven en memoria para no depender de un
 // índice compuesto en Firestore, igual que en obtenerEspeciesActivas.
-export async function obtenerMascotasPublicas() {
+// Una mascota se ve en público solo si su propia publicación está activa
+// Y el refugio que la publicó sigue visible. Faltaba lo segundo: al
+// retirarle la verificación a un refugio, o al suspender a su responsable,
+// el refugio desaparecía del listado pero sus mascotas seguían en el
+// catálogo, huérfanas y sin forma de contactar a nadie.
+//
+// Quien ya tenga la lista de refugios visibles puede pasarla para evitar
+// una segunda lectura de la colección.
+export async function obtenerMascotasPublicas(alberguesVisibles) {
+
+    const albergues =
+        alberguesVisibles || await obtenerAlberguesVerificados();
+
+    const idsVisibles = [];
+
+    for (const albergue of albergues) {
+        idsVisibles.push(albergue.id);
+    }
 
     const referencia = collection(db, "mascotas");
 
@@ -154,7 +173,8 @@ export async function obtenerMascotasPublicas() {
 
         if (
             datos.activo !== false &&
-            ESTADOS_PUBLICOS.includes(datos.estadoAdopcion)
+            ESTADOS_PUBLICOS.includes(datos.estadoAdopcion) &&
+            idsVisibles.includes(datos.albergueId)
         ) {
 
             mascotas.push({
@@ -171,7 +191,18 @@ export async function obtenerMascotasPublicas() {
     return mascotas;
 }
 
+// Lo usan los favoritos. Se aplica el mismo criterio que en el catálogo:
+// una mascota guardada como favorita deja de mostrarse si su refugio ya no
+// está visible, porque llevaría a una ficha que tampoco se puede abrir.
 export async function obtenerMascotasPorIds(ids) {
+
+    const visibles = await obtenerAlberguesVerificados();
+
+    const idsVisibles = [];
+
+    for (const albergue of visibles) {
+        idsVisibles.push(albergue.id);
+    }
 
     const mascotas = [];
 
@@ -179,7 +210,11 @@ export async function obtenerMascotasPorIds(ids) {
 
         const mascota = await obtenerMascota(id);
 
-        if (mascota && mascota.activo !== false) {
+        if (
+            mascota &&
+            mascota.activo !== false &&
+            idsVisibles.includes(mascota.albergueId)
+        ) {
             mascotas.push(mascota);
         }
     }

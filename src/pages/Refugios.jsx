@@ -68,7 +68,7 @@ function Refugios() {
 
             // Una sola lectura del catálogo público, agrupada acá, en
             // lugar de una consulta por cada tarjeta de refugio.
-            const publicas = await obtenerMascotasPublicas();
+            const publicas = await obtenerMascotasPublicas(resultado);
 
             const agrupadas = {};
 

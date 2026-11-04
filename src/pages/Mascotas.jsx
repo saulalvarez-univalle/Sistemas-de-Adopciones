@@ -69,8 +69,14 @@ function Mascotas() {
             setCargando(true);
             setError("");
 
+            // Los refugios visibles se leen primero porque el catálogo
+            // se filtra con ellos: una mascota solo se publica si su
+            // refugio sigue verificado y activo.
+            const listaAlbergues =
+                await obtenerAlberguesVerificados();
+
             const listaMascotas =
-                await obtenerMascotasPublicas();
+                await obtenerMascotasPublicas(listaAlbergues);
 
             const listaDepartamentos =
                 await obtenerDepartamentos();
@@ -82,9 +88,9 @@ function Mascotas() {
             setDepartamentos(listaDepartamentos);
             setEspecies(listaEspecies);
 
-            // Se usa solo para poner el nombre del refugio cuando se
-            // llega desde el listado con ?albergue=<id>.
-            setAlbergues(await obtenerAlberguesVerificados());
+            // Se usa para poner el nombre del refugio cuando se llega
+            // desde el listado con ?albergue=<id>.
+            setAlbergues(listaAlbergues);
 
             if (usuarioFirebase) {
 

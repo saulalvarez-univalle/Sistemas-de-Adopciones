@@ -65,12 +65,45 @@ function DetalleMascota() {
                     return;
                 }
 
-                setMascota(datosMascota);
-
                 const datosAlbergue =
                     await obtenerAlberguePorId(
                         datosMascota.albergueId
                     );
+
+                // El enlace directo tiene que respetar la misma regla que
+                // el catálogo: si al refugio le retiraron la verificación
+                // o su responsable está suspendido, la ficha no se abre.
+                // Si no, bastaría con guardar la URL para saltarse la
+                // medida.
+                const puedeVerSiempre =
+                    perfil &&
+                    (
+                        perfil.rol === "Admin" ||
+                        perfil.rol === "Superusuario" ||
+                        (
+                            datosAlbergue &&
+                            datosAlbergue.userId === perfil.uid
+                        )
+                    );
+
+                if (
+                    !puedeVerSiempre &&
+                    (
+                        !datosAlbergue ||
+                        datosAlbergue.estadoVerificacion !== "Verificado" ||
+                        datosAlbergue.activo === false
+                    )
+                ) {
+
+                    setError(
+                        "Esta publicación no está disponible: el refugio " +
+                        "que la publicó no se encuentra activo en Red Huella."
+                    );
+
+                    return;
+                }
+
+                setMascota(datosMascota);
 
                 setAlbergue(datosAlbergue);
 
@@ -136,7 +169,7 @@ function DetalleMascota() {
 
         cargarDatos();
 
-    }, [id, usuarioFirebase]);
+    }, [id, usuarioFirebase, perfil]);
 
 
     async function manejarFavorito() {

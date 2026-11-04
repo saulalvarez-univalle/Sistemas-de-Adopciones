@@ -6,16 +6,91 @@
    registro: la suspensión le impide iniciar sesión.
 ========================================================= */
 
-.admin-dueno {
+.admin-ficha {
+    margin-top: 18px;
+
+    border: 1px solid var(--color-border-light);
+
+    border-radius: var(--radius-lg);
+
+    padding: 16px 18px;
+
+    background: var(--color-surface);
+}
+
+.admin-ficha > h3 {
+    margin: 0 0 14px;
+
+    color: var(--color-text-light);
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+}
+
+.admin-ficha-datos {
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+
+    gap: 14px 20px;
+}
+
+.admin-ficha-datos > div {
     display: flex;
 
-    align-items: center;
+    flex-direction: column;
 
-    flex-wrap: wrap;
+    gap: 3px;
 
-    gap: 16px;
+    min-width: 0;
+}
 
-    margin-top: 18px;
+.admin-ficha-datos span {
+    color: var(--color-text-light);
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 0.8px;
+
+    text-transform: uppercase;
+}
+
+.admin-ficha-datos strong {
+    color: var(--color-text);
+
+    font-size: 14px;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+.admin-ficha-ancho {
+    grid-column: 1 / -1;
+}
+
+.admin-ficha-id {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12px !important;
+
+    color: var(--color-text-secondary) !important;
+}
+
+
+.admin-dueno {
+    display: grid;
+
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+
+    align-items: end;
+
+    gap: 14px 20px;
+
+    margin-top: 14px;
 
     border: 1px solid var(--color-border);
 
@@ -33,7 +108,7 @@
 
     gap: 3px;
 
-    min-width: 140px;
+    min-width: 0;
 }
 
 .admin-dueno > div > span {
@@ -52,6 +127,28 @@
 
     font-size: 14px;
     font-weight: 700;
+
+    overflow-wrap: anywhere;
+}
+
+.admin-dueno a {
+    color: var(--color-primary);
+
+    text-decoration: none;
+}
+
+.admin-dueno a:hover {
+    text-decoration: underline;
+}
+
+.admin-dueno-huerfano {
+    border-style: dashed;
+}
+
+.admin-dueno-huerfano strong {
+    color: var(--color-text-light);
+
+    font-weight: 600;
 }
 
 .admin-dueno strong.admin-dueno-activo {
@@ -64,7 +161,9 @@
 
 .admin-dueno-suspender,
 .admin-dueno-reactivar {
-    margin-left: auto;
+    grid-column: 1 / -1;
+
+    justify-self: end;
 
     border-radius: var(--radius-sm);
 
@@ -112,7 +211,7 @@
 
     .admin-dueno-suspender,
     .admin-dueno-reactivar {
-        margin-left: 0;
+        justify-self: stretch;
 
         width: 100%;
     }

@@ -13,6 +13,11 @@ import { db } from "./firebase";
 
 import { crearNotificacion } from "./notificacionService";
 
+import {
+    suspenderCuenta,
+    reactivarCuenta
+} from "./userService";
+
 export async function registrarAlbergue(datos) {
 
     const referencia = collection(db, "albergues");
@@ -30,6 +35,7 @@ export async function registrarAlbergue(datos) {
         horariosAtencion: datos.horariosAtencion,
         logoUrl: datos.logoUrl || "",
         estadoVerificacion: "Pendiente_Verificacion",
+        activo: true,
         fechaSolicitud: new Date(),
         motivoRechazo: ""
     });
@@ -271,6 +277,13 @@ export async function actualizarEstadoAlbergue(
     }
 }
 
+// Un refugio aparece en público solo si está verificado Y su responsable
+// no está suspendido. El estado de la cuenta vive en la colección "users",
+// que el visitante no puede leer, así que se copia aquí como un campo
+// "activo" (lo escriben suspenderRefugio y reactivarRefugio). El filtro por
+// "activo" se hace en memoria a propósito: un segundo where() obligaría a
+// crear un índice compuesto en Firestore, y la cantidad de refugios del
+// sistema no lo justifica.
 export async function obtenerAlberguesVerificados() {
 
     const referencia = collection(db, "albergues");
@@ -290,12 +303,68 @@ export async function obtenerAlberguesVerificados() {
 
     resultado.forEach((documento) => {
 
+        const datos = documento.data();
+
+        // Los refugios registrados antes de que existiera el campo no
+        // tienen "activo": se consideran activos.
+        if (datos.activo === false) {
+            return;
+        }
+
         albergues.push({
             id: documento.id,
-            ...documento.data()
+            ...datos
         });
 
     });
 
     return albergues;
+}
+
+// Suspender al responsable y ocultar el refugio son dos caras de la misma
+// medida, y por eso se hacen juntas. Antes no era así: se suspendía la
+// cuenta, el usuario ya no podía entrar, pero su refugio seguía apareciendo
+// en el listado público y sus mascotas en el catálogo, que es justo lo que
+// la suspensión pretende evitar. No se borra nada (RNF-08): "activo" vuelve
+// a true al reactivar.
+export async function suspenderRefugio(albergueId, userId) {
+
+    await suspenderCuenta(userId);
+
+    await updateDoc(
+        doc(db, "albergues", albergueId),
+        { activo: false }
+    );
+
+    await crearNotificacion({
+        userId: userId,
+        titulo: "Tu cuenta fue suspendida",
+        mensaje:
+            "Un administrador suspendió tu cuenta. Tu refugio dejó de " +
+            "aparecer en el listado público y sus mascotas salieron del " +
+            "catálogo. Comunícate con la administración de Red Huella " +
+            "para resolverlo.",
+        tipo: "Moderacion"
+    });
+}
+
+
+export async function reactivarRefugio(albergueId, userId) {
+
+    await reactivarCuenta(userId);
+
+    await updateDoc(
+        doc(db, "albergues", albergueId),
+        { activo: true }
+    );
+
+    await crearNotificacion({
+        userId: userId,
+        titulo: "Tu cuenta fue reactivada",
+        mensaje:
+            "Ya puedes iniciar sesión otra vez. Si tu refugio está " +
+            "verificado, volvió a aparecer en el listado público junto " +
+            "con sus mascotas.",
+        tipo: "Moderacion"
+    });
 }
