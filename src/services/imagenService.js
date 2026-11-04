@@ -65,7 +65,7 @@ export async function subirImagen(archivo) {
 
     if (!respuesta.ok) {
 
-        let detalle = "";
+        let detalle;
 
         try {
 
@@ -74,6 +74,8 @@ export async function subirImagen(archivo) {
             detalle = cuerpo?.error?.message || "";
 
         } catch {
+
+            // La respuesta de error no siempre trae JSON.
             detalle = "";
         }
 

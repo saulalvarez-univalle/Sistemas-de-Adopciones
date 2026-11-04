@@ -5,6 +5,8 @@ import { useAuth } from "../context/AuthContext";
 import { actualizarPerfil } from "../services/userService";
 
 import CampoImagen from "../components/CampoImagen";
+
+import Cargando from "../components/Cargando";
 import {
     obtenerDepartamentos,
     obtenerMunicipios
@@ -276,15 +278,7 @@ function Perfil() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Cargando perfil...
-                </p>
-
-            </main>
+            <Cargando texto="Cargando perfil" />
         );
     }
 

@@ -15,6 +15,8 @@ import iconoSombra from "leaflet/dist/images/marker-shadow.png";
 
 import { useAuth } from "../context/AuthContext";
 
+import "../styles/cargando.css";
+
 import {
     obtenerAlberguesPendientes,
     actualizarEstadoAlbergue

@@ -14,6 +14,8 @@ import {
 
 import "../../styles/servicios.css";
 
+import Cargando from "../../components/Cargando";
+
 function GestionServicios() {
 
     const { perfil } = useAuth();
@@ -143,15 +145,7 @@ function GestionServicios() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Cargando solicitudes...
-                </p>
-
-            </main>
+            <Cargando texto="Cargando solicitudes" />
         );
     }
 

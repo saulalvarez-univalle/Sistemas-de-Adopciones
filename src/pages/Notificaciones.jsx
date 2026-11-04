@@ -10,6 +10,8 @@ import {
 
 import "../styles/notificaciones.css";
 
+import Cargando from "../components/Cargando";
+
 const ICONOS = {
     Solicitud: "✉",
     Adopcion: "✓",
@@ -128,15 +130,7 @@ function Notificaciones() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Cargando notificaciones...
-                </p>
-
-            </main>
+            <Cargando texto="Cargando notificaciones" />
         );
     }
 

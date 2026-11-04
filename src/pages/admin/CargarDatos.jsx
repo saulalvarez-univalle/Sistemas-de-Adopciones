@@ -10,6 +10,8 @@ import {
 
 import "../../styles/admin.css";
 
+import Cargando from "../../components/Cargando";
+
 const NOMBRES = {
     departamentos: "Departamentos",
     municipios: "Municipios",
@@ -119,15 +121,7 @@ function CargarDatos() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Revisando los catálogos...
-                </p>
-
-            </main>
+            <Cargando texto="Revisando los catálogos" />
         );
     }
 

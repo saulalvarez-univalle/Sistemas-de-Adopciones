@@ -13,6 +13,8 @@ import { obtenerDatosDelSistema } from "../../services/reporteService";
 
 import "../../styles/reportes.css";
 
+import Cargando from "../../components/Cargando";
+
 // HU-26 (supervisión). El administrador no publica mascotas: eso es del
 // albergue. Lo que necesita es ver todo el catálogo de un vistazo y poder
 // intervenir cuando algo está mal publicado, por ejemplo tras resolver
@@ -156,15 +158,7 @@ function GestionMascotas() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Cargando el catálogo...
-                </p>
-
-            </main>
+            <Cargando texto="Cargando el catálogo" />
         );
     }
 

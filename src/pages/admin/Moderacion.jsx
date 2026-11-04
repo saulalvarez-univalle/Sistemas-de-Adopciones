@@ -14,6 +14,8 @@ import {
 
 import "../../styles/notificaciones.css";
 
+import Cargando from "../../components/Cargando";
+
 function Moderacion() {
 
     const [pendientes, setPendientes] = useState([]);
@@ -199,15 +201,7 @@ function Moderacion() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Cargando la bandeja de moderación...
-                </p>
-
-            </main>
+            <Cargando texto="Cargando la bandeja de moderación" />
         );
     }
 

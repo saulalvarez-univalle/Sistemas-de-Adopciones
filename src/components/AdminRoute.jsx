@@ -1,15 +1,14 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+import Cargando from "./Cargando";
+
 function AdminRoute({ children }) {
     const { usuarioFirebase, perfil, cargando } = useAuth();
 
     if (cargando) {
         return (
-            <div className="loading-page">
-                <div className="loading-spinner"></div>
-                <p>Comprobando permisos...</p>
-            </div>
+            <Cargando texto="Comprobando tus permisos" />
         );
     }
 

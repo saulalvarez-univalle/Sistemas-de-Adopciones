@@ -18,6 +18,8 @@ import MapaUbicacion from "../components/MapaUbicacion";
 
 import CampoImagen from "../components/CampoImagen";
 
+import Cargando from "../components/Cargando";
+
 function Albergue() {
 
     const navigate = useNavigate();
@@ -562,15 +564,7 @@ function Albergue() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Cargando información del albergue...
-                </p>
-
-            </main>
+            <Cargando texto="Cargando información del albergue" />
         );
     }
 

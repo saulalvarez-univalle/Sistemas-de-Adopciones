@@ -12,6 +12,8 @@ import {
 
 import "../styles/solicitudes.css";
 
+import Cargando from "../components/Cargando";
+
 function SolicitudAdopcion() {
 
     const { mascotaId } = useParams();
@@ -216,15 +218,7 @@ function SolicitudAdopcion() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Cargando formulario...
-                </p>
-
-            </main>
+            <Cargando texto="Cargando formulario" />
         );
     }
 

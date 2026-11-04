@@ -4,6 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { cerrarSesion } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 
+import MenuUsuario from "./MenuUsuario";
+
 import { contarNoLeidas } from "../services/notificacionService";
 
 import "../styles/navbar.css";
@@ -72,149 +74,6 @@ function Navbar() {
                 error
             );
         }
-    }
-
-    function mostrarMenuUsuario() {
-
-        if (perfil === null) {
-            return;
-        }
-
-        if (
-            perfil.rol === "Admin" ||
-            perfil.rol === "Superusuario"
-        ) {
-            return (
-                <>
-                    <Link
-                        to="/admin"
-                        onClick={cerrarMenu}
-                    >
-                        Administración
-                    </Link>
-
-                    <Link
-                        to="/admin/solicitudes"
-                        onClick={cerrarMenu}
-                    >
-                        Solicitudes de adopción
-                    </Link>
-
-                    <Link
-                        to="/moderacion"
-                        onClick={cerrarMenu}
-                    >
-                        Moderación
-                    </Link>
-
-                    <Link
-                        to="/reportes"
-                        onClick={cerrarMenu}
-                    >
-                        Reportes
-                    </Link>
-                </>
-            );
-        }
-
-        if (perfil.rol === "Albergue/Refugio") {
-            return (
-                <>
-                    <Link
-                        to="/panel"
-                        onClick={cerrarMenu}
-                    >
-                        Mi panel
-                    </Link>
-
-                    <Link
-                        to="/albergue"
-                        onClick={cerrarMenu}
-                    >
-                        Mi albergue
-                    </Link>
-
-                    <Link
-                        to="/mis-mascotas"
-                        onClick={cerrarMenu}
-                    >
-                        Mis mascotas
-                    </Link>
-
-                    <Link
-                        to="/solicitudes-albergue"
-                        onClick={cerrarMenu}
-                    >
-                        Solicitudes
-                    </Link>
-                </>
-            );
-        }
-
-        if (perfil.rol === "Servicio") {
-
-            return (
-                <>
-                    <Link
-                        to="/panel"
-                        onClick={cerrarMenu}
-                    >
-                        Mi panel
-                    </Link>
-
-                    <Link
-                        to="/mi-servicio"
-                        onClick={cerrarMenu}
-                    >
-                        Mi establecimiento
-                    </Link>
-                </>
-            );
-        }
-
-        if (perfil.rol === "Adoptante") {
-
-            return (
-                <>
-                    <Link
-                        to="/panel"
-                        onClick={cerrarMenu}
-                    >
-                        Mi panel
-                    </Link>
-
-                    <Link
-                        to="/favoritos"
-                        onClick={cerrarMenu}
-                    >
-                        Favoritos
-                    </Link>
-
-                    <Link
-                        to="/mis-solicitudes"
-                        onClick={cerrarMenu}
-                    >
-                        Mis solicitudes
-                    </Link>
-
-                    <Link
-                        to="/mis-adopciones"
-                        onClick={cerrarMenu}
-                    >
-                        Mis adopciones
-                    </Link>
-                </>
-            );
-        }
-
-        return (
-            <Link
-                to="/panel"
-                onClick={cerrarMenu}
-            >
-                Mi panel
-            </Link>
-        );
     }
 
     return (
@@ -294,8 +153,6 @@ function Navbar() {
                         Nosotros
                     </a>
 
-                    {usuarioFirebase && mostrarMenuUsuario()}
-
                     <div className="navbar-actions">
 
                         {!cargando && !usuarioFirebase && (
@@ -319,38 +176,13 @@ function Navbar() {
                         )}
 
                         {usuarioFirebase && (
-                            <>
-                                <Link
-                                    to="/notificaciones"
-                                    className="notif-bell"
-                                    onClick={cerrarMenu}
-                                    aria-label="Notificaciones"
-                                    title="Notificaciones"
-                                >
-                                    ✉
 
-                                    {sinLeer > 0 && (
-                                        <span className="notif-bell-badge">
-                                            {sinLeer > 9 ? "9+" : sinLeer}
-                                        </span>
-                                    )}
-                                </Link>
-
-                                <Link
-                                    to="/perfil"
-                                    className="navbar-profile"
-                                    onClick={cerrarMenu}
-                                >
-                                    Mi perfil
-                                </Link>
-
-                                <button
-                                    className="navbar-logout"
-                                    onClick={manejarCerrarSesion}
-                                >
-                                    Cerrar sesión
-                                </button>
-                            </>
+                            <MenuUsuario
+                                perfil={perfil}
+                                sinLeer={sinLeer}
+                                alNavegar={cerrarMenu}
+                                alCerrarSesion={manejarCerrarSesion}
+                            />
                         )}
 
                     </div>

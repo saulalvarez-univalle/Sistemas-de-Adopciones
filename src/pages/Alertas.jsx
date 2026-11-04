@@ -29,6 +29,7 @@ import BotonDenunciar from "../components/BotonDenunciar";
 
 import "../styles/alertas.css";
 import "../styles/notificaciones.css";
+import "../styles/cargando.css";
 
 const FORMULARIO_VACIO = {
     tipoAlerta: "",

@@ -15,6 +15,8 @@ import TarjetaMascota from "../components/TarjetaMascota";
 
 import "../styles/mascotas.css";
 
+import Cargando from "../components/Cargando";
+
 function Favoritos() {
 
     const { usuarioFirebase } = useAuth();
@@ -113,15 +115,7 @@ function Favoritos() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Cargando tus favoritos...
-                </p>
-
-            </main>
+            <Cargando texto="Cargando tus favoritos" />
         );
     }
 

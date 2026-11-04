@@ -12,6 +12,8 @@ import { obtenerMascota } from "../services/mascotaService";
 
 import "../styles/solicitudes.css";
 
+import Cargando from "../components/Cargando";
+
 function MisSolicitudes() {
 
     const location = useLocation();
@@ -129,15 +131,7 @@ function MisSolicitudes() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Cargando tus solicitudes...
-                </p>
-
-            </main>
+            <Cargando texto="Cargando tus solicitudes" />
         );
     }
 

@@ -1,15 +1,14 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+import Cargando from "./Cargando";
+
 function ProtectedRoute({ children }) {
     const { usuarioFirebase, cargando } = useAuth();
 
     if (cargando) {
         return (
-            <div className="loading-page">
-                <div className="loading-spinner"></div>
-                <p>Comprobando sesión...</p>
-            </div>
+            <Cargando texto="Comprobando tu sesión" />
         );
     }
 

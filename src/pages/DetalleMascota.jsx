@@ -22,6 +22,8 @@ import BotonDenunciar from "../components/BotonDenunciar";
 import "../styles/detalle-mascota.css";
 import "../styles/notificaciones.css";
 
+import Cargando from "../components/Cargando";
+
 function DetalleMascota() {
 
     const { id } = useParams();
@@ -182,15 +184,7 @@ function DetalleMascota() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Cargando mascota...
-                </p>
-
-            </main>
+            <Cargando texto="Cargando mascota" />
         );
     }
 

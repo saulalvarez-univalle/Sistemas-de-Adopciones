@@ -9,6 +9,8 @@ import { obtenerAlberguePorId } from "../services/albergueService";
 
 import "../styles/solicitudes.css";
 
+import Cargando from "../components/Cargando";
+
 function MisAdopciones() {
 
     const { usuarioFirebase } = useAuth();
@@ -100,15 +102,7 @@ function MisAdopciones() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Cargando tus adopciones...
-                </p>
-
-            </main>
+            <Cargando texto="Cargando tus adopciones" />
         );
     }
 

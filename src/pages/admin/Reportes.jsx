@@ -15,6 +15,8 @@ import { obtenerDepartamentos } from "../../services/territorioService";
 
 import "../../styles/reportes.css";
 
+import Cargando from "../../components/Cargando";
+
 function Reportes() {
 
     const anioActual = new Date().getFullYear();
@@ -296,15 +298,7 @@ function Reportes() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Generando los reportes...
-                </p>
-
-            </main>
+            <Cargando texto="Generando los reportes" />
         );
     }
 

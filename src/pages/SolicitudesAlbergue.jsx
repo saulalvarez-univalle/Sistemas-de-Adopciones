@@ -15,6 +15,8 @@ import { obtenerMascota } from "../services/mascotaService";
 
 import "../styles/solicitudes.css";
 
+import Cargando from "../components/Cargando";
+
 function SolicitudesAlbergue() {
 
     const { usuarioFirebase } = useAuth();
@@ -196,15 +198,7 @@ function SolicitudesAlbergue() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Cargando solicitudes...
-                </p>
-
-            </main>
+            <Cargando texto="Cargando solicitudes" />
         );
     }
 

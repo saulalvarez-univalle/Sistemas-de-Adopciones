@@ -21,6 +21,8 @@ import CampoImagen from "../components/CampoImagen";
 
 import "../styles/servicios.css";
 
+import Cargando from "../components/Cargando";
+
 function MiServicio() {
 
     const navigate = useNavigate();
@@ -316,15 +318,7 @@ function MiServicio() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Cargando tu establecimiento...
-                </p>
-
-            </main>
+            <Cargando texto="Cargando tu establecimiento" />
         );
     }
 

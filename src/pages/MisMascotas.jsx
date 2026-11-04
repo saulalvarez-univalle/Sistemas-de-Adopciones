@@ -30,6 +30,8 @@ import {
 
 import "../styles/mis-mascotas.css";
 
+import Cargando from "../components/Cargando";
+
 const FORMULARIO_VACIO = {
     nombre: "",
     descripcion: "",
@@ -479,15 +481,7 @@ function MisMascotas() {
     if (cargando) {
 
         return (
-            <main className="loading-page">
-
-                <div className="loading-spinner"></div>
-
-                <p>
-                    Cargando tus mascotas...
-                </p>
-
-            </main>
+            <Cargando texto="Cargando tus mascotas" />
         );
     }
 
