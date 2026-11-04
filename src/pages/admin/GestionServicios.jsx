@@ -3,7 +3,13 @@ import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../../context/AuthContext";
 
 import {
-    obtenerServiciosPendientes,
+    obtenerPerfil,
+    suspenderCuenta,
+    reactivarCuenta
+} from "../../services/userService";
+
+import {
+    obtenerTodosLosServicios,
     actualizarEstadoServicio,
     CATEGORIAS_SERVICIO
 } from "../../services/servicioService";
@@ -14,6 +20,7 @@ import {
 } from "../../services/territorioService";
 
 import "../../styles/servicios.css";
+import "../../styles/admin-dueno.css";
 
 import Cargando from "../../components/Cargando";
 
@@ -24,9 +31,10 @@ function GestionServicios() {
     const { perfil } = useAuth();
 
     const [servicios, setServicios] = useState([]);
+    const [duenos, setDuenos] = useState({});
 
     const [busqueda, setBusqueda] = useState("");
-    const [filtroEstado, setFiltroEstado] = useState("");
+    const [filtroEstado, setFiltroEstado] = useState("Pendiente_Verificacion");
     const [filtroCategoria, setFiltroCategoria] = useState("");
 
     const [departamentos, setDepartamentos] = useState([]);
@@ -47,7 +55,33 @@ function GestionServicios() {
             setCargando(true);
             setError("");
 
-            const pendientes = await obtenerServiciosPendientes();
+            const pendientes = await obtenerTodosLosServicios();
+
+            // Los perfiles de los responsables, para poder suspender la
+            // cuenta sin salir de esta pantalla.
+            const mapa = {};
+
+            for (const registro of pendientes) {
+
+                if (registro.userId && !mapa[registro.userId]) {
+
+                    try {
+
+                        mapa[registro.userId] =
+                            await obtenerPerfil(registro.userId);
+
+                    } catch (error) {
+
+                        console.error(
+                            "No se pudo leer el perfil del responsable:",
+                            error
+                        );
+                    }
+                }
+            }
+
+            setDuenos(mapa);
+
 
             const listaDepartamentos = await obtenerDepartamentos();
 
@@ -102,6 +136,22 @@ function GestionServicios() {
     }
 
 
+    // Las cuentas creadas por authService siempre nacen con estadoCuenta
+    // "Activo", pero un documento viejo podría no tener el campo: sin este
+    // respaldo se vería vacío y ofrecería "Reactivar" una cuenta que nunca
+    // se suspendió.
+    function estadoCuentaDe(userId) {
+
+        const perfilDueno = duenos[userId];
+
+        if (!perfilDueno || !perfilDueno.estadoCuenta) {
+            return "Activo";
+        }
+
+        return perfilDueno.estadoCuenta;
+    }
+
+
     function cambiarMotivo(id, valor) {
 
         setMotivos({
@@ -112,6 +162,53 @@ function GestionServicios() {
         setError("");
     }
 
+
+
+    // Bloquear al responsable es distinto de retirar la verificación:
+    // una cuenta suspendida no puede ni siquiera iniciar sesión. No se
+    // borra nada, solo cambia estadoCuenta, así la medida es reversible
+    // y queda rastro (RNF-08).
+    async function cambiarCuenta(registro, suspender) {
+
+        setError("");
+        setMensaje("");
+
+        if (!registro.userId) {
+
+            setError("Este registro no tiene una cuenta asociada.");
+
+            return;
+        }
+
+        try {
+
+            if (suspender) {
+
+                await suspenderCuenta(registro.userId);
+
+                setMensaje(
+                    "Cuenta suspendida. El responsable ya no puede iniciar sesión."
+                );
+
+            } else {
+
+                await reactivarCuenta(registro.userId);
+
+                setMensaje("Cuenta reactivada.");
+            }
+
+            await cargarDatos();
+
+        } catch (error) {
+
+            console.error(
+                "Error al cambiar el estado de la cuenta:",
+                error
+            );
+
+            setError("No se pudo cambiar el estado de la cuenta.");
+        }
+    }
 
     async function decidir(servicio, estado) {
 
@@ -126,11 +223,31 @@ function GestionServicios() {
                 motivos[servicio.id] || ""
             );
 
-            setMensaje(
-                estado === "Verificado"
-                    ? servicio.nombreComercio + " fue verificado y ya aparece en el directorio."
-                    : "La solicitud fue rechazada con el motivo registrado."
-            );
+            const estabaVerificado =
+                servicio.estadoVerificacion === "Verificado";
+
+            if (estado === "Verificado") {
+
+                setMensaje(
+                    servicio.nombreComercio +
+                    " fue verificado y ya aparece en el directorio."
+                );
+
+            } else if (estabaVerificado) {
+
+                setMensaje(
+                    "Se retiró la verificación de " +
+                    servicio.nombreComercio +
+                    ". Dejó de aparecer en el directorio y en el mapa, " +
+                    "y se le notificó el motivo."
+                );
+
+            } else {
+
+                setMensaje(
+                    "La solicitud fue rechazada con el motivo registrado."
+                );
+            }
 
             await cargarDatos();
 
@@ -205,13 +322,14 @@ function GestionServicios() {
                         </span>
 
                         <h1>
-                            Verificación de establecimientos
+                            Gestión de establecimientos
                         </h1>
 
                         <p>
                             Revisa los datos de cada veterinaria, tienda o
-                            peluquería antes de publicarla en el directorio
-                            y en el mapa.
+                            peluquería antes de publicarla, y administra las
+                            ya verificadas: puedes retirarles la verificación
+                            o suspender la cuenta de su responsable.
                         </p>
 
                     </div>
@@ -223,7 +341,7 @@ function GestionServicios() {
                         </strong>
 
                         <span>
-                            pendientes
+                            registrados
                         </span>
 
                     </div>
@@ -281,7 +399,7 @@ function GestionServicios() {
                 )}
 
 
-                {servicios.length === 0 && (
+                {filtrados.length === 0 && (
 
                     <div className="servicio-empty">
 
@@ -290,11 +408,13 @@ function GestionServicios() {
                         </span>
 
                         <strong>
-                            Todo está al día
+                            Nada que mostrar
                         </strong>
 
                         <p>
-                            No hay establecimientos esperando verificación.
+                            {servicios.length === 0
+                                ? "Todavía no hay establecimientos registrados en la plataforma."
+                                : "Ningún establecimiento coincide con los filtros aplicados."}
                         </p>
 
                     </div>
@@ -323,7 +443,11 @@ function GestionServicios() {
                             </div>
 
                             <span className="servicio-estado-chip">
-                                Pendiente
+                                {servicio.estadoVerificacion === "Verificado"
+                                    ? "Verificado"
+                                    : servicio.estadoVerificacion === "Rechazado"
+                                        ? "Rechazado"
+                                        : "Pendiente"}
                             </span>
 
                         </div>
@@ -393,11 +517,62 @@ function GestionServicios() {
                             </a>
                         )}
 
+
+                        {duenos[servicio.userId] && (
+
+                            <div className="admin-dueno">
+
+                                <div>
+                                    <span>Cuenta responsable</span>
+                                    <strong>
+                                        {duenos[servicio.userId].nombreCompleto}
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>Estado</span>
+                                    <strong
+                                        className={
+                                            estadoCuentaDe(servicio.userId) === "Activo"
+                                                ? "admin-dueno-activo"
+                                                : "admin-dueno-suspendido"
+                                        }
+                                    >
+                                        {estadoCuentaDe(servicio.userId)}
+                                    </strong>
+                                </div>
+
+                                {estadoCuentaDe(servicio.userId) === "Activo" ? (
+
+                                    <button
+                                        type="button"
+                                        className="admin-dueno-suspender"
+                                        onClick={() => cambiarCuenta(servicio, true)}
+                                    >
+                                        Suspender cuenta
+                                    </button>
+
+                                ) : (
+
+                                    <button
+                                        type="button"
+                                        className="admin-dueno-reactivar"
+                                        onClick={() => cambiarCuenta(servicio, false)}
+                                    >
+                                        Reactivar cuenta
+                                    </button>
+                                )}
+
+                            </div>
+                        )}
+
                         <div className="servicio-review-footer">
 
                             <label htmlFor={"motivo-" + servicio.id}>
-                                Motivo del rechazo
-                                <span> (obligatorio si rechazas)</span>
+                                {servicio.estadoVerificacion === "Verificado"
+                                    ? "Motivo para retirar la verificación"
+                                    : "Motivo del rechazo"}
+                                <span> (obligatorio, se le envía al establecimiento)</span>
                             </label>
 
                             <textarea
@@ -416,25 +591,43 @@ function GestionServicios() {
 
                             <div className="servicio-review-actions">
 
-                                <button
-                                    type="button"
-                                    className="servicio-aprobar"
-                                    onClick={() =>
-                                        decidir(servicio, "Verificado")
-                                    }
-                                >
-                                    ✓ Verificar establecimiento
-                                </button>
+                                {servicio.estadoVerificacion !== "Verificado" && (
 
-                                <button
-                                    type="button"
-                                    className="servicio-rechazar"
-                                    onClick={() =>
-                                        decidir(servicio, "Rechazado")
-                                    }
-                                >
-                                    Rechazar solicitud
-                                </button>
+                                    <button
+                                        type="button"
+                                        className="servicio-aprobar"
+                                        onClick={() =>
+                                            decidir(servicio, "Verificado")
+                                        }
+                                    >
+                                        ✓ Verificar establecimiento
+                                    </button>
+                                )}
+
+                                {servicio.estadoVerificacion === "Verificado" ? (
+
+                                    <button
+                                        type="button"
+                                        className="servicio-rechazar"
+                                        onClick={() =>
+                                            decidir(servicio, "Rechazado")
+                                        }
+                                    >
+                                        Retirar verificación
+                                    </button>
+
+                                ) : (
+
+                                    <button
+                                        type="button"
+                                        className="servicio-rechazar"
+                                        onClick={() =>
+                                            decidir(servicio, "Rechazado")
+                                        }
+                                    >
+                                        Rechazar solicitud
+                                    </button>
+                                )}
 
                             </div>
 

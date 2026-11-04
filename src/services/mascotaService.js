@@ -312,3 +312,19 @@ export async function darDeBajaMascota(id) {
         estadoAdopcion: "No disponible"
     });
 }
+
+
+// Lo contrario de la baja lógica. Hace falta porque la baja no borra el
+// registro (RNF-08): si un administrador retira una publicación por error,
+// o el refugio corrige lo que estaba mal, la mascota tiene que poder volver
+// al catálogo sin cargarla de nuevo. Vuelve como "Disponible" porque es el
+// único estado en el que tiene sentido que el público la vea otra vez.
+export async function reactivarMascota(id) {
+
+    const referencia = doc(db, "mascotas", id);
+
+    await updateDoc(referencia, {
+        activo: true,
+        estadoAdopcion: "Disponible"
+    });
+}

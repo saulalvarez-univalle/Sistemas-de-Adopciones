@@ -11,9 +11,9 @@ import "../styles/menu-usuario.css";
 const ACCESOS_POR_ROL = {
     "Admin": [
         { ruta: "/admin", texto: "Panel administrativo" },
-        { ruta: "/gestion-albergues", texto: "Verificar refugios" },
-        { ruta: "/gestion-servicios", texto: "Verificar establecimientos" },
-        { ruta: "/gestion-mascotas", texto: "Supervisar catálogo" },
+        { ruta: "/gestion-albergues", texto: "Gestionar refugios" },
+        { ruta: "/gestion-servicios", texto: "Gestionar establecimientos" },
+        { ruta: "/gestion-mascotas", texto: "Gestionar mascotas" },
         { ruta: "/gestion-especies", texto: "Especies" },
         { ruta: "/admin/solicitudes", texto: "Solicitudes de adopción" },
         { ruta: "/moderacion", texto: "Moderación" },
@@ -21,9 +21,9 @@ const ACCESOS_POR_ROL = {
     ],
     "Superusuario": [
         { ruta: "/admin", texto: "Panel administrativo" },
-        { ruta: "/gestion-albergues", texto: "Verificar refugios" },
-        { ruta: "/gestion-servicios", texto: "Verificar establecimientos" },
-        { ruta: "/gestion-mascotas", texto: "Supervisar catálogo" },
+        { ruta: "/gestion-albergues", texto: "Gestionar refugios" },
+        { ruta: "/gestion-servicios", texto: "Gestionar establecimientos" },
+        { ruta: "/gestion-mascotas", texto: "Gestionar mascotas" },
         { ruta: "/gestion-especies", texto: "Especies" },
         { ruta: "/admin/solicitudes", texto: "Solicitudes de adopción" },
         { ruta: "/moderacion", texto: "Moderación" },

@@ -1,0 +1,119 @@
+/* =========================================================
+   CUENTA RESPONSABLE (ADMINISTRACIÓN)
+   Bloque común a la gestión de refugios y de establecimientos.
+   Desde aquí el administrador suspende o reactiva la cuenta del
+   responsable, que es distinto de retirar la verificación del
+   registro: la suspensión le impide iniciar sesión.
+========================================================= */
+
+.admin-dueno {
+    display: flex;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 16px;
+
+    margin-top: 18px;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+
+    padding: 14px 16px;
+
+    background: var(--color-surface-soft);
+}
+
+.admin-dueno > div {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+    min-width: 140px;
+}
+
+.admin-dueno > div > span {
+    color: var(--color-text-light);
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 0.8px;
+
+    text-transform: uppercase;
+}
+
+.admin-dueno > div > strong {
+    color: var(--color-text);
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.admin-dueno strong.admin-dueno-activo {
+    color: var(--color-success);
+}
+
+.admin-dueno strong.admin-dueno-suspendido {
+    color: var(--color-danger);
+}
+
+.admin-dueno-suspender,
+.admin-dueno-reactivar {
+    margin-left: auto;
+
+    border-radius: var(--radius-sm);
+
+    padding: 10px 16px;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.admin-dueno-suspender {
+    border: 1px solid var(--color-danger);
+
+    background: none;
+
+    color: var(--color-danger);
+}
+
+.admin-dueno-suspender:hover {
+    background: var(--color-danger);
+
+    color: #ffffff;
+}
+
+.admin-dueno-reactivar {
+    border: 1px solid var(--color-success);
+
+    background: none;
+
+    color: var(--color-success);
+}
+
+.admin-dueno-reactivar:hover {
+    background: var(--color-success);
+
+    color: #ffffff;
+}
+
+
+@media (max-width: 680px) {
+
+    .admin-dueno-suspender,
+    .admin-dueno-reactivar {
+        margin-left: 0;
+
+        width: 100%;
+    }
+}

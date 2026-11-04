@@ -16,13 +16,20 @@ import iconoSombra from "leaflet/dist/images/marker-shadow.png";
 import { useAuth } from "../context/AuthContext";
 
 import "../styles/cargando.css";
+import "../styles/admin-dueno.css";
 
 import BarraFiltros from "../components/BarraFiltros";
 
 import {
-    obtenerAlberguesPendientes,
+    obtenerTodosLosAlbergues,
     actualizarEstadoAlbergue
 } from "../services/albergueService";
+
+import {
+    obtenerPerfil,
+    suspenderCuenta,
+    reactivarCuenta
+} from "../services/userService";
 
 import {
     obtenerDepartamentos,
@@ -43,9 +50,11 @@ function GestionAlbergues() {
     const { perfil } = useAuth();
 
     const [albergues, setAlbergues] = useState([]);
+    const [duenos, setDuenos] = useState({});
 
     const [busqueda, setBusqueda] = useState("");
     const [filtroDepartamento, setFiltroDepartamento] = useState("");
+    const [filtroEstado, setFiltroEstado] = useState("Pendiente_Verificacion");
 
     const [departamentos, setDepartamentos] =
         useState([]);
@@ -73,12 +82,37 @@ function GestionAlbergues() {
             setCargando(true);
 
             const resultado =
-                await obtenerAlberguesPendientes();
+                await obtenerTodosLosAlbergues();
 
             const listaDepartamentos =
                 await obtenerDepartamentos();
 
             setAlbergues(resultado);
+
+            // El perfil del responsable de cada refugio, para poder
+            // suspender su cuenta sin salir de esta pantalla.
+            const mapa = {};
+
+            for (const registro of resultado) {
+
+                if (registro.userId && !mapa[registro.userId]) {
+
+                    try {
+
+                        mapa[registro.userId] =
+                            await obtenerPerfil(registro.userId);
+
+                    } catch (error) {
+
+                        console.error(
+                            "No se pudo leer el perfil del responsable:",
+                            error
+                        );
+                    }
+                }
+            }
+
+            setDuenos(mapa);
 
             setDepartamentos(
                 listaDepartamentos
@@ -172,6 +206,22 @@ function GestionAlbergues() {
     }
 
 
+    // Las cuentas creadas por authService siempre nacen con estadoCuenta
+    // "Activo", pero un documento viejo podría no tener el campo: sin este
+    // respaldo se vería vacío y ofrecería "Reactivar" una cuenta que nunca
+    // se suspendió.
+    function estadoCuentaDe(userId) {
+
+        const perfilDueno = duenos[userId];
+
+        if (!perfilDueno || !perfilDueno.estadoCuenta) {
+            return "Activo";
+        }
+
+        return perfilDueno.estadoCuenta;
+    }
+
+
     function cambiarMotivo(
         id,
         valor
@@ -186,6 +236,73 @@ function GestionAlbergues() {
             ...errores,
             [id]: ""
         });
+    }
+
+
+    // Bloquear al responsable es distinto de retirar la verificación:
+    // una cuenta suspendida no puede ni siquiera iniciar sesión. No se
+    // borra nada, solo cambia estadoCuenta, así la medida es reversible
+    // y queda rastro (RNF-08).
+    async function cambiarCuenta(albergue, suspender) {
+
+        setErrores({
+            ...errores,
+            [albergue.id]: ""
+        });
+
+        setMensajes({
+            ...mensajes,
+            [albergue.id]: ""
+        });
+
+        if (!albergue.userId) {
+
+            setErrores({
+                ...errores,
+                [albergue.id]:
+                    "Este refugio no tiene una cuenta asociada."
+            });
+
+            return;
+        }
+
+        try {
+
+            if (suspender) {
+
+                await suspenderCuenta(albergue.userId);
+
+                setMensajes({
+                    ...mensajes,
+                    [albergue.id]:
+                        "Cuenta suspendida. El responsable ya no puede iniciar sesión."
+                });
+
+            } else {
+
+                await reactivarCuenta(albergue.userId);
+
+                setMensajes({
+                    ...mensajes,
+                    [albergue.id]: "Cuenta reactivada."
+                });
+            }
+
+            await cargarDatos();
+
+        } catch (error) {
+
+            console.error(
+                "ERROR AL CAMBIAR EL ESTADO DE LA CUENTA:",
+                error
+            );
+
+            setErrores({
+                ...errores,
+                [albergue.id]:
+                    "No se pudo cambiar el estado de la cuenta."
+            });
+        }
     }
 
 
@@ -215,12 +332,7 @@ function GestionAlbergues() {
                     "Albergue verificado correctamente."
             });
 
-            setAlbergues(
-                albergues.filter(
-                    (albergue) =>
-                        albergue.id !== id
-                )
-            );
+            await cargarDatos();
 
         } catch (error) {
 
@@ -301,18 +413,20 @@ function GestionAlbergues() {
                 motivo
             );
 
+            const anterior = albergues.find(
+                (albergue) => albergue.id === id
+            );
+
             setMensajes({
                 ...mensajes,
                 [id]:
-                    "Albergue rechazado correctamente."
+                    anterior &&
+                    anterior.estadoVerificacion === "Verificado"
+                        ? "Se retiró la verificación. El refugio dejó de aparecer en el listado público y sus mascotas salieron del catálogo."
+                        : "Albergue rechazado correctamente."
             });
 
-            setAlbergues(
-                albergues.filter(
-                    (albergue) =>
-                        albergue.id !== id
-                )
-            );
+            await cargarDatos();
 
         } catch (error) {
 
@@ -391,6 +505,13 @@ function GestionAlbergues() {
     const filtrados = albergues.filter((albergue) => {
 
         if (
+            filtroEstado !== "" &&
+            albergue.estadoVerificacion !== filtroEstado
+        ) {
+            return false;
+        }
+
+        if (
             filtroDepartamento !== "" &&
             albergue.departamentoId !== filtroDepartamento
         ) {
@@ -450,12 +571,13 @@ function GestionAlbergues() {
                         </span>
 
                         <h1>
-                            Solicitudes de albergues
+                            Gestión de refugios
                         </h1>
 
                         <p>
-                            Revisa la información de cada refugio
-                            antes de aprobar su incorporación a la plataforma.
+                            Revisa las solicitudes nuevas y administra los
+                            refugios ya verificados: puedes retirarles la
+                            verificación o suspender la cuenta de su responsable.
                         </p>
 
                     </div>
@@ -467,7 +589,7 @@ function GestionAlbergues() {
                         </span>
 
                         <small>
-                            pendientes
+                            registrados
                         </small>
 
                     </div>
@@ -483,6 +605,18 @@ function GestionAlbergues() {
                         marcador="Buscar por nombre, dirección o teléfono"
                         campos={[
                             {
+                                id: "estado",
+                                etiqueta: "Estado",
+                                valor: filtroEstado,
+                                alCambiar: setFiltroEstado,
+                                opciones: [
+                                    { valor: "", texto: "Todos los estados" },
+                                    { valor: "Pendiente_Verificacion", texto: "Pendientes de revisar" },
+                                    { valor: "Verificado", texto: "Verificados" },
+                                    { valor: "Rechazado", texto: "Rechazados" }
+                                ]
+                            },
+                            {
                                 id: "departamento",
                                 etiqueta: "Departamento",
                                 valor: filtroDepartamento,
@@ -495,7 +629,7 @@ function GestionAlbergues() {
                         ]}
                         total={albergues.length}
                         mostrados={filtrados.length}
-                        sustantivo="solicitudes"
+                        sustantivo="refugios"
                     />
                 )}
 
@@ -509,12 +643,13 @@ function GestionAlbergues() {
                         </span>
 
                         <h2>
-                            Todo está al día
+                            Nada que mostrar
                         </h2>
 
                         <p>
-                            No hay solicitudes pendientes
-                            de verificación.
+                            {albergues.length === 0
+                                ? "Todavía no hay refugios registrados en la plataforma."
+                                : "Ningún refugio coincide con los filtros aplicados."}
                         </p>
 
                     </div>
@@ -562,7 +697,9 @@ function GestionAlbergues() {
                                                     </h2>
 
                                                     <p>
-                                                        Solicitud de registro
+                                                        {albergue.estadoVerificacion === "Verificado"
+                                                            ? "Refugio activo en la plataforma"
+                                                            : "Solicitud de registro"}
                                                     </p>
 
                                                 </div>
@@ -570,7 +707,11 @@ function GestionAlbergues() {
                                             </div>
 
                                             <span className="shelter-admin-status">
-                                                Pendiente
+                                                {albergue.estadoVerificacion === "Verificado"
+                                                    ? "Verificado"
+                                                    : albergue.estadoVerificacion === "Rechazado"
+                                                        ? "Rechazado"
+                                                        : "Pendiente"}
                                             </span>
 
                                         </div>
@@ -756,6 +897,63 @@ function GestionAlbergues() {
                                         </div>
 
 
+                                        {duenos[albergue.userId] && (
+
+                                            <div className="admin-dueno">
+
+                                                <div>
+                                                    <span>
+                                                        Cuenta responsable
+                                                    </span>
+                                                    <strong>
+                                                        {duenos[albergue.userId].nombreCompleto}
+                                                    </strong>
+                                                </div>
+
+                                                <div>
+                                                    <span>
+                                                        Estado
+                                                    </span>
+                                                    <strong
+                                                        className={
+                                                            estadoCuentaDe(albergue.userId) === "Activo"
+                                                                ? "admin-dueno-activo"
+                                                                : "admin-dueno-suspendido"
+                                                        }
+                                                    >
+                                                        {estadoCuentaDe(albergue.userId)}
+                                                    </strong>
+                                                </div>
+
+                                                {estadoCuentaDe(albergue.userId) === "Activo" ? (
+
+                                                    <button
+                                                        type="button"
+                                                        className="admin-dueno-suspender"
+                                                        onClick={() =>
+                                                            cambiarCuenta(albergue, true)
+                                                        }
+                                                    >
+                                                        Suspender cuenta
+                                                    </button>
+
+                                                ) : (
+
+                                                    <button
+                                                        type="button"
+                                                        className="admin-dueno-reactivar"
+                                                        onClick={() =>
+                                                            cambiarCuenta(albergue, false)
+                                                        }
+                                                    >
+                                                        Reactivar cuenta
+                                                    </button>
+                                                )}
+
+                                            </div>
+                                        )}
+
+
                                         <div className="shelter-admin-review">
 
                                             <div className="shelter-admin-review-title">
@@ -786,17 +984,29 @@ function GestionAlbergues() {
 
                                             <div className="shelter-admin-approve-area">
 
-                                                <button
-                                                    type="button"
-                                                    className="shelter-admin-approve"
-                                                    onClick={() =>
-                                                        aprobar(
-                                                            albergue.id
-                                                        )
-                                                    }
-                                                >
-                                                    ✓ Verificar albergue
-                                                </button>
+                                                {albergue.estadoVerificacion !== "Verificado" && (
+
+                                                    <button
+                                                        type="button"
+                                                        className="shelter-admin-approve"
+                                                        onClick={() =>
+                                                            aprobar(
+                                                                albergue.id
+                                                            )
+                                                        }
+                                                    >
+                                                        ✓ Verificar albergue
+                                                    </button>
+                                                )}
+
+                                                {albergue.estadoVerificacion === "Verificado" && (
+
+                                                    <p className="shelter-admin-verificado">
+                                                        Este refugio está verificado: aparece
+                                                        en el listado público y puede publicar
+                                                        mascotas.
+                                                    </p>
+                                                )}
 
                                             </div>
 
@@ -806,12 +1016,15 @@ function GestionAlbergues() {
                                                 <div>
 
                                                     <h3>
-                                                        Rechazar solicitud
+                                                        {albergue.estadoVerificacion === "Verificado"
+                                                            ? "Retirar la verificación"
+                                                            : "Rechazar solicitud"}
                                                     </h3>
 
                                                     <p>
-                                                        Indica qué información
-                                                        debe corregirse.
+                                                        {albergue.estadoVerificacion === "Verificado"
+                                                            ? "El refugio saldrá del listado público y sus mascotas dejarán de verse en el catálogo. Se le envía el motivo."
+                                                            : "Indica qué información debe corregirse."}
                                                     </p>
 
                                                 </div>
@@ -857,7 +1070,9 @@ function GestionAlbergues() {
                                                             )
                                                         }
                                                     >
-                                                        Rechazar solicitud
+                                                        {albergue.estadoVerificacion === "Verificado"
+                                                            ? "Retirar verificación"
+                                                            : "Rechazar solicitud"}
                                                     </button>
 
                                                 </div>

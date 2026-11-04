@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import {
     ESTADOS_ADOPCION,
     actualizarEstadoMascota,
-    darDeBajaMascota
+    darDeBajaMascota,
+    reactivarMascota
 } from "../../services/mascotaService";
 
 import { obtenerEspecies } from "../../services/especieService";
@@ -14,6 +15,8 @@ import { obtenerDatosDelSistema } from "../../services/reporteService";
 import "../../styles/reportes.css";
 
 import Cargando from "../../components/Cargando";
+
+import BarraFiltros from "../../components/BarraFiltros";
 
 // HU-26 (supervisión). El administrador no publica mascotas: eso es del
 // albergue. Lo que necesita es ver todo el catálogo de un vistazo y poder
@@ -25,9 +28,11 @@ function GestionMascotas() {
     const [albergues, setAlbergues] = useState([]);
     const [especies, setEspecies] = useState([]);
 
+    const [busqueda, setBusqueda] = useState("");
     const [filtroEstado, setFiltroEstado] = useState("");
     const [filtroAlbergue, setFiltroAlbergue] = useState("");
-    const [mostrarInactivas, setMostrarInactivas] = useState(false);
+    const [filtroEspecie, setFiltroEspecie] = useState("");
+    const [filtroPublicacion, setFiltroPublicacion] = useState("activas");
 
     const [cargando, setCargando] = useState(true);
 
@@ -127,6 +132,34 @@ function GestionMascotas() {
     }
 
 
+    async function reactivar(mascota) {
+
+        setError("");
+        setMensaje("");
+
+        try {
+
+            await reactivarMascota(mascota.id);
+
+            setMensaje(
+                "La publicación de " + mascota.nombre +
+                " volvió al catálogo como disponible."
+            );
+
+            await cargar();
+
+        } catch (error) {
+
+            console.error(
+                "Error al reactivar la mascota:",
+                error
+            );
+
+            setError("No se pudo reactivar la publicación.");
+        }
+    }
+
+
     async function darDeBaja(mascota) {
 
         setError("");
@@ -164,11 +197,19 @@ function GestionMascotas() {
 
 
     // Embudo de filtros, el mismo patrón que usa el catálogo público.
+    const texto = busqueda.trim().toLowerCase();
+
     const filtradas = [];
 
     for (const mascota of mascotas) {
 
-        if (!mostrarInactivas && mascota.activo === false) {
+        const retirada = mascota.activo === false;
+
+        if (filtroPublicacion === "activas" && retirada) {
+            continue;
+        }
+
+        if (filtroPublicacion === "retiradas" && !retirada) {
             continue;
         }
 
@@ -184,6 +225,31 @@ function GestionMascotas() {
             mascota.albergueId !== filtroAlbergue
         ) {
             continue;
+        }
+
+        if (
+            filtroEspecie !== "" &&
+            mascota.especieId !== filtroEspecie
+        ) {
+            continue;
+        }
+
+        if (texto !== "") {
+
+            const campos = [
+                mascota.nombre,
+                mascota.raza,
+                mascota.descripcion,
+                nombreRefugio(mascota.albergueId)
+            ];
+
+            const coincide = campos.some(
+                (campo) => (campo || "").toLowerCase().includes(texto)
+            );
+
+            if (!coincide) {
+                continue;
+            }
         }
 
         filtradas.push(mascota);
@@ -243,6 +309,68 @@ function GestionMascotas() {
                 )}
 
 
+                <BarraFiltros
+                    busqueda={busqueda}
+                    alBuscar={setBusqueda}
+                    marcador="Buscar por nombre, raza o refugio"
+                    campos={[
+                        {
+                            id: "publicacion",
+                            etiqueta: "Publicación",
+                            valor: filtroPublicacion,
+                            alCambiar: setFiltroPublicacion,
+                            opciones: [
+                                { valor: "activas", texto: "Publicadas" },
+                                { valor: "retiradas", texto: "Retiradas" },
+                                { valor: "", texto: "Todas" }
+                            ]
+                        },
+                        {
+                            id: "estado",
+                            etiqueta: "Estado",
+                            valor: filtroEstado,
+                            alCambiar: setFiltroEstado,
+                            opciones: [
+                                { valor: "", texto: "Todos los estados" },
+                                ...ESTADOS_ADOPCION.map((estado) => ({
+                                    valor: estado,
+                                    texto: estado
+                                }))
+                            ]
+                        },
+                        {
+                            id: "especie",
+                            etiqueta: "Especie",
+                            valor: filtroEspecie,
+                            alCambiar: setFiltroEspecie,
+                            opciones: [
+                                { valor: "", texto: "Todas las especies" },
+                                ...especies.map((especie) => ({
+                                    valor: especie.id,
+                                    texto: especie.nombre
+                                }))
+                            ]
+                        },
+                        {
+                            id: "refugio",
+                            etiqueta: "Refugio",
+                            valor: filtroAlbergue,
+                            alCambiar: setFiltroAlbergue,
+                            opciones: [
+                                { valor: "", texto: "Todos los refugios" },
+                                ...albergues.map((albergue) => ({
+                                    valor: albergue.id,
+                                    texto: albergue.nombreRefugio
+                                }))
+                            ]
+                        }
+                    ]}
+                    total={mascotas.length}
+                    mostrados={filtradas.length}
+                    sustantivo="mascotas"
+                />
+
+
                 <section className="reportes-bloque">
 
                     <div className="reportes-bloque-header">
@@ -256,63 +384,6 @@ function GestionMascotas() {
                             <p>
                                 De {mascotas.length} registros en total.
                             </p>
-
-                        </div>
-
-                        <div className="reportes-bloque-acciones">
-
-                            <select
-                                value={filtroEstado}
-                                onChange={(evento) =>
-                                    setFiltroEstado(evento.target.value)
-                                }
-                            >
-                                <option value="">
-                                    Todos los estados
-                                </option>
-
-                                {ESTADOS_ADOPCION.map((estado) => (
-
-                                    <option
-                                        key={estado}
-                                        value={estado}
-                                    >
-                                        {estado}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <select
-                                value={filtroAlbergue}
-                                onChange={(evento) =>
-                                    setFiltroAlbergue(evento.target.value)
-                                }
-                            >
-                                <option value="">
-                                    Todos los refugios
-                                </option>
-
-                                {albergues.map((albergue) => (
-
-                                    <option
-                                        key={albergue.id}
-                                        value={albergue.id}
-                                    >
-                                        {albergue.nombreRefugio}
-                                    </option>
-                                ))}
-                            </select>
-
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    setMostrarInactivas(!mostrarInactivas)
-                                }
-                            >
-                                {mostrarInactivas
-                                    ? "Ocultar retiradas"
-                                    : "Ver retiradas"}
-                            </button>
 
                         </div>
 
@@ -424,7 +495,7 @@ function GestionMascotas() {
 
                                         <td>
 
-                                            {mascota.activo !== false && (
+                                            {mascota.activo !== false ? (
 
                                                 <button
                                                     type="button"
@@ -434,6 +505,18 @@ function GestionMascotas() {
                                                     }
                                                 >
                                                     Retirar publicación
+                                                </button>
+
+                                            ) : (
+
+                                                <button
+                                                    type="button"
+                                                    className="gestion-reactivar"
+                                                    onClick={() =>
+                                                        reactivar(mascota)
+                                                    }
+                                                >
+                                                    Reactivar
                                                 </button>
                                             )}
 

@@ -280,10 +280,10 @@ function DashboardAdmin() {
                                 </h3>
 
                                 <p>
-                                    Revisa las solicitudes de registro,
-                                    consulta la información proporcionada
-                                    y verifica los albergues antes de
-                                    habilitarlos en la plataforma.
+                                    Revisa las solicitudes de registro y
+                                    administra los refugios ya verificados:
+                                    retira la verificación o suspende la
+                                    cuenta de su responsable.
                                 </p>
 
                             </div>
@@ -410,8 +410,8 @@ function DashboardAdmin() {
 
                                 <p>
                                     Verifica las veterinarias, tiendas y
-                                    peluquerías antes de publicarlas en el
-                                    directorio.
+                                    peluquerías, y administra las que ya
+                                    están en el directorio.
                                 </p>
 
                             </div>
@@ -496,9 +496,9 @@ function DashboardAdmin() {
 
                                 <p>
                                     Supervisa el catálogo completo,
-                                    corrige un estado mal cargado y
-                                    retira publicaciones que incumplan
-                                    las normas.
+                                    corrige un estado mal cargado, y retira
+                                    o devuelve al catálogo cualquier
+                                    publicación.
                                 </p>
 
                             </div>
@@ -509,7 +509,7 @@ function DashboardAdmin() {
                                     navigate("/gestion-mascotas");
                                 }}
                             >
-                                Supervisar catálogo
+                                Gestionar mascotas
                                 <span>
                                     →
                                 </span>

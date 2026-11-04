@@ -142,6 +142,50 @@ export async function actualizarAlbergue(id, datos) {
     );
 }
 
+// El administrador necesita ver también los ya verificados y los
+// rechazados: si solo viera los pendientes, un refugio verificado por
+// error quedaría fuera de su alcance para siempre.
+export async function obtenerTodosLosAlbergues() {
+
+    const resultado = await getDocs(
+        collection(db, "albergues")
+    );
+
+    const albergues = [];
+
+    resultado.forEach((documento) => {
+
+        albergues.push({
+            id: documento.id,
+            ...documento.data()
+        });
+    });
+
+    // Primero lo que espera revisión, que es lo que requiere acción.
+    const orden = {
+        "Pendiente_Verificacion": 0,
+        "Verificado": 1,
+        "Rechazado": 2
+    };
+
+    albergues.sort((a, b) => {
+
+        const peso =
+            (orden[a.estadoVerificacion] ?? 3) -
+            (orden[b.estadoVerificacion] ?? 3);
+
+        if (peso !== 0) {
+            return peso;
+        }
+
+        return (a.nombreRefugio || "").localeCompare(
+            b.nombreRefugio || ""
+        );
+    });
+
+    return albergues;
+}
+
 export async function obtenerAlberguesPendientes() {
     const referencia = collection(db, "albergues");
 
@@ -187,16 +231,41 @@ export async function actualizarEstadoAlbergue(
 
     if (documento.exists()) {
 
+        // Quitarle la verificación a un refugio que ya la tenía no es lo
+        // mismo que rechazar una solicitud nueva: el aviso tiene que
+        // decirle que sus publicaciones dejaron de ser visibles.
+        const estabaVerificado =
+            documento.data().estadoVerificacion === "Verificado";
+
+        const revocacion =
+            estabaVerificado && estadoVerificacion !== "Verificado";
+
+        let titulo = "Tu solicitud fue rechazada";
+        let mensaje = "Motivo: " + motivoRechazo;
+
+        if (estadoVerificacion === "Verificado") {
+
+            titulo = "Tu refugio fue verificado";
+
+            mensaje =
+                "Ya puedes publicar mascotas y apareces en el listado " +
+                "público de refugios.";
+
+        } else if (revocacion) {
+
+            titulo = "Se retiró la verificación de tu refugio";
+
+            mensaje =
+                "Tu refugio dejó de aparecer en el listado público y no " +
+                "puede publicar mascotas. Motivo: " + motivoRechazo +
+                ". Si corriges la información, tu registro vuelve a la " +
+                "cola de revisión.";
+        }
+
         await crearNotificacion({
             userId: documento.data().userId,
-            titulo:
-                estadoVerificacion === "Verificado"
-                    ? "Tu refugio fue verificado"
-                    : "Tu solicitud fue rechazada",
-            mensaje:
-                estadoVerificacion === "Verificado"
-                    ? "Ya puedes publicar mascotas y apareces en el listado público de refugios."
-                    : "Motivo: " + motivoRechazo,
+            titulo: titulo,
+            mensaje: mensaje,
             tipo: "Verificacion"
         });
     }

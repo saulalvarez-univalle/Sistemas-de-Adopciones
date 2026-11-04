@@ -141,6 +141,48 @@ export async function actualizarServicio(id, datos) {
     await updateDoc(referencia, cambios);
 }
 
+// Mismo criterio que en albergues: el administrador tiene que poder
+// alcanzar también a los ya verificados.
+export async function obtenerTodosLosServicios() {
+
+    const resultado = await getDocs(
+        collection(db, "servicios")
+    );
+
+    const servicios = [];
+
+    resultado.forEach((documento) => {
+
+        servicios.push({
+            id: documento.id,
+            ...documento.data()
+        });
+    });
+
+    const orden = {
+        "Pendiente_Verificacion": 0,
+        "Verificado": 1,
+        "Rechazado": 2
+    };
+
+    servicios.sort((a, b) => {
+
+        const peso =
+            (orden[a.estadoVerificacion] ?? 3) -
+            (orden[b.estadoVerificacion] ?? 3);
+
+        if (peso !== 0) {
+            return peso;
+        }
+
+        return (a.nombreComercio || "").localeCompare(
+            b.nombreComercio || ""
+        );
+    });
+
+    return servicios;
+}
+
 export async function obtenerServiciosPendientes() {
 
     const consulta = query(
@@ -223,16 +265,38 @@ export async function actualizarEstadoServicio(
 
     if (documento.exists()) {
 
+        const estabaVerificado =
+            documento.data().estadoVerificacion === "Verificado";
+
+        const revocacion =
+            estabaVerificado && estadoVerificacion !== "Verificado";
+
+        let titulo = "Tu solicitud fue rechazada";
+        let mensaje = "Motivo: " + motivoRechazo;
+
+        if (estadoVerificacion === "Verificado") {
+
+            titulo = "Tu establecimiento fue verificado";
+
+            mensaje =
+                "Ya apareces en el directorio público y en el mapa de " +
+                "servicios.";
+
+        } else if (revocacion) {
+
+            titulo = "Se retiró la verificación de tu establecimiento";
+
+            mensaje =
+                "Tu establecimiento dejó de aparecer en el directorio y " +
+                "en el mapa. Motivo: " + motivoRechazo +
+                ". Si corriges la información, tu registro vuelve a la " +
+                "cola de revisión.";
+        }
+
         await crearNotificacion({
             userId: documento.data().userId,
-            titulo:
-                estadoVerificacion === "Verificado"
-                    ? "Tu establecimiento fue verificado"
-                    : "Tu solicitud fue rechazada",
-            mensaje:
-                estadoVerificacion === "Verificado"
-                    ? "Ya apareces en el directorio público y en el mapa de servicios."
-                    : "Motivo: " + motivoRechazo,
+            titulo: titulo,
+            mensaje: mensaje,
             tipo: "Verificacion"
         });
     }

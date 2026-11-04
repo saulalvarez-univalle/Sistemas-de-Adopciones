@@ -2701,3 +2701,24 @@ img {
     }
 
 }
+
+/* El refugio ya verificado no muestra el botón de verificar, sino la
+   constancia de su estado: la acción que queda disponible es retirarle
+   la verificación. */
+.shelter-admin-verificado {
+    margin: 0;
+
+    padding: 12px 16px;
+
+    border: 1px solid #b7e0cf;
+    border-radius: 10px;
+
+    background: #e8f5ef;
+
+    color: #1f6b52;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    line-height: 1.5;
+}
