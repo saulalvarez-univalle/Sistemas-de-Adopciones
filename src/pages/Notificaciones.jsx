@@ -12,6 +12,8 @@ import "../styles/notificaciones.css";
 
 import Cargando from "../components/Cargando";
 
+import BarraFiltros from "../components/BarraFiltros";
+
 const ICONOS = {
     Solicitud: "✉",
     Adopcion: "✓",
@@ -24,6 +26,10 @@ function Notificaciones() {
     const { usuarioFirebase } = useAuth();
 
     const [notificaciones, setNotificaciones] = useState([]);
+
+    const [busqueda, setBusqueda] = useState("");
+    const [filtroTipo, setFiltroTipo] = useState("");
+    const [filtroLectura, setFiltroLectura] = useState("");
 
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
@@ -139,6 +145,33 @@ function Notificaciones() {
         (notificacion) => notificacion.leido !== true
     );
 
+    const texto = busqueda.trim().toLowerCase();
+
+    const filtradas = notificaciones.filter((notificacion) => {
+
+        if (filtroTipo !== "" && notificacion.tipo !== filtroTipo) {
+            return false;
+        }
+
+        if (filtroLectura === "nuevas" && notificacion.leido === true) {
+            return false;
+        }
+
+        if (filtroLectura === "leidas" && notificacion.leido !== true) {
+            return false;
+        }
+
+        if (texto === "") {
+            return true;
+        }
+
+        const campos = [notificacion.titulo, notificacion.mensaje];
+
+        return campos.some(
+            (campo) => (campo || "").toLowerCase().includes(texto)
+        );
+    });
+
 
     return (
         <main className="notif-page">
@@ -178,6 +211,45 @@ function Notificaciones() {
                 </header>
 
 
+                {notificaciones.length > 0 && (
+
+                    <BarraFiltros
+                        busqueda={busqueda}
+                        alBuscar={setBusqueda}
+                        marcador="Buscar en tus avisos"
+                        campos={[
+                            {
+                                id: "lectura",
+                                etiqueta: "Lectura",
+                                valor: filtroLectura,
+                                alCambiar: setFiltroLectura,
+                                opciones: [
+                                    { valor: "", texto: "Todas" },
+                                    { valor: "nuevas", texto: "Sin leer" },
+                                    { valor: "leidas", texto: "Leídas" }
+                                ]
+                            },
+                            {
+                                id: "tipo",
+                                etiqueta: "Tipo",
+                                valor: filtroTipo,
+                                alCambiar: setFiltroTipo,
+                                opciones: [
+                                    { valor: "", texto: "Todos los tipos" },
+                                    { valor: "Solicitud", texto: "Solicitudes" },
+                                    { valor: "Adopcion", texto: "Adopciones" },
+                                    { valor: "Verificacion", texto: "Verificaciones" },
+                                    { valor: "Moderacion", texto: "Moderación" }
+                                ]
+                            }
+                        ]}
+                        total={notificaciones.length}
+                        mostrados={filtradas.length}
+                        sustantivo="avisos"
+                    />
+                )}
+
+
                 {error !== "" && (
                     <div className="notif-error">
                         {error}
@@ -207,11 +279,11 @@ function Notificaciones() {
                 )}
 
 
-                {notificaciones.length > 0 && (
+                {filtradas.length > 0 && (
 
                     <div className="notif-lista">
 
-                        {notificaciones.map((notificacion) => (
+                        {filtradas.map((notificacion) => (
 
                             <article
                                 key={notificacion.id}

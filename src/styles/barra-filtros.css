@@ -1,0 +1,200 @@
+/* =========================================================
+   BARRA DE BÚSQUEDA Y FILTROS
+   Común a todos los listados del sistema.
+========================================================= */
+
+.barra-filtros {
+    margin-bottom: 22px;
+
+    padding: 16px 18px;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-lg);
+
+    background: var(--color-surface);
+}
+
+.barra-filtros-campos {
+    display: flex;
+
+    align-items: flex-end;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+}
+
+
+/* =========================================================
+   BÚSQUEDA
+========================================================= */
+
+.barra-filtros-busqueda {
+    position: relative;
+
+    flex: 1;
+
+    min-width: 220px;
+}
+
+.barra-filtros-busqueda span {
+    position: absolute;
+
+    top: 50%;
+    left: 13px;
+
+    transform: translateY(-50%);
+
+    color: var(--color-text-light);
+
+    font-size: 17px;
+
+    pointer-events: none;
+}
+
+.barra-filtros-busqueda input {
+    width: 100%;
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-sm);
+
+    padding: 11px 13px 11px 36px;
+
+    background: var(--color-surface-soft);
+
+    color: var(--color-text);
+
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.barra-filtros-busqueda input:focus {
+    outline: none;
+
+    border-color: var(--color-primary);
+
+    background: var(--color-surface);
+}
+
+
+/* =========================================================
+   SELECTORES
+========================================================= */
+
+.barra-filtros-campo {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+
+    min-width: 152px;
+}
+
+.barra-filtros-campo > span {
+    color: var(--color-text-light);
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: 0.8px;
+
+    text-transform: uppercase;
+}
+
+.barra-filtros-campo select {
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-sm);
+
+    padding: 11px 13px;
+
+    background: var(--color-surface-soft);
+
+    color: var(--color-text);
+
+    font-family: inherit;
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.barra-filtros-campo select:focus {
+    outline: none;
+
+    border-color: var(--color-primary);
+}
+
+
+/* =========================================================
+   LIMPIAR Y CONTEO
+========================================================= */
+
+.barra-filtros-limpiar {
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-sm);
+
+    padding: 11px 18px;
+
+    background: none;
+
+    color: var(--color-text-secondary);
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.barra-filtros-limpiar:hover {
+    border-color: var(--color-primary);
+
+    color: var(--color-primary);
+}
+
+.barra-filtros-conteo {
+    margin: 13px 0 0;
+
+    padding-top: 12px;
+
+    border-top: 1px solid var(--color-border-light);
+
+    color: var(--color-text-secondary);
+
+    font-size: 13px;
+}
+
+.barra-filtros-conteo strong {
+    color: var(--color-primary);
+}
+
+
+/* =========================================================
+   RESPONSIVO
+========================================================= */
+
+@media (max-width: 680px) {
+
+    .barra-filtros-campos {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+    .barra-filtros-busqueda,
+    .barra-filtros-campo {
+        min-width: 0;
+
+        width: 100%;
+    }
+
+    .barra-filtros-limpiar {
+        width: 100%;
+    }
+}

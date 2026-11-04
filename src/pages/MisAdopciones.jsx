@@ -11,11 +11,15 @@ import "../styles/solicitudes.css";
 
 import Cargando from "../components/Cargando";
 
+import BarraFiltros from "../components/BarraFiltros";
+
 function MisAdopciones() {
 
     const { usuarioFirebase } = useAuth();
 
     const [adopciones, setAdopciones] = useState([]);
+
+    const [busqueda, setBusqueda] = useState("");
 
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
@@ -107,6 +111,29 @@ function MisAdopciones() {
     }
 
 
+
+    const texto = busqueda.trim().toLowerCase();
+
+    const filtradas = adopciones.filter((adopcion) => {
+
+        if (texto === "") {
+            return true;
+        }
+
+        const nombre = adopcion.mascota
+            ? adopcion.mascota.nombre
+            : "";
+
+        const refugio = adopcion.albergue
+            ? adopcion.albergue.nombreRefugio
+            : "";
+
+        return (
+            nombre.toLowerCase().includes(texto) ||
+            refugio.toLowerCase().includes(texto)
+        );
+    });
+
     return (
         <main className="solicitud-page">
 
@@ -129,6 +156,16 @@ function MisAdopciones() {
                     </p>
 
                 </header>
+
+
+                <BarraFiltros
+                    busqueda={busqueda}
+                    alBuscar={setBusqueda}
+                    marcador="Buscar por mascota o refugio"
+                    total={adopciones.length}
+                    mostrados={filtradas.length}
+                    sustantivo="adopciones"
+                />
 
 
                 {error !== "" && (
@@ -172,7 +209,7 @@ function MisAdopciones() {
 
                     <div className="solicitud-list">
 
-                        {adopciones.map((adopcion) => (
+                        {filtradas.map((adopcion) => (
 
                             <article
                                 key={adopcion.id}

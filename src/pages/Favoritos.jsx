@@ -17,11 +17,16 @@ import "../styles/mascotas.css";
 
 import Cargando from "../components/Cargando";
 
+import BarraFiltros from "../components/BarraFiltros";
+
 function Favoritos() {
 
     const { usuarioFirebase } = useAuth();
 
     const [mascotas, setMascotas] = useState([]);
+
+    const [busqueda, setBusqueda] = useState("");
+    const [filtroEspecie, setFiltroEspecie] = useState("");
     const [especies, setEspecies] = useState([]);
 
     const [cargando, setCargando] = useState(true);
@@ -120,6 +125,27 @@ function Favoritos() {
     }
 
 
+
+    const texto = busqueda.trim().toLowerCase();
+
+    const filtradas = mascotas.filter((mascota) => {
+
+        if (
+            filtroEspecie !== "" &&
+            mascota.especieId !== filtroEspecie
+        ) {
+            return false;
+        }
+
+        if (texto === "") {
+            return true;
+        }
+
+        return (mascota.nombre || "")
+            .toLowerCase()
+            .includes(texto);
+    });
+
     return (
         <main className="mascotas-page">
 
@@ -146,6 +172,34 @@ function Favoritos() {
                     </p>
 
                 </div>
+
+
+                {mascotas.length > 0 && (
+
+                    <BarraFiltros
+                        busqueda={busqueda}
+                        alBuscar={setBusqueda}
+                        marcador="Buscar por nombre"
+                        campos={[
+                            {
+                                id: "especie",
+                                etiqueta: "Especie",
+                                valor: filtroEspecie,
+                                alCambiar: setFiltroEspecie,
+                                opciones: [
+                                    { valor: "", texto: "Todas las especies" },
+                                    ...especies.map((especie) => ({
+                                        valor: especie.id,
+                                        texto: especie.nombre
+                                    }))
+                                ]
+                            }
+                        ]}
+                        total={mascotas.length}
+                        mostrados={filtradas.length}
+                        sustantivo="favoritos"
+                    />
+                )}
 
 
                 {error !== "" && (
@@ -191,11 +245,11 @@ function Favoritos() {
                 )}
 
 
-                {mascotas.length > 0 && (
+                {filtradas.length > 0 && (
 
                     <div className="mascotas-grid">
 
-                        {mascotas.map((mascota) => (
+                        {filtradas.map((mascota) => (
 
                             <TarjetaMascota
                                 key={mascota.id}

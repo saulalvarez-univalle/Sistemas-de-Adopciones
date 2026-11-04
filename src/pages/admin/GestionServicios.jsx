@@ -4,7 +4,8 @@ import { useAuth } from "../../context/AuthContext";
 
 import {
     obtenerServiciosPendientes,
-    actualizarEstadoServicio
+    actualizarEstadoServicio,
+    CATEGORIAS_SERVICIO
 } from "../../services/servicioService";
 
 import {
@@ -16,11 +17,17 @@ import "../../styles/servicios.css";
 
 import Cargando from "../../components/Cargando";
 
+import BarraFiltros from "../../components/BarraFiltros";
+
 function GestionServicios() {
 
     const { perfil } = useAuth();
 
     const [servicios, setServicios] = useState([]);
+
+    const [busqueda, setBusqueda] = useState("");
+    const [filtroEstado, setFiltroEstado] = useState("");
+    const [filtroCategoria, setFiltroCategoria] = useState("");
 
     const [departamentos, setDepartamentos] = useState([]);
     const [municipios, setMunicipios] = useState([]);
@@ -150,6 +157,40 @@ function GestionServicios() {
     }
 
 
+
+    const texto = busqueda.trim().toLowerCase();
+
+    const filtrados = servicios.filter((servicio) => {
+
+        if (
+            filtroEstado !== "" &&
+            servicio.estadoVerificacion !== filtroEstado
+        ) {
+            return false;
+        }
+
+        if (
+            filtroCategoria !== "" &&
+            servicio.categoria !== filtroCategoria
+        ) {
+            return false;
+        }
+
+        if (texto === "") {
+            return true;
+        }
+
+        const campos = [
+            servicio.nombreComercio,
+            servicio.direccion,
+            servicio.telefono
+        ];
+
+        return campos.some(
+            (campo) => (campo || "").toLowerCase().includes(texto)
+        );
+    });
+
     return (
         <main className="servicio-page">
 
@@ -190,6 +231,43 @@ function GestionServicios() {
                 </header>
 
 
+                <BarraFiltros
+                    busqueda={busqueda}
+                    alBuscar={setBusqueda}
+                    marcador="Buscar por nombre, dirección o teléfono"
+                    campos={[
+                        {
+                            id: "estado",
+                            etiqueta: "Verificación",
+                            valor: filtroEstado,
+                            alCambiar: setFiltroEstado,
+                            opciones: [
+                                { valor: "", texto: "Todos los estados" },
+                                { valor: "Pendiente_Verificacion", texto: "Pendientes" },
+                                { valor: "Verificado", texto: "Verificados" },
+                                { valor: "Rechazado", texto: "Rechazados" }
+                            ]
+                        },
+                        {
+                            id: "categoria",
+                            etiqueta: "Categoría",
+                            valor: filtroCategoria,
+                            alCambiar: setFiltroCategoria,
+                            opciones: [
+                                { valor: "", texto: "Todas las categorías" },
+                                ...CATEGORIAS_SERVICIO.map((categoria) => ({
+                                    valor: categoria,
+                                    texto: categoria
+                                }))
+                            ]
+                        }
+                    ]}
+                    total={servicios.length}
+                    mostrados={filtrados.length}
+                    sustantivo="establecimientos"
+                />
+
+
                 {mensaje !== "" && (
                     <div className="servicio-success">
                         {mensaje}
@@ -223,7 +301,7 @@ function GestionServicios() {
                 )}
 
 
-                {servicios.map((servicio) => (
+                {filtrados.map((servicio) => (
 
                     <article
                         key={servicio.id}

@@ -16,9 +16,14 @@ import "../../styles/notificaciones.css";
 
 import Cargando from "../../components/Cargando";
 
+import BarraFiltros from "../../components/BarraFiltros";
+
 function Moderacion() {
 
     const [pendientes, setPendientes] = useState([]);
+
+    const [busqueda, setBusqueda] = useState("");
+    const [filtroTipo, setFiltroTipo] = useState("");
     const [resueltas, setResueltas] = useState([]);
 
     const [autores, setAutores] = useState({});
@@ -206,6 +211,36 @@ function Moderacion() {
     }
 
 
+
+    const texto = busqueda.trim().toLowerCase();
+
+    function coincide(denuncia) {
+
+        if (
+            filtroTipo !== "" &&
+            denuncia.tipoContenido !== filtroTipo
+        ) {
+            return false;
+        }
+
+        if (texto === "") {
+            return true;
+        }
+
+        const campos = [
+            denuncia.contenidoTitulo,
+            denuncia.motivo,
+            denuncia.observaciones
+        ];
+
+        return campos.some(
+            (campo) => (campo || "").toLowerCase().includes(texto)
+        );
+    }
+
+    const pendientesVisibles = pendientes.filter(coincide);
+    const resueltasVisibles = resueltas.filter(coincide);
+
     return (
         <main className="notif-page">
 
@@ -246,6 +281,31 @@ function Moderacion() {
                 </header>
 
 
+                <BarraFiltros
+                    busqueda={busqueda}
+                    alBuscar={setBusqueda}
+                    marcador="Buscar por contenido, motivo o descripción"
+                    campos={[
+                        {
+                            id: "tipo",
+                            etiqueta: "Tipo de contenido",
+                            valor: filtroTipo,
+                            alCambiar: setFiltroTipo,
+                            opciones: [
+                                { valor: "", texto: "Todo el contenido" },
+                                { valor: "Mascota", texto: "Mascotas" },
+                                { valor: "Albergue", texto: "Refugios" },
+                                { valor: "Servicio", texto: "Establecimientos" },
+                                { valor: "Alerta", texto: "Alertas" }
+                            ]
+                        }
+                    ]}
+                    total={pendientes.length + resueltas.length}
+                    mostrados={pendientesVisibles.length + resueltasVisibles.length}
+                    sustantivo="reportes"
+                />
+
+
                 {mensaje !== "" && (
                     <div className="notif-success">
                         {mensaje}
@@ -259,7 +319,7 @@ function Moderacion() {
                 )}
 
 
-                {pendientes.length === 0 && (
+                {pendientesVisibles.length === 0 && (
 
                     <div className="notif-empty">
 
@@ -280,7 +340,7 @@ function Moderacion() {
                 )}
 
 
-                {pendientes.map((denuncia) => (
+                {pendientesVisibles.map((denuncia) => (
 
                     <article
                         key={denuncia.id}
@@ -431,7 +491,7 @@ function Moderacion() {
                 ))}
 
 
-                {resueltas.length > 0 && (
+                {resueltasVisibles.length > 0 && (
 
                     <section className="moderacion-historial">
 
@@ -439,7 +499,7 @@ function Moderacion() {
                             Reportes ya revisados
                         </h2>
 
-                        {resueltas.map((denuncia) => (
+                        {resueltasVisibles.map((denuncia) => (
 
                             <article
                                 key={denuncia.id}

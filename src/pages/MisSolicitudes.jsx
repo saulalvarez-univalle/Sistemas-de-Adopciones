@@ -14,6 +14,8 @@ import "../styles/solicitudes.css";
 
 import Cargando from "../components/Cargando";
 
+import BarraFiltros from "../components/BarraFiltros";
+
 function MisSolicitudes() {
 
     const location = useLocation();
@@ -21,6 +23,9 @@ function MisSolicitudes() {
     const { usuarioFirebase } = useAuth();
 
     const [solicitudes, setSolicitudes] = useState([]);
+
+    const [busqueda, setBusqueda] = useState("");
+    const [filtroEstado, setFiltroEstado] = useState("");
 
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState("");
@@ -136,6 +141,26 @@ function MisSolicitudes() {
     }
 
 
+
+    const texto = busqueda.trim().toLowerCase();
+
+    const filtradas = solicitudes.filter((solicitud) => {
+
+        if (filtroEstado !== "" && solicitud.estado !== filtroEstado) {
+            return false;
+        }
+
+        if (texto === "") {
+            return true;
+        }
+
+        const nombre = solicitud.mascota
+            ? solicitud.mascota.nombre
+            : "";
+
+        return nombre.toLowerCase().includes(texto);
+    });
+
     return (
         <main className="solicitud-page">
 
@@ -157,6 +182,32 @@ function MisSolicitudes() {
                     </p>
 
                 </header>
+
+
+                <BarraFiltros
+                    busqueda={busqueda}
+                    alBuscar={setBusqueda}
+                    marcador="Buscar por nombre de la mascota"
+                    campos={[
+                        {
+                            id: "estado",
+                            etiqueta: "Estado",
+                            valor: filtroEstado,
+                            alCambiar: setFiltroEstado,
+                            opciones: [
+                                { valor: "", texto: "Todos los estados" },
+                                { valor: "Pendiente", texto: "Pendiente" },
+                                { valor: "Aprobada", texto: "Aprobada" },
+                                { valor: "Rechazada", texto: "Rechazada" },
+                                { valor: "Cancelada", texto: "Cancelada" },
+                                { valor: "Concretada", texto: "Concretada" }
+                            ]
+                        }
+                    ]}
+                    total={solicitudes.length}
+                    mostrados={filtradas.length}
+                    sustantivo="solicitudes"
+                />
 
 
                 {mensaje !== "" && (
@@ -207,7 +258,7 @@ function MisSolicitudes() {
 
                     <div className="solicitud-list">
 
-                        {solicitudes.map((solicitud) => (
+                        {filtradas.map((solicitud) => (
 
                             <article
                                 key={solicitud.id}

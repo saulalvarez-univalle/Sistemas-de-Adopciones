@@ -17,6 +17,8 @@ import { useAuth } from "../context/AuthContext";
 
 import "../styles/cargando.css";
 
+import BarraFiltros from "../components/BarraFiltros";
+
 import {
     obtenerAlberguesPendientes,
     actualizarEstadoAlbergue
@@ -41,6 +43,9 @@ function GestionAlbergues() {
     const { perfil } = useAuth();
 
     const [albergues, setAlbergues] = useState([]);
+
+    const [busqueda, setBusqueda] = useState("");
+    const [filtroDepartamento, setFiltroDepartamento] = useState("");
 
     const [departamentos, setDepartamentos] =
         useState([]);
@@ -380,6 +385,57 @@ function GestionAlbergues() {
     }
 
 
+
+    const texto = busqueda.trim().toLowerCase();
+
+    const filtrados = albergues.filter((albergue) => {
+
+        if (
+            filtroDepartamento !== "" &&
+            albergue.departamentoId !== filtroDepartamento
+        ) {
+            return false;
+        }
+
+        if (texto === "") {
+            return true;
+        }
+
+        const campos = [
+            albergue.nombreRefugio,
+            albergue.direccion,
+            albergue.telefonoContacto
+        ];
+
+        return campos.some(
+            (campo) => (campo || "").toLowerCase().includes(texto)
+        );
+    });
+
+    // Solo los departamentos que tienen refugios esperando: ofrecer los
+    // nueve cuando hay solicitudes de dos haría que el filtro casi
+    // siempre devolviera nada.
+    const departamentosConSolicitud = [];
+
+    for (const albergue of albergues) {
+
+        if (
+            albergue.departamentoId &&
+            !departamentosConSolicitud.some(
+                (item) => item.valor === albergue.departamentoId
+            )
+        ) {
+            departamentosConSolicitud.push({
+                valor: albergue.departamentoId,
+                texto: obtenerNombreDepartamento(albergue.departamentoId)
+            });
+        }
+    }
+
+    departamentosConSolicitud.sort(
+        (a, b) => a.texto.localeCompare(b.texto)
+    );
+
     return (
         <main className="shelter-admin-page">
 
@@ -419,7 +475,32 @@ function GestionAlbergues() {
                 </div>
 
 
-                {albergues.length === 0 ? (
+                {albergues.length > 0 && (
+
+                    <BarraFiltros
+                        busqueda={busqueda}
+                        alBuscar={setBusqueda}
+                        marcador="Buscar por nombre, dirección o teléfono"
+                        campos={[
+                            {
+                                id: "departamento",
+                                etiqueta: "Departamento",
+                                valor: filtroDepartamento,
+                                alCambiar: setFiltroDepartamento,
+                                opciones: [
+                                    { valor: "", texto: "Todos los departamentos" },
+                                    ...departamentosConSolicitud
+                                ]
+                            }
+                        ]}
+                        total={albergues.length}
+                        mostrados={filtrados.length}
+                        sustantivo="solicitudes"
+                    />
+                )}
+
+
+                {filtrados.length === 0 ? (
 
                     <div className="shelter-admin-empty">
 
@@ -442,7 +523,7 @@ function GestionAlbergues() {
 
                     <div className="shelter-admin-list">
 
-                        {albergues.map(
+                        {filtrados.map(
                             (albergue) => {
 
                                 const latitud =

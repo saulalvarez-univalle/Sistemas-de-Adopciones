@@ -32,6 +32,8 @@ import "../styles/mis-mascotas.css";
 
 import Cargando from "../components/Cargando";
 
+import BarraFiltros from "../components/BarraFiltros";
+
 const FORMULARIO_VACIO = {
     nombre: "",
     descripcion: "",
@@ -50,6 +52,10 @@ function MisMascotas() {
 
     const [albergue, setAlbergue] = useState(null);
     const [mascotas, setMascotas] = useState([]);
+
+    const [busqueda, setBusqueda] = useState("");
+    const [filtroEstado, setFiltroEstado] = useState("");
+    const [filtroEspecie, setFiltroEspecie] = useState("");
     const [especies, setEspecies] = useState([]);
 
     const [formulario, setFormulario] = useState(FORMULARIO_VACIO);
@@ -567,6 +573,36 @@ function MisMascotas() {
     }
 
 
+
+    const texto = busqueda.trim().toLowerCase();
+
+    const filtradas = mascotas.filter((mascota) => {
+
+        if (
+            filtroEstado !== "" &&
+            mascota.estadoAdopcion !== filtroEstado
+        ) {
+            return false;
+        }
+
+        if (
+            filtroEspecie !== "" &&
+            mascota.especieId !== filtroEspecie
+        ) {
+            return false;
+        }
+
+        if (texto === "") {
+            return true;
+        }
+
+        const campos = [mascota.nombre, mascota.raza];
+
+        return campos.some(
+            (campo) => (campo || "").toLowerCase().includes(texto)
+        );
+    });
+
     return (
         <main className="mascotas-admin-page">
 
@@ -1031,9 +1067,50 @@ function MisMascotas() {
 
                 {mascotas.length > 0 && (
 
+                    <BarraFiltros
+                        busqueda={busqueda}
+                        alBuscar={setBusqueda}
+                        marcador="Buscar por nombre o raza"
+                        campos={[
+                            {
+                                id: "estado",
+                                etiqueta: "Estado",
+                                valor: filtroEstado,
+                                alCambiar: setFiltroEstado,
+                                opciones: [
+                                    { valor: "", texto: "Todos los estados" },
+                                    ...ESTADOS_ADOPCION.map((estado) => ({
+                                        valor: estado,
+                                        texto: estado
+                                    }))
+                                ]
+                            },
+                            {
+                                id: "especie",
+                                etiqueta: "Especie",
+                                valor: filtroEspecie,
+                                alCambiar: setFiltroEspecie,
+                                opciones: [
+                                    { valor: "", texto: "Todas las especies" },
+                                    ...especies.map((especie) => ({
+                                        valor: especie.id,
+                                        texto: especie.nombre
+                                    }))
+                                ]
+                            }
+                        ]}
+                        total={mascotas.length}
+                        mostrados={filtradas.length}
+                        sustantivo="mascotas"
+                    />
+                )}
+
+
+                {filtradas.length > 0 && (
+
                     <div className="mascotas-admin-list">
 
-                        {mascotas.map((mascota) => (
+                        {filtradas.map((mascota) => (
 
                             <article
                                 key={mascota.id}

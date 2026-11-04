@@ -17,12 +17,17 @@ import "../styles/solicitudes.css";
 
 import Cargando from "../components/Cargando";
 
+import BarraFiltros from "../components/BarraFiltros";
+
 function SolicitudesAlbergue() {
 
     const { usuarioFirebase } = useAuth();
 
     const [albergue, setAlbergue] = useState(null);
     const [solicitudes, setSolicitudes] = useState([]);
+
+    const [busqueda, setBusqueda] = useState("");
+    const [filtroMascota, setFiltroMascota] = useState("");
 
     const [observaciones, setObservaciones] = useState({});
     const [expandida, setExpandida] = useState("");
@@ -241,15 +246,73 @@ function SolicitudesAlbergue() {
     }
 
 
-    const pendientes = solicitudes.filter(
+    // El filtro se aplica antes de separar por estado, para que buscar
+    // a una persona la encuentre esté su solicitud donde esté.
+    const texto = busqueda.trim().toLowerCase();
+
+    const visibles = solicitudes.filter((solicitud) => {
+
+        if (
+            filtroMascota !== "" &&
+            solicitud.mascotaId !== filtroMascota
+        ) {
+            return false;
+        }
+
+        if (texto === "") {
+            return true;
+        }
+
+        const datos = solicitud.datosSolicitante || {};
+
+        const campos = [
+            datos.nombreCompleto,
+            datos.telefono,
+            datos.email,
+            solicitud.mascota ? solicitud.mascota.nombre : ""
+        ];
+
+        return campos.some(
+            (campo) =>
+                (campo || "").toLowerCase().includes(texto)
+        );
+    });
+
+    // Las mascotas que efectivamente recibieron solicitudes, para no
+    // ofrecer en el filtro opciones que no devolverían nada.
+    const mascotasConSolicitud = [];
+
+    for (const solicitud of solicitudes) {
+
+        const nombre = solicitud.mascota
+            ? solicitud.mascota.nombre
+            : "Mascota retirada";
+
+        if (
+            !mascotasConSolicitud.some(
+                (item) => item.valor === solicitud.mascotaId
+            )
+        ) {
+            mascotasConSolicitud.push({
+                valor: solicitud.mascotaId,
+                texto: nombre
+            });
+        }
+    }
+
+    mascotasConSolicitud.sort(
+        (a, b) => a.texto.localeCompare(b.texto)
+    );
+
+    const pendientes = visibles.filter(
         (solicitud) => solicitud.estado === "Pendiente"
     );
 
-    const aprobadas = solicitudes.filter(
+    const aprobadas = visibles.filter(
         (solicitud) => solicitud.estado === "Aprobada"
     );
 
-    const historial = solicitudes.filter(
+    const historial = visibles.filter(
         (solicitud) =>
             solicitud.estado !== "Pendiente" &&
             solicitud.estado !== "Aprobada"
@@ -306,6 +369,28 @@ function SolicitudesAlbergue() {
                             pendientes de revisión
                         </span>
                     </div>
+
+                <BarraFiltros
+                    busqueda={busqueda}
+                    alBuscar={setBusqueda}
+                    marcador="Buscar por nombre, teléfono o mascota"
+                    campos={[
+                        {
+                            id: "mascota",
+                            etiqueta: "Mascota",
+                            valor: filtroMascota,
+                            alCambiar: setFiltroMascota,
+                            opciones: [
+                                { valor: "", texto: "Todas las mascotas" },
+                                ...mascotasConSolicitud
+                            ]
+                        }
+                    ]}
+                    total={solicitudes.length}
+                    mostrados={visibles.length}
+                    sustantivo="solicitudes"
+                />
+
 
                     <div>
                         <strong>
