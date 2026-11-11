@@ -6,14 +6,17 @@ Aplicación Android nativa en Kotlin y Jetpack Compose para personas que quieren
 
 - Explorar mascotas disponibles y en proceso, ver sus fichas y fotos.
 - Consultar refugios verificados.
+- Explorar tarjetas de refugios con el botón **Ver más**, que abre una ficha separada con descripción, imagen, dirección, municipio, departamento, horarios, contacto, ubicación y mascotas publicadas. Desde la ficha se puede abrir el marcador, WhatsApp o el mapa.
 - Crear e iniciar sesión únicamente con una cuenta de adoptante.
-- Enviar una solicitud con los datos que revisa el sistema web.
+- Enviar una solicitud con los datos que revisa el sistema web. En la app móvil solo se permite una solicitud pendiente o aprobada a la vez.
 - Consultar el estado y la respuesta del refugio en tiempo real, y cancelar una solicitud pendiente.
-- No incluye alta de refugios, funciones administrativas ni pantallas de administración.
+- No incluye formularios de refugio/servicio ni funciones administrativas. Los botones de **Mi cuenta** abren el registro web para esos tipos de cuenta.
+- En el registro web se elige el rol **Albergue/Refugio** o **Servicio**; la app móvil conserva el rol adoptante.
+- El botón Atrás de Android vuelve a la pantalla anterior, regresa al catálogo o minimiza la app sin cerrar la sesión.
 
 ## Abrir y ejecutar
 
-1. Descomprime `Red_Huella_Android.zip`.
+1. Descomprime `Red_Huella_Android_API36_listo.zip`.
 2. En Android Studio, selecciona **Open** y abre la carpeta `RedHuellaAndroid`.
 3. Acepta la instalación de Android SDK 36 si Android Studio la solicita y espera a que termine **Gradle Sync**.
 4. Selecciona un emulador Android con Google Play o conecta un teléfono con depuración USB.
@@ -50,3 +53,8 @@ En Firebase Console también deben estar activos el proveedor **Correo electrón
 - SDK objetivo: API 36
 - JDK: 17
 - Firebase Authentication y Cloud Firestore
+- Android Gradle Plugin: 8.13.2
+- Gradle: 8.13
+- Kotlin: 2.4.21
+- Compose BOM: 2025.12.01
+- Firebase BOM: 34.16.0

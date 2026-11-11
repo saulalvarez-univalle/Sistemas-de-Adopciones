@@ -1,9 +1,16 @@
 package com.redhuella.android
 
+import android.app.Activity
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -36,6 +43,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Store
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -69,6 +77,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -126,16 +135,24 @@ private enum class MainTab(val title: String) {
 
 private enum class AuthMode { LOGIN, REGISTER }
 
+private const val WEB_REGISTRATION_URL =
+    "https://sistema-de-adopciones-e8cf4.web.app/registro"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun RedHuellaApp() {
     var signedIn by remember { mutableStateOf(FirebaseRepository.currentUid() != null) }
     var profile by remember { mutableStateOf<UserProfile?>(null) }
+    var hasActiveRequest by remember { mutableStateOf(false) }
+    var checkingActiveRequest by remember { mutableStateOf(false) }
     var tab by remember { mutableStateOf(MainTab.MASCOTAS) }
     var authMode by remember { mutableStateOf<AuthMode?>(null) }
     var authMessage by remember { mutableStateOf("") }
     var selectedPet by remember { mutableStateOf<Pet?>(null) }
+    var selectedShelter by remember { mutableStateOf<Shelter?>(null) }
+    var selectedShelterPets by remember { mutableStateOf<List<Pet>>(emptyList()) }
     var requestPet by remember { mutableStateOf<Pet?>(null) }
+    val context = LocalContext.current
 
     LaunchedEffect(signedIn) {
         if (!signedIn) {
@@ -164,6 +181,36 @@ private fun RedHuellaApp() {
         }
     }
 
+    LaunchedEffect(profile?.uid) {
+        val uid = profile?.uid
+        if (uid == null) {
+            hasActiveRequest = false
+            checkingActiveRequest = false
+        } else {
+            checkingActiveRequest = true
+            runCatching { FirebaseRepository.hasActiveAdoptionRequest(uid) }
+                .onSuccess { hasActiveRequest = it }
+            checkingActiveRequest = false
+        }
+    }
+
+    BackHandler(enabled = true) {
+        when {
+            authMode != null -> {
+                authMode = null
+                authMessage = ""
+            }
+            requestPet != null -> requestPet = null
+            selectedPet != null -> selectedPet = null
+            selectedShelter != null -> {
+                selectedShelter = null
+                selectedShelterPets = emptyList()
+            }
+            tab != MainTab.MASCOTAS -> tab = MainTab.MASCOTAS
+            else -> context.findActivity()?.moveTaskToBack(true)
+        }
+    }
+
     when {
         authMode != null -> AuthScreen(
             initialMode = authMode!!,
@@ -184,21 +231,37 @@ private fun RedHuellaApp() {
             onBack = { requestPet = null },
             onSubmitted = {
                 requestPet = null
+                selectedPet = null
+                selectedShelter = null
+                selectedShelterPets = emptyList()
+                hasActiveRequest = true
                 tab = MainTab.SOLICITUDES
             }
         )
 
         selectedPet != null -> PetDetailScreen(
             pet = selectedPet!!,
+            activeRequest = profile != null && hasActiveRequest,
+            checkingActiveRequest = profile != null && checkingActiveRequest,
             onBack = { selectedPet = null },
             onRequest = {
                 if (profile?.rol == "Adoptante") {
-                    requestPet = selectedPet
+                    if (!hasActiveRequest) requestPet = selectedPet
                 } else {
                     authMessage = "Inicia sesión o crea una cuenta de adoptante para solicitar la adopción."
                     authMode = AuthMode.LOGIN
                 }
             }
+        )
+
+        selectedShelter != null -> ShelterDetailScreen(
+            shelter = selectedShelter!!,
+            pets = selectedShelterPets,
+            onBack = {
+                selectedShelter = null
+                selectedShelterPets = emptyList()
+            },
+            onPetSelected = { selectedPet = it }
         )
 
         else -> Scaffold(
@@ -231,13 +294,7 @@ private fun RedHuellaApp() {
                     tabs.forEach { item ->
                         NavigationBarItem(
                             selected = tab == item,
-                            onClick = {
-                                if (item == MainTab.PERFIL && !signedIn) {
-                                    authMode = AuthMode.LOGIN
-                                } else {
-                                    tab = item
-                                }
-                            },
+                            onClick = { tab = item },
                             icon = {
                                 Icon(
                                     imageVector = when (item) {
@@ -260,9 +317,19 @@ private fun RedHuellaApp() {
                     modifier = Modifier.padding(padding),
                     onPetSelected = { selectedPet = it }
                 )
-                MainTab.REFUGIOS -> SheltersScreen(Modifier.padding(padding))
+                MainTab.REFUGIOS -> SheltersScreen(
+                    modifier = Modifier.padding(padding),
+                    onShelterSelected = { shelter, shelterPets ->
+                        selectedShelter = shelter
+                        selectedShelterPets = shelterPets
+                    }
+                )
                 MainTab.SOLICITUDES -> if (profile != null) {
-                    MyRequestsScreen(Modifier.padding(padding), profile!!.uid)
+                    MyRequestsScreen(
+                        modifier = Modifier.padding(padding),
+                        uid = profile!!.uid,
+                        onActiveRequestChanged = { hasActiveRequest = it }
+                    )
                 } else {
                     InfoScreen(
                         modifier = Modifier.padding(padding),
@@ -279,6 +346,7 @@ private fun RedHuellaApp() {
                         onSignOut = {
                             FirebaseRepository.signOut()
                             signedIn = false
+                            hasActiveRequest = false
                             tab = MainTab.MASCOTAS
                         }
                     )
@@ -287,8 +355,9 @@ private fun RedHuellaApp() {
                         modifier = Modifier.padding(padding),
                         title = "Bienvenido a Red Huella",
                         message = "Crea tu cuenta de adoptante para solicitar una mascota y seguir el estado de tu solicitud.",
-                        action = "Crear cuenta",
-                        onAction = { authMode = AuthMode.REGISTER }
+                        action = "Iniciar sesión",
+                        onAction = { authMode = AuthMode.LOGIN },
+                        extraContent = { WebRegistrationButtons() }
                     )
                 }
             }
@@ -374,7 +443,13 @@ private fun PetCard(pet: Pet, onClick: () -> Unit) {
 }
 
 @Composable
-private fun PetDetailScreen(pet: Pet, onBack: () -> Unit, onRequest: () -> Unit) {
+private fun PetDetailScreen(
+    pet: Pet,
+    activeRequest: Boolean,
+    checkingActiveRequest: Boolean,
+    onBack: () -> Unit,
+    onRequest: () -> Unit
+) {
     Column(Modifier.fillMaxSize().background(HuellaCanvas)) {
         Row(Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 8.dp, vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) { Icon(Icons.Filled.ArrowBack, contentDescription = "Volver") }
@@ -402,29 +477,55 @@ private fun PetDetailScreen(pet: Pet, onBack: () -> Unit, onRequest: () -> Unit)
             Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(
                     onClick = onRequest,
-                    enabled = pet.estadoAdopcion == "Disponible",
+                    enabled = pet.estadoAdopcion == "Disponible" && !activeRequest && !checkingActiveRequest,
                     modifier = Modifier.fillMaxWidth().height(52.dp),
                     shape = RoundedCornerShape(14.dp)
                 ) {
-                    Text(if (pet.estadoAdopcion == "Disponible") "Solicitar adopción" else "Adopción en proceso")
+                    Text(
+                        when {
+                            pet.estadoAdopcion != "Disponible" -> "Adopción en proceso"
+                            checkingActiveRequest -> "Revisando solicitud…"
+                            activeRequest -> "Ya tienes una solicitud activa"
+                            else -> "Solicitar adopción"
+                        }
+                    )
                 }
-                Text("El refugio revisará tus respuestas antes de aceptar la solicitud.", color = HuellaMuted, fontSize = 12.sp)
+                Text(
+                    if (activeRequest) {
+                        "Mientras tengas una solicitud Pendiente o Aprobada no puedes enviar otra. Si está Pendiente, puedes cancelarla desde Mis solicitudes."
+                    } else {
+                        "El refugio revisará tus respuestas antes de aceptar la solicitud."
+                    },
+                    color = HuellaMuted,
+                    fontSize = 12.sp
+                )
             }
         }
     }
 }
 
 @Composable
-private fun SheltersScreen(modifier: Modifier) {
+private fun SheltersScreen(
+    modifier: Modifier,
+    onShelterSelected: (Shelter, List<Pet>) -> Unit
+) {
     var shelters by remember { mutableStateOf<List<Shelter>>(emptyList()) }
+    var pets by remember { mutableStateOf<List<Pet>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf("") }
     var reload by remember { mutableStateOf(0) }
     LaunchedEffect(reload) {
         loading = true
         error = ""
-        runCatching { FirebaseRepository.loadShelters() }
-            .onSuccess { shelters = it }
+        runCatching {
+            val loadedShelters = FirebaseRepository.loadShelters()
+            val loadedPets = FirebaseRepository.loadPets()
+            loadedShelters to loadedPets
+        }
+            .onSuccess { (loadedShelters, loadedPets) ->
+                shelters = loadedShelters
+                pets = loadedPets
+            }
             .onFailure { error = readableError(it, "No se pudieron cargar los refugios.") }
         loading = false
     }
@@ -441,26 +542,169 @@ private fun SheltersScreen(modifier: Modifier) {
         if (loading) LoadingPanel("Cargando refugios…")
         if (error.isNotBlank()) ErrorPanel(error, onRetry = { reload++ })
         if (!loading && error.isBlank() && shelters.isEmpty()) EmptyPanel("Todavía no hay refugios verificados.")
-        shelters.forEach { ShelterCard(it) }
+        shelters.forEach { shelter ->
+            val shelterPets = pets.filter { it.albergueId == shelter.id }
+            ShelterCard(
+                shelter = shelter,
+                petCount = shelterPets.size,
+                onViewMore = { onShelterSelected(shelter, shelterPets) }
+            )
+        }
     }
 }
 
 @Composable
-private fun ShelterCard(shelter: Shelter) {
-    Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = Color.White), modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(shelter.nombre.ifBlank { "Refugio Red Huella" }, style = MaterialTheme.typography.titleLarge, color = HuellaBlue, fontWeight = FontWeight.Bold)
-            if (shelter.descripcion.isNotBlank()) Text(shelter.descripcion)
-            if (shelter.direccion.isNotBlank()) Text("Dirección: ${shelter.direccion}", color = HuellaMuted)
-            if (shelter.horarios.isNotBlank()) Text("Atención: ${shelter.horarios}", color = HuellaMuted)
-            if (shelter.telefono.isNotBlank()) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Filled.Call, contentDescription = null, tint = HuellaGreen, modifier = Modifier.size(18.dp))
-                    Spacer(Modifier.width(7.dp))
-                    Text(shelter.telefono, color = HuellaGreen, fontWeight = FontWeight.SemiBold)
+private fun ShelterCard(
+    shelter: Shelter,
+    petCount: Int,
+    onViewMore: () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column {
+            RemotePhoto(
+                url = shelter.logoUrl.takeIf(String::isNotBlank),
+                modifier = Modifier.fillMaxWidth().height(165.dp),
+                contentDescription = "Imagen de ${shelter.nombre.ifBlank { "refugio" }}"
+            )
+            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(9.dp)) {
+                Text(shelter.nombre.ifBlank { "Refugio Red Huella" }, style = MaterialTheme.typography.titleLarge, color = HuellaBlue, fontWeight = FontWeight.Bold)
+                StatusPill("Verificado")
+                Text(shelter.descripcion.ifBlank { "Refugio registrado en Red Huella." })
+                val location = listOf(shelter.municipioId, shelter.departamentoId)
+                    .filter(String::isNotBlank)
+                    .joinToString(", ")
+                if (location.isNotBlank()) Text(location, color = HuellaMuted)
+                Text(
+                    if (petCount == 1) "1 mascota publicada busca hogar"
+                    else "$petCount mascotas publicadas buscan hogar",
+                    color = HuellaGreen,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Button(
+                    onClick = onViewMore,
+                    modifier = Modifier.fillMaxWidth().height(50.dp),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = HuellaGreen)
+                ) {
+                    Text("Ver más  →", fontWeight = FontWeight.Bold)
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ShelterDetailScreen(
+    shelter: Shelter,
+    pets: List<Pet>,
+    onBack: () -> Unit,
+    onPetSelected: (Pet) -> Unit
+) {
+    val context = LocalContext.current
+    Column(Modifier.fillMaxSize().background(HuellaCanvas)) {
+        Row(
+            Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = 8.dp, vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(onClick = onBack) {
+                Icon(Icons.Filled.ArrowBack, contentDescription = "Volver a refugios")
+            }
+            Text("Ficha del refugio", color = HuellaBlue, fontWeight = FontWeight.SemiBold)
+        }
+        Column(
+            Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(13.dp)
+        ) {
+            RemotePhoto(
+                url = shelter.logoUrl.takeIf(String::isNotBlank),
+                modifier = Modifier.fillMaxWidth().height(220.dp).clip(RoundedCornerShape(22.dp)),
+                contentDescription = "Imagen de ${shelter.nombre.ifBlank { "refugio" }}"
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    shelter.nombre.ifBlank { "Refugio Red Huella" },
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = HuellaBlue,
+                    fontWeight = FontWeight.Bold
+                )
+                StatusPill("Verificado")
+            }
+            Text(shelter.descripcion.ifBlank { "Refugio registrado en Red Huella." })
+            HorizontalDivider()
+            Text("Información del refugio", style = MaterialTheme.typography.titleMedium, color = HuellaBlue, fontWeight = FontWeight.Bold)
+            ShelterInfoLine("Dirección", shelter.direccion.ifBlank { "Dirección no registrada" })
+            ShelterInfoLine("Municipio", shelter.municipioId.ifBlank { "No registrado" })
+            ShelterInfoLine("Departamento", shelter.departamentoId.ifBlank { "No registrado" })
+            ShelterInfoLine("Horario de atención", shelter.horarios.ifBlank { "Horario no registrado" })
+            ShelterInfoLine("Teléfono", shelter.telefono.ifBlank { "No disponible" })
+
+            if (shelter.telefono.isNotBlank()) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    OutlinedButton(
+                        onClick = { openPhoneDialer(context, shelter.telefono) },
+                        modifier = Modifier.weight(1f)
+                    ) { Text("Llamar") }
+                    Button(
+                        onClick = { openWhatsApp(context, shelter.telefono) },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = HuellaGreen)
+                    ) { Text("WhatsApp") }
+                }
+            }
+
+            if (shelter.latitud.isNotBlank() && shelter.longitud.isNotBlank()) {
+                OutlinedButton(onClick = { openShelterMap(context, shelter) }, modifier = Modifier.fillMaxWidth()) {
+                    Text("Ver ubicación en el mapa")
+                }
+            }
+
+            HorizontalDivider()
+            Text("Mascotas del refugio", style = MaterialTheme.typography.titleMedium, color = HuellaBlue, fontWeight = FontWeight.Bold)
+            if (pets.isEmpty()) {
+                Text("Por ahora no tiene mascotas publicadas.", color = HuellaMuted)
+            } else {
+                pets.forEach { pet ->
+                    PetInShelterRow(pet = pet, onClick = { onPetSelected(pet) })
+                }
+            }
+            Spacer(Modifier.height(18.dp))
+        }
+    }
+}
+
+@Composable
+private fun ShelterInfoLine(label: String, value: String) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(label, color = HuellaMuted, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+        Text(value, color = HuellaBlue)
+    }
+}
+
+@Composable
+private fun PetInShelterRow(pet: Pet, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        RemotePhoto(
+            url = pet.fotosUrls.firstOrNull(),
+            modifier = Modifier.size(58.dp).clip(RoundedCornerShape(12.dp))
+        )
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+            Text(pet.nombre, color = HuellaBlue, fontWeight = FontWeight.SemiBold)
+            Text(listOf(pet.especieId, pet.edadCategoria).filter(String::isNotBlank).joinToString(" · "), color = HuellaMuted, fontSize = 12.sp)
+        }
+        StatusPill(pet.estadoAdopcion)
     }
 }
 
@@ -530,9 +774,9 @@ private fun AdoptionFormScreen(
                 onClick = {
                     error = validateAdoptionForm(vivienda, espacioExterior, otrasMascotas, personas, experiencia, motivacion, aceptaCompromiso)
                     val currentProfile = profile
-                    if (error.isBlank() && currentProfile != null) {
+                    if (error.isBlank() && currentProfile != null && !sending) {
+                        sending = true
                         scope.launch {
-                            sending = true
                             runCatching {
                                 FirebaseRepository.submitAdoptionRequest(
                                     currentProfile, pet, vivienda, espacioExterior, otrasMascotas,
@@ -595,7 +839,11 @@ private fun validateAdoptionForm(
 }
 
 @Composable
-private fun MyRequestsScreen(modifier: Modifier, uid: String) {
+private fun MyRequestsScreen(
+    modifier: Modifier,
+    uid: String,
+    onActiveRequestChanged: (Boolean) -> Unit
+) {
     var requests by remember { mutableStateOf<List<AdoptionRequest>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf("") }
@@ -605,7 +853,11 @@ private fun MyRequestsScreen(modifier: Modifier, uid: String) {
         scope.launch {
             loading = true
             runCatching { FirebaseRepository.loadMyRequests(uid) }
-                .onSuccess { requests = it; error = "" }
+                .onSuccess {
+                    requests = it
+                    error = ""
+                    onActiveRequestChanged(it.any { request -> request.estado in setOf("Pendiente", "Aprobada") })
+                }
                 .onFailure { error = readableError(it, "No se pudieron cargar tus solicitudes.") }
             loading = false
         }
@@ -636,6 +888,7 @@ private fun MyRequestsScreen(modifier: Modifier, uid: String) {
             scope.launch {
                 runCatching { FirebaseRepository.cancelRequest(request.id) }
                     .onFailure { error = readableError(it, "No se pudo cancelar la solicitud.") }
+                    .onSuccess { refresh() }
             }
         } }
     }
@@ -682,6 +935,7 @@ private fun ProfileScreen(modifier: Modifier, profile: UserProfile, onSignOut: (
             }
         }
         Text("Desde aquí puedes consultar tus solicitudes y las respuestas de los refugios.", color = HuellaMuted)
+        WebRegistrationButtons()
         OutlinedButton(onClick = onSignOut, modifier = Modifier.fillMaxWidth()) {
             Icon(Icons.Filled.Logout, contentDescription = null)
             Spacer(Modifier.width(8.dp))
@@ -799,7 +1053,14 @@ private fun validateAuthForm(
 }
 
 @Composable
-private fun InfoScreen(modifier: Modifier, title: String, message: String, action: String, onAction: () -> Unit) {
+private fun InfoScreen(
+    modifier: Modifier,
+    title: String,
+    message: String,
+    action: String,
+    onAction: () -> Unit,
+    extraContent: (@Composable () -> Unit)? = null
+) {
     Column(
         modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp),
         verticalArrangement = Arrangement.Center,
@@ -812,13 +1073,44 @@ private fun InfoScreen(modifier: Modifier, title: String, message: String, actio
         Text(message, color = HuellaMuted)
         Spacer(Modifier.height(18.dp))
         Button(onClick = onAction) { Text(action) }
+        extraContent?.invoke()
+    }
+}
+
+@Composable
+private fun WebRegistrationButtons() {
+    val context = LocalContext.current
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            "Los registros de refugios y servicios se completan en la página web. Allí selecciona el tipo de cuenta correspondiente.",
+            color = HuellaMuted,
+            fontSize = 13.sp
+        )
+        Button(
+            onClick = { openWebRegistration(context) },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = HuellaGreen)
+        ) {
+            Text("Registrar refugio", fontWeight = FontWeight.Bold)
+        }
+        OutlinedButton(
+            onClick = { openWebRegistration(context) },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(14.dp)
+        ) {
+            Text("Registrar servicios", color = HuellaGreen, fontWeight = FontWeight.Bold)
+        }
     }
 }
 
 @Composable
 private fun StatusPill(status: String) {
     val color = when (status) {
-        "Disponible", "Aprobada", "Concretada" -> HuellaGreen
+        "Disponible", "Aprobada", "Concretada", "Verificado" -> HuellaGreen
         "Pendiente", "En proceso" -> Color(0xFFB56A00)
         "Rechazada", "Cancelada" -> Color(0xFF9D3D36)
         else -> HuellaMuted
@@ -828,8 +1120,61 @@ private fun StatusPill(status: String) {
     }
 }
 
+private fun openPhoneDialer(context: Context, phone: String) {
+    val digits = phone.filter(Char::isDigit)
+    if (digits.isBlank()) return
+    val number = if (phone.trim().startsWith("+")) "+$digits" else digits
+    val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", number, null))
+    try {
+        context.startActivity(intent)
+    } catch (_: ActivityNotFoundException) {
+        // A device without a dialer cannot place calls.
+    }
+}
+
+private fun openWebRegistration(context: Context) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(WEB_REGISTRATION_URL))
+    try {
+        context.startActivity(intent)
+    } catch (_: ActivityNotFoundException) {
+        // The operating system reports if no browser is available.
+    }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
+
+private fun openWhatsApp(context: Context, phone: String) {
+    val digits = phone.filter(Char::isDigit)
+    if (digits.isBlank()) return
+    val whatsappNumber = if (digits.length == 8) "591$digits" else digits
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/$whatsappNumber"))
+    try {
+        context.startActivity(intent)
+    } catch (_: ActivityNotFoundException) {
+        openPhoneDialer(context, phone)
+    }
+}
+
+private fun openShelterMap(context: Context, shelter: Shelter) {
+    val query = Uri.encode("${shelter.latitud},${shelter.longitud}")
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/?api=1&query=$query"))
+    try {
+        context.startActivity(intent)
+    } catch (_: ActivityNotFoundException) {
+        // Google Maps links can also be opened from a browser.
+    }
+}
+
 @Composable
-private fun RemotePhoto(url: String?, modifier: Modifier = Modifier) {
+private fun RemotePhoto(
+    url: String?,
+    modifier: Modifier = Modifier,
+    contentDescription: String = "Fotografía de mascota"
+) {
     val bitmap by produceState<Bitmap?>(initialValue = null, key1 = url) {
         value = if (url.isNullOrBlank()) null else withContext(Dispatchers.IO) {
             runCatching {
@@ -842,7 +1187,7 @@ private fun RemotePhoto(url: String?, modifier: Modifier = Modifier) {
         }
     }
     if (bitmap != null) {
-        Image(bitmap = bitmap!!.asImageBitmap(), contentDescription = "Fotografía de mascota", modifier = modifier, contentScale = ContentScale.Crop)
+        Image(bitmap = bitmap!!.asImageBitmap(), contentDescription = contentDescription, modifier = modifier, contentScale = ContentScale.Crop)
     } else {
         Box(modifier.background(Color(0xFFE5EEF0)), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {

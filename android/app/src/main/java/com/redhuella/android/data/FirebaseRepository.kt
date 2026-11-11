@@ -43,7 +43,10 @@ data class Shelter(
     val telefono: String,
     val horarios: String,
     val departamentoId: String,
-    val municipioId: String
+    val municipioId: String,
+    val logoUrl: String,
+    val latitud: String,
+    val longitud: String
 )
 
 data class AdoptionRequest(
@@ -138,10 +141,20 @@ object FirebaseRepository {
                     telefono = document.string("telefonoContacto"),
                     horarios = document.string("horariosAtencion"),
                     departamentoId = document.string("departamentoId"),
-                    municipioId = document.string("municipioId")
+                    municipioId = document.string("municipioId"),
+                    logoUrl = document.string("logoUrl"),
+                    latitud = document.value("latitud"),
+                    longitud = document.value("longitud")
                 )
             }
             .sortedBy { it.nombre.lowercase() }
+    }
+
+    suspend fun hasActiveAdoptionRequest(uid: String): Boolean {
+        return db.collection("solicitudes_adopcion")
+            .whereEqualTo("adoptanteUserId", uid)
+            .get().await().documents
+            .any { it.string("estado") in setOf("Pendiente", "Aprobada") }
     }
 
     suspend fun submitAdoptionRequest(
@@ -154,14 +167,9 @@ object FirebaseRepository {
         experiencia: String,
         motivacion: String
     ) {
-        val existing = db.collection("solicitudes_adopcion")
-            .whereEqualTo("adoptanteUserId", profile.uid)
-            .get().await().documents
-        val hasActiveRequest = existing.any { document ->
-            document.string("mascotaId") == pet.id &&
-                document.string("estado") in setOf("Pendiente", "Aprobada")
+        check(!hasActiveAdoptionRequest(profile.uid)) {
+            "Ya tienes una solicitud activa. Espera a que se cierre o cancélala antes de enviar otra."
         }
-        check(!hasActiveRequest) { "Ya tienes una solicitud activa para esta mascota." }
         check(pet.estadoAdopcion == "Disponible") { "Esta mascota ya no está recibiendo solicitudes." }
 
         val applicant = hashMapOf(

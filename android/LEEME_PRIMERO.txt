@@ -1,0 +1,26 @@
+RED HUELLA ANDROID — API 36 — GUÍA RÁPIDA
+
+ABRIR EN ANDROID STUDIO
+1. Extrae el ZIP completo `Red_Huella_Android_API36_listo.zip`.
+2. En Android Studio elige File > Open.
+3. Selecciona la carpeta RedHuellaAndroid. Debe contener settings.gradle.kts, build.gradle.kts y gradlew.bat.
+4. Antes de sincronizar, abre File > Settings > Build, Execution, Deployment > Build Tools > Gradle.
+5. En Gradle JDK selecciona Embedded JDK / JetBrains Runtime (JBR), o GRADLE_LOCAL_JAVA_HOME si aparece. Pulsa Apply y OK.
+6. Elige File > Sync Project with Gradle Files. Acepta instalar Android SDK 36 si Android Studio lo solicita. El proyecto usa compileSdk y targetSdk 36, Android Gradle Plugin 8.13.2, Gradle 8.13 y JDK 17.
+7. Selecciona un emulador o conecta tu teléfono con depuración USB y pulsa Run.
+
+IMPORTANTE SOBRE POWERSHELL
+Para compilar desde Android Studio no necesitas ejecutar comandos en PowerShell. Si usas la terminal, escribe únicamente el comando; no copies el texto del prompt (PS C:\...) ni los mensajes de salida. La terminal necesita un Java configurado. La selección Gradle JDK de Android Studio se usa para compilaciones iniciadas desde el IDE.
+
+FIREBASE
+La aplicación usa el mismo proyecto Firebase configurado por la web: sistema-de-adopciones-e8cf4. La inicialización está en el código con FirebaseOptions; este proyecto no necesita google-services.json para sincronizar. En Firebase deben estar activos Correo electrónico/Contraseña y las reglas Firestore del repositorio.
+
+La app es para personas adoptantes: catálogo de mascotas y refugios verificados, registro/inicio de sesión de adoptante, solicitudes y seguimiento. No incluye acceso administrativo ni formularios móviles para refugios o servicios; los botones de Mi cuenta abren el registro en la web. La administración revisa y responde las solicitudes desde la web.
+Cada refugio tiene un botón Ver más que abre su ficha detallada y sus mascotas publicadas. Desde allí puedes llamar, abrir WhatsApp o ver el mapa. En la app móvil solo se puede mantener una solicitud Pendiente o Aprobada a la vez. El botón Atrás de Android regresa a la pantalla anterior, vuelve al catálogo o minimiza la app.
+
+SI APARECE UN ERROR
+- “JAVA_HOME is not set” en PowerShell: configura el JDK en Android Studio como se indica arriba y sincroniza desde el IDE.
+- “Application Control policy blocked this file” o error 4551: Windows bloqueó un ejecutable del proceso de compilación. Consulta el evento correspondiente en el registro CodeIntegrity/Operational; no desactives la protección de Windows.
+- El APK de depuración se genera en app/build/outputs/apk/debug/app-debug.apk después de que la compilación termine correctamente.
+
+Las dependencias Compose y Firebase se fijaron en versiones compatibles con esta configuración API 36 y AGP 8.13.2.
